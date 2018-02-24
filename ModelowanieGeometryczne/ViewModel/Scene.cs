@@ -58,16 +58,17 @@ namespace ModelowanieGeometryczne.ViewModel
             GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
             GL.Enable(EnableCap.Normalize);
         }
-        internal void Render()
+        internal void Render(double scale)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
           
-            CreateProjectionMatrices();
+        //    CreateProjectionMatrices();
+            
+          
+            GL.LoadIdentity();
+            GL.Scale(scale, scale, scale);
             DrawAxis();
-           // int scale =10;
-            //GL.Scale(scale * 0.03, scale * 0.03, -scale * 0.03);
-
             GL.Begin(BeginMode.Lines);
             GL.Color4(0, 0, 255, 0.1);
             GL.Vertex3(0,0, 0);
@@ -86,25 +87,25 @@ namespace ModelowanieGeometryczne.ViewModel
             GL.LoadIdentity();
         }
 
-        private void CreateProjectionMatrices()
-        {
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
+        //private void CreateProjectionMatrices()
+        //{
+        //    GL.MatrixMode(MatrixMode.Modelview);
+        //    GL.LoadIdentity();
 
-            InitializeLights();
+        //    InitializeLights();
 
-            //// Move the box to the center of the control 
-            //GL.Translate(0, -0.5, 0);
-            //// User transformations
-            //GL.Rotate(rotation.X, 1, 0, 0);
-            //GL.Rotate(rotation.Y, 0, 1, 0);
-            double scale = 0.1;
-            GL.Scale(scale, scale, scale);
-            //// Enable transforming the box around its center
-            //GL.Translate(-_lookAt.X, -_lookAt.Y, -_lookAt.Z);
+        //    //// Move the box to the center of the control 
+        //    //GL.Translate(0, -0.5, 0);
+        //    //// User transformations
+        //    //GL.Rotate(rotation.X, 1, 0, 0);
+        //    //GL.Rotate(rotation.Y, 0, 1, 0);
+        //    double scale = 0.1;
+        //    GL.Scale(scale, scale, scale);
+        //    //// Enable transforming the box around its center
+        //    //GL.Translate(-_lookAt.X, -_lookAt.Y, -_lookAt.Z);
 
-            //GL.Translate(Translation.X, 0, Translation.Y);
-        }
+        //    //GL.Translate(Translation.X, 0, Translation.Y);
+        //}
 
         private void InitializeLights()
         {
@@ -129,36 +130,36 @@ namespace ModelowanieGeometryczne.ViewModel
             // draw line for x axis
             GL.Color3(1.0, 0.0, 0.0);
             GL.Vertex3(0.0, 0.0, 0.0);
-            GL.Vertex3(0.1, 0.0, 0.0);
+            GL.Vertex3(1, 0.0, 0.0);
 
-            GL.Vertex3(0.11, 0.0, 0.0);
-            GL.Vertex3(0.12, -0.01, 0.0);
-            GL.Vertex3(0.11, -0.01, 0.0);
-            GL.Vertex3(0.12, 0.0, 0.0);
+            GL.Vertex3(1.1, 0.0, 0.0);
+            GL.Vertex3(1.2, -0.1, 0.0);
+            GL.Vertex3(1.1, -0.1, 0.0);
+            GL.Vertex3(1.2, 0.0, 0.0);
 
             // draw line for z axis
             GL.Color3(0.0, 1.0, 0.0);
             GL.Vertex3(0.0, 0.0, 0.0);
-            GL.Vertex3(0.0, 0.1, 0.0);
+            GL.Vertex3(0.0, 1, 0.0);
 
-            GL.Vertex3(0.0, 0.11, 0);
-            GL.Vertex3(0.0, 0.12, 0);
-            GL.Vertex3(0.01, 0.13, 0);
-            GL.Vertex3(0.0, 0.12, 0);
-            GL.Vertex3(-0.01, 0.13, 0);
-            GL.Vertex3(0.0, 0.12, 0);
+            GL.Vertex3(0.0, 1.1, 0);
+            GL.Vertex3(0.0, 1.2, 0);
+            GL.Vertex3(0.1, 1.3, 0);
+            GL.Vertex3(0.0, 1.2, 0);
+            GL.Vertex3(-0.1, 1.3, 0);
+            GL.Vertex3(0.0, 1.2, 0);
 
             // draw line for y axis
             GL.Color3(0.0, 0.0, 1.0);
             GL.Vertex3(0.0, 0.0, 0.0);
-            GL.Vertex3(0.0, 0.0, 0.1);
+            GL.Vertex3(0.0, 0.0, 1.0);
 
-            GL.Vertex3(0.02, 0.0, 0.1);
-            GL.Vertex3(0.01, 0.0, 0.1);
-            GL.Vertex3(0.01, 0.0, 0.1);
-            GL.Vertex3(0.02, 0.01, 0.1);
-            GL.Vertex3(0.02, 0.01, 0.1);
-            GL.Vertex3(0.01, 0.01, 0.1);
+            GL.Vertex3(0.2, 0.0, 1);
+            GL.Vertex3(0.1, 0.0, 1);
+            GL.Vertex3(0.1, 0.0, 1);
+            GL.Vertex3(0.2, 0.1, 1);
+            GL.Vertex3(0.2, 0.1, 1);
+            GL.Vertex3(0.1, 0.1, 1);
 
             GL.End();
            // GL.PopMatrix();

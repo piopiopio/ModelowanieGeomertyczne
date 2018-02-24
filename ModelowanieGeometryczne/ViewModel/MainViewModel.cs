@@ -54,9 +54,9 @@ namespace ModelowanieGeometryczne.ViewModel
 
 
 
-        internal void Render()
+        internal void Render(double scale)
         {
-            _scene.Render();
+            _scene.Render(scale);
 
         }
         
