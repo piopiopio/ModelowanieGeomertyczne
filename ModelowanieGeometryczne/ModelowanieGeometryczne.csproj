@@ -66,6 +66,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helpers\MatrixProvider.cs" />
     <Compile Include="Helpers\SizeObserver.cs" />
     <Compile Include="Model\Torus.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />

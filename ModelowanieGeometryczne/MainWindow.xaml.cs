@@ -28,24 +28,17 @@ namespace ModelowanieGeometryczne
     {
         private GLControl _glControl;
         private MainViewModel _mainViewModel;
-        private double _scale;
+      
 
         public MainWindow()
         {
             InitializeComponent();
             _mainViewModel = new MainViewModel();
             DataContext = _mainViewModel;
-            _scale = 0.1;
+           
         }
 
-        public double Scale
-        {
-            get { return _scale; }
-            set
-            {
-                _scale = Math.Max(value, 0.01);
-            }
-        }
+
         private void OpenTkControl_Initialized(object sender, EventArgs e)
         {
             _glControl = new GLControl();
@@ -54,15 +47,42 @@ namespace ModelowanieGeometryczne
             _glControl.Dock = DockStyle.Fill;
             _glControl.MouseUp += _glControl_MouseUp;
             _glControl.MouseWheel += _glControl_MouseWheel;
+            _glControl.MouseMove += _glControl_MouseMove;
+            _glControl.MouseDown += _glControl_MouseDown;
+            
             (sender as WindowsFormsHost).Child = _glControl;
+        }
+
+        void _glControl_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            _mainViewModel.Scene.SetCurrentCoordinate(e.X, e.Y);
+        }
+
+        void _glControl_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            _mainViewModel.Text = "";
+            if (e.Button== MouseButtons.Left)
+            {
+                _mainViewModel.Text = "Left";
+                //_mainViewModel.MouseMove(e);
+                //RepaintGlControl();
+            }
+            if (e.Button== MouseButtons.Right)
+            {
+                _mainViewModel.Text = "Right";
+                _mainViewModel.Scene.MouseMoveTranslate(e.X, e.Y);
+                Paint();
+                //_mainViewModel.MouseMove(e);
+                //RepaintGlControl();
+            }
         }
 
         void _glControl_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             // _mainViewModel.Text="MainWindow";
-            Scale += e.Delta / 3000.0;
+            _mainViewModel.Scene.Scale += e.Delta / 3000.0;
 
-            _mainViewModel.Text = Scale.ToString() + ":" + e.Delta;
+           
 
             Paint();
 
@@ -79,7 +99,7 @@ namespace ModelowanieGeometryczne
         }
         void Paint()
         {
-            _mainViewModel.Render(Scale);
+            _mainViewModel.Render();
 
             _glControl.SwapBuffers();
         }

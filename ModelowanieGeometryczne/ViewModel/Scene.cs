@@ -1,14 +1,21 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using System;
+using System.Windows.Forms;
+using ModelowanieGeometryczne.Helpers;
+using OpenTK;
+using OpenTK.Graphics.OpenGL;
 
 namespace ModelowanieGeometryczne.ViewModel
 {
     public class Scene : ViewModelBase
     {
         #region Private Fields
-
+        
         private double _height;
         private double _width;
+        private double _x, _y, _x0, _y0;
         #endregion Private Fields
+        private double _scale;
+        private Matrix4d M;
         #region Public Properties
 
         public double Height
@@ -39,6 +46,18 @@ namespace ModelowanieGeometryczne.ViewModel
         public Scene()
         {
             DefineDrawingMode();
+            _scale = 0.1;
+            _x = 0;
+            _y = 0; 
+    
+        }
+        public double Scale
+        {
+            get { return _scale; }
+            set
+            {
+                _scale = Math.Max(value, 0.01);
+            }
         }
 
         private void DefineDrawingMode()
@@ -58,7 +77,7 @@ namespace ModelowanieGeometryczne.ViewModel
             GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
             GL.Enable(EnableCap.Normalize);
         }
-        internal void Render(double scale)
+        internal void Render()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
@@ -67,7 +86,11 @@ namespace ModelowanieGeometryczne.ViewModel
             
           
             GL.LoadIdentity();
-            GL.Scale(scale, scale, scale);
+            var scaleMatrix = MatrixProvider.ScaleMatrix(_scale);
+            var translateMatrix = MatrixProvider.TranslateMatrix(_x/50, -_y/50, 0);
+            M = scaleMatrix*translateMatrix;
+            GL.MultMatrix(ref scaleMatrix);
+            GL.MultMatrix(ref translateMatrix);
             DrawAxis();
             GL.Begin(BeginMode.Lines);
             GL.Color4(0, 0, 255, 0.1);
@@ -163,6 +186,46 @@ namespace ModelowanieGeometryczne.ViewModel
 
             GL.End();
            // GL.PopMatrix();
+        }
+
+
+
+        //public void MouseMoveRotate(System.Windows.Forms.MouseEventArgs e)
+        //{
+        //    if (e.Button == MouseButtons.Left)
+        //    {
+        //        var translation = Engine3D.Translation;
+        //        translation.X += 0.4 * (e.X - PreviousMousePosition.X);
+        //        translation.Y += 0.4 * (e.Y - PreviousMousePosition.Y);
+        //        Engine3D.Translation = translation;
+        //    }
+
+        //    if (e.Button == MouseButtons.Right)
+        //    {
+        //        var rotation = Engine3D.Rotation;
+        //        rotation.Y += 0.4 * (e.X - PreviousMousePosition.X);
+        //        rotation.X += 0.4 * (e.Y - PreviousMousePosition.Y);
+        //        if (rotation.X < 0)
+        //            rotation.X = 0;
+        //        else if (rotation.X > 90)
+        //            rotation.X = 90;
+        //        Engine3D.Rotation = rotation;
+        //    }
+
+        //    PreviousMousePosition = new Point(e.X, e.Y);
+        //    Render();
+        //}
+
+        public void MouseMoveTranslate(int x, int y)
+        {
+            _x = x-_x0;
+            _y = y-_y0;
+        }
+
+        internal void SetCurrentCoordinate(int x, int y)
+        {
+            _x0 = x;
+            _y0 = y;
         }
     }
 }
