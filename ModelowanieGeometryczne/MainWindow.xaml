@@ -29,22 +29,36 @@
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Row="0" Grid.Column="0" Text="  r: "></TextBlock>
-            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Torus.r}"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Scene.Torus.r}"/>
            
             <TextBlock Grid.Row="1" Grid.Column="0" Text="  R: "></TextBlock>
-            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Torus.R}"/>
-            
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="  L: "></TextBlock>
-            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Torus.L}"/>
-            
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="  V: "></TextBlock>
-                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Torus.V}"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Scene.Torus.R}"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="  Division_fi: "></TextBlock>
+            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Scene.Torus.Division_fi}"/>
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="  Division_teta: "></TextBlock>
+            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Scene.Torus.Division_teta}"/>
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="  alphaX: "></TextBlock>
+            <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Scene.AlphaX}"/>
+
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="  alphaY: "></TextBlock>
+            <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding  Scene.AlphaZ}"/>
+
+            <TextBlock Grid.Row="6" Grid.Column="0" Text="  alphaZ: "></TextBlock>
+            <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding  Scene.AlphaZ}"/>
+
+
         </Grid>
         <TextBlock Grid.Row="2" Text="{Binding Text}"></TextBlock>
 <WindowsFormsHost Grid.Column="0" Grid.Row="0" Initialized="OpenTkControl_Initialized"

@@ -35,7 +35,12 @@ namespace ModelowanieGeometryczne
             InitializeComponent();
             _mainViewModel = new MainViewModel();
             DataContext = _mainViewModel;
-           
+            _mainViewModel.Scene.RefreshScene += Scene_RefreshScene;
+        }
+
+        void Scene_RefreshScene(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            Paint();
         }
 
 
@@ -52,6 +57,7 @@ namespace ModelowanieGeometryczne
             
             (sender as WindowsFormsHost).Child = _glControl;
         }
+
 
         void _glControl_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
@@ -97,7 +103,8 @@ namespace ModelowanieGeometryczne
         {
             Paint();
         }
-        void Paint()
+
+        public void Paint()
         {
             _mainViewModel.Render();
 

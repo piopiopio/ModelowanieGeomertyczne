@@ -1,6 +1,9 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
+using System.Windows.Navigation;
 using ModelowanieGeometryczne.Helpers;
+using ModelowanieGeometryczne.Model;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
@@ -8,11 +11,13 @@ namespace ModelowanieGeometryczne.ViewModel
 {
     public class Scene : ViewModelBase
     {
+        public event PropertyChangedEventHandler RefreshScene;
+        private Torus _torus;
         #region Private Fields
-        
+
         private double _height;
         private double _width;
-        private double _x, _y, _x0, _y0;
+        private double _x, _y, _x0, _y0, _alphaX, _alphaY, _alphaZ;
         #endregion Private Fields
         private double _scale;
         private Matrix4d M;
@@ -42,22 +47,81 @@ namespace ModelowanieGeometryczne.ViewModel
         #endregion Private Methods
         #region Public Methods
         #endregion Public Methods
+        public Torus Torus
+        {
+            get
+            {
+                return _torus;
+            }
+            set
+            {
+                _torus = value;
+                OnPropertyChanged("Torus");
+            }
+        }
+
+        public double AlphaX
+        {
+            get { return _alphaX; }
+            set
+            {
+                _alphaX = value;
+                Refresh();
+            }
+        }
+
+        public double AlphaY
+        {
+            get { return _alphaY; }
+            set
+            {
+                _alphaY = value;
+                Refresh();
+            }
+        }
+
+        public double AlphaZ
+        {
+            get { return _alphaZ; }
+            set
+            {
+                _alphaZ = value;
+                Refresh();
+
+            }
+        }
 
         public Scene()
         {
+            M = Matrix4d.Identity;
             DefineDrawingMode();
             _scale = 0.1;
             _x = 0;
-            _y = 0; 
-    
+            _y = 0;
+            _alphaX = 0;
+            _alphaY = 0;
+            _alphaZ = 0;
+            Torus = new Torus();
+
         }
+
+
+
         public double Scale
         {
             get { return _scale; }
             set
             {
                 _scale = Math.Max(value, 0.01);
+                var scaleMatrix = MatrixProvider.ScaleMatrix(_scale);
+                M = M * scaleMatrix;
             }
+        }
+
+        private void Refresh()
+        {
+            if (RefreshScene != null)
+                RefreshScene(this, new PropertyChangedEventArgs("RefreshScene"));
         }
 
         private void DefineDrawingMode()
@@ -81,26 +145,39 @@ namespace ModelowanieGeometryczne.ViewModel
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-          
-        //    CreateProjectionMatrices();
-            
-          
+
+            //    CreateProjectionMatrices();
+
+
             GL.LoadIdentity();
+            //GL.MultMatrix(ref M);
+
+            //Skasowac
+            //_scale = 1;
+            //_x = 0;
+            //_y = 0;
             var scaleMatrix = MatrixProvider.ScaleMatrix(_scale);
-            var translateMatrix = MatrixProvider.TranslateMatrix(_x/50, -_y/50, 0);
-            M = scaleMatrix*translateMatrix;
-            GL.MultMatrix(ref scaleMatrix);
-            GL.MultMatrix(ref translateMatrix);
+            var translateMatrix = MatrixProvider.TranslateMatrix(_x / 50, -_y / 50, 0);
+            var rotate = MatrixProvider.RotateXMatrix(_alphaX) * MatrixProvider.RotateYMatrix(_alphaY) * MatrixProvider.RotateZMatrix(_alphaZ);
+            M = scaleMatrix * translateMatrix * rotate;
+            //GL.MultMatrix(ref scaleMatrix);
+            //GL.MultMatrix(ref translateMatrix);
+            //GL.MultMatrix(ref rotate);
+            GL.MultMatrix(ref M);
             DrawAxis();
+          
+            _torus.Draw();
             GL.Begin(BeginMode.Lines);
             GL.Color4(0, 0, 255, 0.1);
-            GL.Vertex3(0,0, 0);
+            GL.Vertex3(0, 0, 0);
             GL.Vertex3(1, 2, 0);
             GL.Vertex3(1, 2, 0);
             GL.Vertex3(1, 0, 0);
             GL.End();
-            
+
             GL.Flush();
+
+
         }
 
         private void SetViewPort()
@@ -141,10 +218,10 @@ namespace ModelowanieGeometryczne.ViewModel
 
         private void DrawAxis()
         {
-           // GL.PushMatrix();
+            // GL.PushMatrix();
             //GL.LoadIdentity();
-        
-          //  GL.Translate(-0.9, -0.9, 0.0);
+
+            //  GL.Translate(-0.9, -0.9, 0.0);
             //GL.Rotate(Rotation.X, 1.0, 0.0, 0.0);
             //GL.Rotate(Rotation.Y, 0.0, 1.0, 0.0);
 
@@ -185,7 +262,7 @@ namespace ModelowanieGeometryczne.ViewModel
             GL.Vertex3(0.1, 0.1, 1);
 
             GL.End();
-           // GL.PopMatrix();
+            // GL.PopMatrix();
         }
 
 
@@ -218,8 +295,11 @@ namespace ModelowanieGeometryczne.ViewModel
 
         public void MouseMoveTranslate(int x, int y)
         {
-            _x = x-_x0;
-            _y = y-_y0;
+            _x = x - _x0;
+            _y = y - _y0;
+
+            var translateMatrix = MatrixProvider.TranslateMatrix(_x / 50, -_y / 50, 0);
+            M = M * translateMatrix;
         }
 
         internal void SetCurrentCoordinate(int x, int y)

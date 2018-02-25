@@ -6,13 +6,13 @@ namespace ModelowanieGeometryczne.ViewModel
     public class MainViewModel : ViewModelBase
     {
         private string _text;
-        private Torus _torus;
+        
         private Scene _scene;
         
         public MainViewModel()
         {
             Text = "test";
-            Torus = new Torus();
+
             Scene = new Scene();
         }
 
@@ -39,18 +39,6 @@ namespace ModelowanieGeometryczne.ViewModel
             }
         }
 
-        public Torus Torus
-        {
-            get
-            {
-                return _torus;
-            }
-            set
-            {
-                _torus = value;
-                OnPropertyChanged("Torus");
-            }
-        }
 
 
 
