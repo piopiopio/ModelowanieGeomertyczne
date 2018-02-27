@@ -85,8 +85,8 @@ namespace ModelowanieGeometryczne.Model
         {
             _r = 1;
             _R = 2;
-            _division_fi = 100;
-            _division_teta = 100;
+            _division_fi = 10;
+            _division_teta = 10;
             generateParametrization();
            
         }
@@ -117,19 +117,37 @@ namespace ModelowanieGeometryczne.Model
                     temp.Z = _R * Math.Sin(fi);
                     _verticesList.Add(temp);
 
-                    if (i != _division_fi && i>0)
+                    if (i>0)
                     {
                         _relationsList.Add(new Tuple<int, int>(k-1, k));
                     }
 
-                    else if (i>0)
+                    if (i == _division_fi-1)
                     {
                         _relationsList.Add(new Tuple<int, int>(k, k-i));
                     }
+
+
+                }
+
+
+                if (j > 0)
+                {
+                   for (int i = 0; i < _division_fi; i++)
+                   {
+                        _relationsList.Add(new Tuple<int, int>(k - _division_fi-i , k-i));
+                    }
+
                 }
                 
-                
-
+                if (j == Division_teta-1)
+                { 
+                    for (int i = 0; i < _division_fi; i++)
+                   {
+                   _relationsList.Add(new Tuple<int, int>(k - j*_division_fi-i, k-i));
+                    }
+                   // _relationsList.Add(new Tuple<int, int>(9999,9900));
+                }
                //TODO : Data representation in two list vertices List<Vector3d> and relations List<Vector2d> _verticesList.ElementAt();
             }
 
@@ -149,8 +167,6 @@ namespace ModelowanieGeometryczne.Model
 
         public void Draw()
         {
-            foreach (var v in _relationsList)
-            {
                 GL.Begin(BeginMode.Lines);
                 GL.Color3(1.0, 1.0, 1.0);
 
@@ -164,10 +180,11 @@ namespace ModelowanieGeometryczne.Model
                     GL.Vertex3(_verticesList[relations.Item1]);
                     GL.Vertex3(_verticesList[relations.Item2]);
                 }
-                GL.End();
-            }
 
+                GL.End();
         }
+
+
 
         #endregion Public Methods
     }
