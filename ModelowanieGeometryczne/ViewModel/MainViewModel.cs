@@ -5,17 +5,18 @@ namespace ModelowanieGeometryczne.ViewModel
 {
     public class MainViewModel : ViewModelBase
     {
+        #region Private fields
         private string _text;
-        
         private Scene _scene;
-        
+        #endregion Private fields
+
+        #region Public Properties
         public MainViewModel()
         {
             Text = "test";
 
             Scene = new Scene();
         }
-
         public Scene Scene
         {
             get { return _scene; }
@@ -38,16 +39,14 @@ namespace ModelowanieGeometryczne.ViewModel
                 OnPropertyChanged("Text");
             }
         }
-
-
-
-
+        #endregion Public Properties
+        #region Private Methods
         internal void Render()
         {
             _scene.Render();
 
         }
-        
+        #endregion Private Methods
     }
 }
 

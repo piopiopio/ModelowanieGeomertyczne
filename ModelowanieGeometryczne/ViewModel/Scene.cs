@@ -12,15 +12,16 @@ namespace ModelowanieGeometryczne.ViewModel
     public class Scene : ViewModelBase
     {
         public event PropertyChangedEventHandler RefreshScene;
-        private Torus _torus;
-        #region Private Fields
 
+        #region Private Fields
+        private Torus _torus;
         private double _height;
         private double _width;
         private double _x, _y, _x0, _y0, _alphaX, _alphaY, _alphaZ;
-        #endregion Private Fields
         private double _scale;
         private Matrix4d M;
+        #endregion Private Fields
+
         #region Public Properties
 
         public double Height
@@ -40,23 +41,6 @@ namespace ModelowanieGeometryczne.ViewModel
             {
                 _width = value;
                 SetViewPort();
-            }
-        }
-        #endregion Public Properties
-        #region Private Methods
-        #endregion Private Methods
-        #region Public Methods
-        #endregion Public Methods
-        public Torus Torus
-        {
-            get
-            {
-                return _torus;
-            }
-            set
-            {
-                _torus = value;
-                OnPropertyChanged("Torus");
             }
         }
 
@@ -91,22 +75,6 @@ namespace ModelowanieGeometryczne.ViewModel
             }
         }
 
-        public Scene()
-        {
-            M = Matrix4d.Identity;
-            DefineDrawingMode();
-            _scale = 0.1;
-            _x = 0;
-            _y = 0;
-            _alphaX = 0;
-            _alphaY = 0;
-            _alphaZ = 0;
-            Torus = new Torus();
-
-        }
-
-
-
         public double Scale
         {
             get { return _scale; }
@@ -118,6 +86,23 @@ namespace ModelowanieGeometryczne.ViewModel
             }
         }
 
+        public Torus Torus
+        {
+            get
+            {
+                return _torus;
+            }
+            set
+            {
+                _torus = value;
+                OnPropertyChanged("Torus");
+            }
+        }
+        #endregion Public Properties
+
+       
+
+        #region Private Methods
         private void Refresh()
         {
             if (RefreshScene != null)
@@ -165,8 +150,10 @@ namespace ModelowanieGeometryczne.ViewModel
             //GL.MultMatrix(ref rotate);
             GL.MultMatrix(ref M);
             DrawAxis();
-          
+
             _torus.Draw();
+            var projectionMatrix = MatrixProvider.ProjectionMatrix(200.0);
+            GL.MultMatrix(ref projectionMatrix);
             GL.Begin(BeginMode.Lines);
             GL.Color4(0, 0, 255, 0.1);
             GL.Vertex3(0, 0, 0);
@@ -182,9 +169,9 @@ namespace ModelowanieGeometryczne.ViewModel
 
         private void SetViewPort()
         {
-            GL.Viewport(0, 0, (int)_width, (int)_height);
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadIdentity();
+            GL.Viewport(0, 0, 1440, 750);
+            // GL.MatrixMode(MatrixMode.Projection);
+            //  GL.LoadIdentity();
         }
 
         //private void CreateProjectionMatrices()
@@ -265,10 +252,47 @@ namespace ModelowanieGeometryczne.ViewModel
             // GL.PopMatrix();
         }
 
+        internal void SetCurrentCoordinate(int x, int y)
+        {
+            _x0 = x;
+            _y0 = y;
+        }
+
+        #endregion Private Methods
+        #region Public Methods
+        public void MouseMoveTranslate(int x, int y)
+        {
+            _x = x - _x0;
+            _y = y - _y0;
+
+            var translateMatrix = MatrixProvider.TranslateMatrix(_x / 50, -_y / 50, 0);
+            M = M * translateMatrix;
+        }
+        #endregion Public Methods
+
+        public Scene()
+        {
+            M = Matrix4d.Identity;
+           // DefineDrawingMode();
+            _scale = 0.1;
+            _x = 0;
+            _y = 0;
+            _alphaX = 0;
+            _alphaY = 0;
+            _alphaZ = 0;
+            Torus = new Torus();
+
+        }
+
+
+
+
+
+        
+
 
 
         //public void MouseMoveRotate(System.Windows.Forms.MouseEventArgs e)
-        //{
         //    if (e.Button == MouseButtons.Left)
         //    {
         //        var translation = Engine3D.Translation;
@@ -293,20 +317,9 @@ namespace ModelowanieGeometryczne.ViewModel
         //    Render();
         //}
 
-        public void MouseMoveTranslate(int x, int y)
-        {
-            _x = x - _x0;
-            _y = y - _y0;
 
-            var translateMatrix = MatrixProvider.TranslateMatrix(_x / 50, -_y / 50, 0);
-            M = M * translateMatrix;
-        }
 
-        internal void SetCurrentCoordinate(int x, int y)
-        {
-            _x0 = x;
-            _y0 = y;
-        }
+
     }
 }
 

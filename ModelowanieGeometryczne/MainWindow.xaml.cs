@@ -26,9 +26,10 @@ namespace ModelowanieGeometryczne
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region Private fields
         private GLControl _glControl;
         private MainViewModel _mainViewModel;
-      
+        #endregion Private fields
 
         public MainWindow()
         {
@@ -36,13 +37,18 @@ namespace ModelowanieGeometryczne
             _mainViewModel = new MainViewModel();
             DataContext = _mainViewModel;
             _mainViewModel.Scene.RefreshScene += Scene_RefreshScene;
+
+            _mainViewModel.Scene.Torus.RefreshTorus += Torus_RefreshTorus;
         }
 
+        #region Public Properties
+        #endregion Public Properties
+
+        #region Private Methods
         void Scene_RefreshScene(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             Paint();
         }
-
 
         private void OpenTkControl_Initialized(object sender, EventArgs e)
         {
@@ -54,10 +60,14 @@ namespace ModelowanieGeometryczne
             _glControl.MouseWheel += _glControl_MouseWheel;
             _glControl.MouseMove += _glControl_MouseMove;
             _glControl.MouseDown += _glControl_MouseDown;
-            
+
             (sender as WindowsFormsHost).Child = _glControl;
         }
 
+        void Torus_RefreshTorus(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            Paint();
+        }
 
         void _glControl_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
@@ -66,14 +76,14 @@ namespace ModelowanieGeometryczne
 
         void _glControl_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            _mainViewModel.Text = "";
-            if (e.Button== MouseButtons.Left)
+            _mainViewModel.Text = "x:" + e.X + " y:" + e.Y;
+            if (e.Button == MouseButtons.Left)
             {
                 _mainViewModel.Text = "Left";
                 //_mainViewModel.MouseMove(e);
                 //RepaintGlControl();
             }
-            if (e.Button== MouseButtons.Right)
+            if (e.Button == MouseButtons.Right)
             {
                 _mainViewModel.Text = "Right";
                 _mainViewModel.Scene.MouseMoveTranslate(e.X, e.Y);
@@ -87,11 +97,7 @@ namespace ModelowanieGeometryczne
         {
             // _mainViewModel.Text="MainWindow";
             _mainViewModel.Scene.Scale += e.Delta / 3000.0;
-
-           
-
             Paint();
-
         }
 
         void _glControl_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -107,8 +113,9 @@ namespace ModelowanieGeometryczne
         public void Paint()
         {
             _mainViewModel.Render();
-
             _glControl.SwapBuffers();
         }
+        #endregion Private Methods
+        
     }
 }

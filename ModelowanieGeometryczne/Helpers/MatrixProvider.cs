@@ -55,5 +55,15 @@ namespace ModelowanieGeometryczne.Helpers
             return result;
         }
 
+        public static Matrix4d ProjectionMatrix(double r)
+        {
+            Matrix4d result = new Matrix4d(1, 0, 0, 0,
+                                           0, 1, 0, 0,
+                                           0, 0, 0, 0,
+                                           0, 0, 1/r, 1);
+            result.Transpose();
+            return result;
+        }
+
     }
 }
