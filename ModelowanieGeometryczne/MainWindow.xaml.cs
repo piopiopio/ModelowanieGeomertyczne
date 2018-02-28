@@ -37,7 +37,6 @@ namespace ModelowanieGeometryczne
             _mainViewModel = new MainViewModel();
             DataContext = _mainViewModel;
             _mainViewModel.Scene.RefreshScene += Scene_RefreshScene;
-
             _mainViewModel.Scene.Torus.RefreshTorus += Torus_RefreshTorus;
         }
 
@@ -84,18 +83,15 @@ namespace ModelowanieGeometryczne
                 //RepaintGlControl();
             }
             if (e.Button == MouseButtons.Right)
-            {
+            {   //TODO: Mouse event move
                 _mainViewModel.Text = "Right";
                 _mainViewModel.Scene.MouseMoveTranslate(e.X, e.Y);
                 Paint();
-                //_mainViewModel.MouseMove(e);
-                //RepaintGlControl();
             }
         }
 
         void _glControl_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            // _mainViewModel.Text="MainWindow";
             _mainViewModel.Scene.Scale += e.Delta / 3000.0;
             Paint();
         }

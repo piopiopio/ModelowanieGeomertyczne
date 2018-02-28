@@ -20,6 +20,7 @@ namespace ModelowanieGeometryczne.ViewModel
         private double _x, _y, _x0, _y0, _alphaX, _alphaY, _alphaZ;
         private double _scale;
         private Matrix4d M;
+        private Matrix4d projection;
         #endregion Private Fields
 
         #region Public Properties
@@ -81,8 +82,7 @@ namespace ModelowanieGeometryczne.ViewModel
             set
             {
                 _scale = Math.Max(value, 0.01);
-                var scaleMatrix = MatrixProvider.ScaleMatrix(_scale);
-                M = M * scaleMatrix;
+
             }
         }
 
@@ -99,8 +99,6 @@ namespace ModelowanieGeometryczne.ViewModel
             }
         }
         #endregion Public Properties
-
-       
 
         #region Private Methods
         private void Refresh()
@@ -127,72 +125,33 @@ namespace ModelowanieGeometryczne.ViewModel
             GL.Enable(EnableCap.Normalize);
         }
         internal void Render()
-        {
+        {   //TODO: Render
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-
-            //    CreateProjectionMatrices();
-
-
             GL.LoadIdentity();
-            //GL.MultMatrix(ref M);
-
-            //Skasowac
-            //_scale = 1;
-            //_x = 0;
-            //_y = 0;
             var scaleMatrix = MatrixProvider.ScaleMatrix(_scale);
             var translateMatrix = MatrixProvider.TranslateMatrix(_x / 50, -_y / 50, 0);
             var rotate = MatrixProvider.RotateXMatrix(_alphaX) * MatrixProvider.RotateYMatrix(_alphaY) * MatrixProvider.RotateZMatrix(_alphaZ);
-            M = scaleMatrix * translateMatrix * rotate;
-            //GL.MultMatrix(ref scaleMatrix);
-            //GL.MultMatrix(ref translateMatrix);
-            //GL.MultMatrix(ref rotate);
+            
+            //TODO: Matrix multiplication
+            M = scaleMatrix * translateMatrix * rotate * M;
+
+            _scale = 1;
+            _alphaX = 0;
+            _alphaY = 0;
+            _alphaZ = 0;
+            _x = 0;
+            _y = 0;
             GL.MultMatrix(ref M);
             DrawAxis();
-
             _torus.Draw();
-            var projectionMatrix = MatrixProvider.ProjectionMatrix(200.0);
-            GL.MultMatrix(ref projectionMatrix);
-            GL.Begin(BeginMode.Lines);
-            GL.Color4(0, 0, 255, 0.1);
-            GL.Vertex3(0, 0, 0);
-            GL.Vertex3(1, 2, 0);
-            GL.Vertex3(1, 2, 0);
-            GL.Vertex3(1, 0, 0);
-            GL.End();
-
             GL.Flush();
-
 
         }
 
         private void SetViewPort()
         {
             GL.Viewport(0, 0, 1440, 750);
-            // GL.MatrixMode(MatrixMode.Projection);
-            //  GL.LoadIdentity();
         }
-
-        //private void CreateProjectionMatrices()
-        //{
-        //    GL.MatrixMode(MatrixMode.Modelview);
-        //    GL.LoadIdentity();
-
-        //    InitializeLights();
-
-        //    //// Move the box to the center of the control 
-        //    //GL.Translate(0, -0.5, 0);
-        //    //// User transformations
-        //    //GL.Rotate(rotation.X, 1, 0, 0);
-        //    //GL.Rotate(rotation.Y, 0, 1, 0);
-        //    double scale = 0.1;
-        //    GL.Scale(scale, scale, scale);
-        //    //// Enable transforming the box around its center
-        //    //GL.Translate(-_lookAt.X, -_lookAt.Y, -_lookAt.Z);
-
-        //    //GL.Translate(Translation.X, 0, Translation.Y);
-        //}
 
         private void InitializeLights()
         {
@@ -205,12 +164,6 @@ namespace ModelowanieGeometryczne.ViewModel
 
         private void DrawAxis()
         {
-            // GL.PushMatrix();
-            //GL.LoadIdentity();
-
-            //  GL.Translate(-0.9, -0.9, 0.0);
-            //GL.Rotate(Rotation.X, 1.0, 0.0, 0.0);
-            //GL.Rotate(Rotation.Y, 0.0, 1.0, 0.0);
 
             GL.Begin(BeginMode.Lines);
 
@@ -249,7 +202,7 @@ namespace ModelowanieGeometryczne.ViewModel
             GL.Vertex3(0.1, 0.1, 1);
 
             GL.End();
-            // GL.PopMatrix();
+
         }
 
         internal void SetCurrentCoordinate(int x, int y)
@@ -264,9 +217,9 @@ namespace ModelowanieGeometryczne.ViewModel
         {
             _x = x - _x0;
             _y = y - _y0;
+            _x0 = x;
+            _y0 = y;
 
-            var translateMatrix = MatrixProvider.TranslateMatrix(_x / 50, -_y / 50, 0);
-            M = M * translateMatrix;
         }
         #endregion Public Methods
 
@@ -280,17 +233,10 @@ namespace ModelowanieGeometryczne.ViewModel
             _alphaX = 0;
             _alphaY = 0;
             _alphaZ = 0;
+            M= MatrixProvider.ProjectionMatrix(100);
             Torus = new Torus();
 
         }
-
-
-
-
-
-        
-
-
 
         //public void MouseMoveRotate(System.Windows.Forms.MouseEventArgs e)
         //    if (e.Button == MouseButtons.Left)
@@ -316,9 +262,6 @@ namespace ModelowanieGeometryczne.ViewModel
         //    PreviousMousePosition = new Point(e.X, e.Y);
         //    Render();
         //}
-
-
-
 
     }
 }

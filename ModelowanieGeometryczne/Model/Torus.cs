@@ -14,7 +14,6 @@ namespace ModelowanieGeometryczne.Model
 {
     public class Torus : ViewModelBase
     {
-
         public event PropertyChangedEventHandler RefreshTorus;
         #region Private fields
         private double _r;
@@ -38,7 +37,6 @@ namespace ModelowanieGeometryczne.Model
                 generateParametrization();
                 Refresh();
             }
-
 
         }
 
@@ -78,35 +76,35 @@ namespace ModelowanieGeometryczne.Model
             }
         }
 
-
         #endregion Public Properties
 
         public Torus()
         {
             _r = 1;
             _R = 2;
-            _division_fi = 10;
-            _division_teta = 10;
+            _division_fi = 50;
+            _division_teta = 50;
             generateParametrization();
-           
+
         }
-       
+
         #region Private Methods
 
         private void generateParametrization()
-        {
+        {   
+            //TODO: Generate parametrization
             _verticesList.Clear();
             double fi, teta;
-            double deltaFi = 2*Math.PI / _division_fi;
-            double deltaTeta = 2*Math.PI / _division_teta;
+            double deltaFi = 2 * Math.PI / _division_fi;
+            double deltaTeta = 2 * Math.PI / _division_teta;
             Vector3d temp = new Vector3d();
-            int k=0;
+            int k = 0;
 
             _relationsList.Clear();
             _verticesList.Clear();
             for (int j = 0; j < _division_teta; j++)
             {
-               
+
                 for (int i = 0; i < _division_fi; i++)
                 {
                     k = i + j * _division_fi;
@@ -114,80 +112,66 @@ namespace ModelowanieGeometryczne.Model
                     teta = deltaTeta * j;
                     temp.X = (_R + _r * Math.Cos(fi)) * Math.Cos(teta);
                     temp.Y = (_R + _r * Math.Cos(fi)) * Math.Sin(teta);
-                    temp.Z = _R * Math.Sin(fi);
+                    temp.Z = _r * Math.Sin(fi);
                     _verticesList.Add(temp);
 
-                    if (i>0)
+                    if (i > 0)
                     {
-                        _relationsList.Add(new Tuple<int, int>(k-1, k));
+                        _relationsList.Add(new Tuple<int, int>(k - 1, k));
                     }
 
-                    if (i == _division_fi-1)
+                    if (i == _division_fi - 1)
                     {
-                        _relationsList.Add(new Tuple<int, int>(k, k-i));
+                        _relationsList.Add(new Tuple<int, int>(k, k - i));
                     }
-
 
                 }
-
 
                 if (j > 0)
                 {
-                   for (int i = 0; i < _division_fi; i++)
-                   {
-                        _relationsList.Add(new Tuple<int, int>(k - _division_fi-i , k-i));
-                    }
-
-                }
-                
-                if (j == Division_teta-1)
-                { 
                     for (int i = 0; i < _division_fi; i++)
-                   {
-                   _relationsList.Add(new Tuple<int, int>(k - j*_division_fi-i, k-i));
+                    {
+                        _relationsList.Add(new Tuple<int, int>(k - _division_fi - i, k - i));
                     }
-                   // _relationsList.Add(new Tuple<int, int>(9999,9900));
-                }
-               //TODO : Data representation in two list vertices List<Vector3d> and relations List<Vector2d> _verticesList.ElementAt();
-            }
 
+                }
+
+                if (j == Division_teta - 1)
+                {
+                    for (int i = 0; i < _division_fi; i++)
+                    {
+                        _relationsList.Add(new Tuple<int, int>(k - j * _division_fi - i, k - i));
+                    }
+                }
+            }
         }
 
-       
         private void Refresh()
-        {   
+        {
             if (RefreshTorus != null)
                 RefreshTorus(this, new PropertyChangedEventArgs("RefreshScene"));
         }
-        
- 
+
         #endregion Private Methods
-        
+
         #region Public Methods
 
         public void Draw()
         {
-                GL.Begin(BeginMode.Lines);
-                GL.Color3(1.0, 1.0, 1.0);
+            GL.Begin(BeginMode.Lines);
+            GL.Color3(1.0, 1.0, 1.0);
 
-                //for (int i = 0; i < 1000; i++)
-                //{
-                //    GL.Vertex3(_verticesList.ElementAt(_relationsList.ElementAt(i).Item1));
-                //    GL.Vertex3(_verticesList.ElementAt(_relationsList.ElementAt(i).Item2));
-                //}
-                foreach (var relations in _relationsList)
-                {
-                    GL.Vertex3(_verticesList[relations.Item1]);
-                    GL.Vertex3(_verticesList[relations.Item2]);
-                }
+            foreach (var relations in _relationsList)
+            {
+                GL.Vertex3(_verticesList[relations.Item1]);
+                GL.Vertex3(_verticesList[relations.Item2]);
+            }
 
-                GL.End();
+            GL.End();
         }
-
-
 
         #endregion Public Methods
     }
-        
+
 }
 

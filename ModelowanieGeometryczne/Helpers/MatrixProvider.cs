@@ -5,7 +5,7 @@ using OpenTK;
 namespace ModelowanieGeometryczne.Helpers
 {
     public static class MatrixProvider
-    {
+    {   //TODO: ScaleMatrix, TranslateMatrix, ProjectionMatrix
 
         public static Matrix4d ScaleMatrix(double s)
         {
@@ -25,7 +25,7 @@ namespace ModelowanieGeometryczne.Helpers
         }
         //alpha in radians
         public static Matrix4d RotateXMatrix(double alphaX)
-        {
+        {    
             Matrix4d result = new Matrix4d(1, 0, 0, 0,
                                 0, Math.Cos(alphaX), Math.Sin(-alphaX), 0,
                                 0, Math.Sin(alphaX), Math.Cos(alphaX), 0,
