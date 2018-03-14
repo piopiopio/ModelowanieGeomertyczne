@@ -32,9 +32,10 @@
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Row="0" Grid.Column="0" Text="  r: "></TextBlock>
@@ -58,9 +59,11 @@
             <TextBlock Grid.Row="6" Grid.Column="0" Text="  alphaZ: "></TextBlock>
             <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding  Scene.AlphaZ}"/>
 
-
+            <TextBlock Grid.Row="7" Grid.Column="0" Text="  stereoscopy: "></TextBlock>
+            <CheckBox Grid.Row="7" Grid.Column="1" IsChecked="{Binding  Scene.Stereoscopy}"/>
         </Grid>
         <TextBlock Grid.Row="2" Text="{Binding Text}"></TextBlock>
+        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Scene.Stereoscopy}"></TextBlock>
 <WindowsFormsHost Grid.Column="0" Grid.Row="0" Initialized="OpenTkControl_Initialized"
                   helpers:SizeObserver.Observe="True"
                   helpers:SizeObserver.ObservedHeight="{Binding Scene.Height, Mode=OneWayToSource}"
