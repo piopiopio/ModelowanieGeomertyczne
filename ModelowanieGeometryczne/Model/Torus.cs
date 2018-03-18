@@ -121,9 +121,9 @@ namespace ModelowanieGeometryczne.Model
                     k = i + j * _division_fi;
                     fi = deltaFi * i;
                     teta = deltaTeta * j;
-                    temp.X = (_R + _r * Math.Cos(fi)) * Math.Cos(teta)+2;
-                    temp.Y = (_R + _r * Math.Cos(fi)) * Math.Sin(teta)+2;
-                    temp.Z = _r * Math.Sin(fi)+4;
+                    temp.X = (_R + _r * Math.Cos(fi)) * Math.Cos(teta);
+                    temp.Y = (_R + _r * Math.Cos(fi)) * Math.Sin(teta);
+                    temp.Z = _r*Math.Sin(fi);
                     temp.W = 1;
                     _verticesList.Add(temp);
 
@@ -170,7 +170,7 @@ namespace ModelowanieGeometryczne.Model
 
         public void Draw(Matrix4d transformacja)
         {
-            Matrix4d projekcja = MatrixProvider.ProjectionMatrix(100);
+            Matrix4d projekcja = MatrixProvider.ProjectionMatrix();
             GL.Begin(BeginMode.Lines);
             GL.Color3(1.0, 1.0, 1.0);
 
@@ -195,7 +195,7 @@ namespace ModelowanieGeometryczne.Model
             GL.Color3(0.6, 0, 0);
 
             // TODO: zmiana odleglosciu oczu
-            Matrix4d projekcja = MatrixProvider.StereoscopyProjectionMatrix(1, 0.05);
+            Matrix4d projekcja = MatrixProvider.RightProjectionMatrix();
             foreach (var relations in _relationsList)
             {
                 var avertex = transformacja.Multiply(_verticesList[relations.Item1]);
@@ -223,7 +223,7 @@ namespace ModelowanieGeometryczne.Model
             GL.Color3(0, 0, 0.9);
             //todo : zmniejszyc e zwiekszyc r
             //TODO: Zrobić stałą wartosc
-            projekcja = MatrixProvider.StereoscopyProjectionMatrix(1, -0.05);
+            projekcja = MatrixProvider.LeftProjectionMatrix();
             foreach (var relations in _relationsList)
             {
 
@@ -234,7 +234,7 @@ namespace ModelowanieGeometryczne.Model
                 var vertex = projekcja.Multiply(avertex);
                 var vertex2 = projekcja.Multiply(avertex2);
                 GL.Vertex2(vertex.X, vertex.Y);
-                 GL.Vertex2(vertex2.X, vertex2.Y);
+                GL.Vertex2(vertex2.X, vertex2.Y);
 
             }
             GL.End();
@@ -264,12 +264,9 @@ namespace ModelowanieGeometryczne.Model
                    }
                    else
                    {
-                     
                        //TODO: Mieszanie koloru
                        pixeltemp = bmp3.GetPixel(i, j);
-
                        result = Color.FromArgb(Math.Min(temp.R + pixeltemp.R, 255), Math.Min(temp.G + pixeltemp.G, 255), Math.Min(temp.B + pixeltemp.B, 255));
-
                        bmp3.SetPixel(i, j, result);
                    }
                }

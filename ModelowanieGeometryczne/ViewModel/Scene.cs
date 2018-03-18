@@ -24,14 +24,25 @@ namespace ModelowanieGeometryczne.ViewModel
         private Matrix4d M;
         private Matrix4d _projection;
         private bool _stereoscopy;
-        private ObservableCollection<Point> _pointsCollection;// = new ObservableCollection<Point>();
+        private ObservableCollection<Point> _pointsCollection;//
         //private List<Point> _pointsCollection = new List<Point>();
-
+        private List<Point> _selectedPointsCollection;
 
 
         #endregion Private Fields
 
         #region Public Properties
+
+
+        public List<Point> SelectedPointsCollection 
+        {
+            get { return _selectedPointsCollection;}
+            set
+            {
+                _selectedPointsCollection=value;
+            }
+        }
+
 
         public ObservableCollection<Point> PointsCollection 
         {
@@ -133,8 +144,10 @@ namespace ModelowanieGeometryczne.ViewModel
             M = Matrix4d.Identity;
             // DefineDrawingMode();
             _scale = 0.1;
-            _x = -2*700;
-            _y = 2*400;
+            //_x = -2*700;
+            //_y = 2*400;
+            _x =0;
+            _y =0;
             _alphaX = 0;
             _alphaY = 0;
             _alphaZ = 0;
@@ -142,9 +155,11 @@ namespace ModelowanieGeometryczne.ViewModel
             Torus = new Torus();
            // _projection = MatrixProvider.ProjectionMatrix(100);
             //M = _projection;
-
+            SelectedPointsCollection = new List<Point>();
             PointsCollection=new ObservableCollection<Point>();
-            PointsCollection.Add(new Point(20,30,0));
+            PointsCollection.Add(new Point(0,0,10));
+            PointsCollection.Add(new Point(0, 1, 0));
+            PointsCollection.Add(new Point(1, 1, -1));
             
         }
         #endregion Public Properties
@@ -197,19 +212,34 @@ namespace ModelowanieGeometryczne.ViewModel
             
 
 
-        
-            if (Stereoscopy)
-            {
-               _torus.DrawStereoscopy(M);
-               
-            }
-            else
-            {
-                _torus.Draw(M);
-              
-            }
-        
+            //TODO: wywoływanie rysowania torusa      
+            //if (Stereoscopy)
+            //{
+            //    _torus.DrawStereoscopy(M);
 
+            //}
+            //else
+            //{
+            //    _torus.Draw(M);
+
+            //}
+
+
+
+            foreach (var i in _pointsCollection)
+            {
+                if (Stereoscopy)
+                {
+                    i.DrawStereoscopy(M);
+
+                }
+                else
+                {
+                    i.Draw(M);
+
+                }
+
+            }
 
 
             GL.Flush();
