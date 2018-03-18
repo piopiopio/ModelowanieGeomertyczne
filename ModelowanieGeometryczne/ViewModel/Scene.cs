@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Windows.Navigation;
@@ -20,11 +22,38 @@ namespace ModelowanieGeometryczne.ViewModel
         private double _x, _y, _x0, _y0, _alphaX, _alphaY, _alphaZ;
         private double _scale;
         private Matrix4d M;
-        private Matrix4d projection;
+        private Matrix4d _projection;
+        private bool _stereoscopy;
+        private ObservableCollection<Point> _pointsCollection;// = new ObservableCollection<Point>();
+        //private List<Point> _pointsCollection = new List<Point>();
+
+
+
         #endregion Private Fields
 
         #region Public Properties
 
+        public ObservableCollection<Point> PointsCollection 
+        {
+            get { return _pointsCollection;}
+            set
+            {
+                _pointsCollection=value;
+                OnPropertyChanged("PointsCollection");
+            }
+        }
+
+        public bool Stereoscopy
+        {
+            get { return _stereoscopy; }
+            set
+            {
+                _stereoscopy = value;
+                //Refresh();
+                OnPropertyChanged("Stereoscopy");
+                Refresh();
+            }
+        }
         public double Height
         {
             get { return _height; }
@@ -98,6 +127,26 @@ namespace ModelowanieGeometryczne.ViewModel
                 OnPropertyChanged("Torus");
             }
         }
+
+        public Scene()
+        {
+            M = Matrix4d.Identity;
+            // DefineDrawingMode();
+            _scale = 0.1;
+            _x = -2*700;
+            _y = 2*400;
+            _alphaX = 0;
+            _alphaY = 0;
+            _alphaZ = 0;
+            M = Matrix4d.Identity;
+            Torus = new Torus();
+           // _projection = MatrixProvider.ProjectionMatrix(100);
+            //M = _projection;
+
+            PointsCollection=new ObservableCollection<Point>();
+            PointsCollection.Add(new Point(20,30,0));
+            
+        }
         #endregion Public Properties
 
         #region Private Methods
@@ -106,6 +155,7 @@ namespace ModelowanieGeometryczne.ViewModel
             if (RefreshScene != null)
                 RefreshScene(this, new PropertyChangedEventArgs("RefreshScene"));
         }
+
 
         private void DefineDrawingMode()
         {
@@ -129,9 +179,9 @@ namespace ModelowanieGeometryczne.ViewModel
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.LoadIdentity();
             var scaleMatrix = MatrixProvider.ScaleMatrix(_scale);
-            var translateMatrix = MatrixProvider.TranslateMatrix(_x / 50, -_y / 50, 0);
+            var translateMatrix = MatrixProvider.TranslateMatrix(_x / 700, -_y / 400, 0);
             var rotate = MatrixProvider.RotateXMatrix(_alphaX) * MatrixProvider.RotateYMatrix(_alphaY) * MatrixProvider.RotateZMatrix(_alphaZ);
-            
+
             //TODO: Matrix multiplication
             M = scaleMatrix * translateMatrix * rotate * M;
 
@@ -141,9 +191,27 @@ namespace ModelowanieGeometryczne.ViewModel
             _alphaZ = 0;
             _x = 0;
             _y = 0;
-            GL.MultMatrix(ref M);
-            DrawAxis();
-            _torus.Draw();
+            //GL.MultMatrix(ref _projection);
+            //GL.MultMatrix(ref M);
+           
+            
+
+
+        
+            if (Stereoscopy)
+            {
+               _torus.DrawStereoscopy(M);
+               
+            }
+            else
+            {
+                _torus.Draw(M);
+              
+            }
+        
+
+
+
             GL.Flush();
 
         }
@@ -151,6 +219,7 @@ namespace ModelowanieGeometryczne.ViewModel
         private void SetViewPort()
         {
             GL.Viewport(0, 0, 1440, 750);
+          //  GL.Viewport(0, 0, 750, 750);
         }
 
         private void InitializeLights()
@@ -223,20 +292,7 @@ namespace ModelowanieGeometryczne.ViewModel
         }
         #endregion Public Methods
 
-        public Scene()
-        {
-            M = Matrix4d.Identity;
-           // DefineDrawingMode();
-            _scale = 0.1;
-            _x = 0;
-            _y = 0;
-            _alphaX = 0;
-            _alphaY = 0;
-            _alphaZ = 0;
-            M= MatrixProvider.ProjectionMatrix(100);
-            Torus = new Torus();
 
-        }
 
         //public void MouseMoveRotate(System.Windows.Forms.MouseEventArgs e)
         //    if (e.Button == MouseButtons.Left)

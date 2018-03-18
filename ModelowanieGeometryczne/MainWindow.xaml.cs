@@ -112,6 +112,11 @@ namespace ModelowanieGeometryczne
             _glControl.SwapBuffers();
         }
         #endregion Private Methods
+
+        private void Points_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
         
     }
 }

@@ -40,7 +40,7 @@
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Row="0" Grid.Column="0" Text="  r: "></TextBlock>
             <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Scene.Torus.r}"/>
-           
+
             <TextBlock Grid.Row="1" Grid.Column="0" Text="  R: "></TextBlock>
             <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Scene.Torus.R}"/>
 
@@ -62,12 +62,44 @@
             <TextBlock Grid.Row="7" Grid.Column="0" Text="  stereoscopy: "></TextBlock>
             <CheckBox Grid.Row="7" Grid.Column="1" IsChecked="{Binding  Scene.Stereoscopy}"/>
         </Grid>
-        <TextBlock Grid.Row="2" Text="{Binding Text}"></TextBlock>
-        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Scene.Stereoscopy}"></TextBlock>
-<WindowsFormsHost Grid.Column="0" Grid.Row="0" Initialized="OpenTkControl_Initialized"
+
+        <ListView  Name="PointsListView" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.PointsCollection}">
+            <!--<ListView.View>
+
+                <GridView >
+
+                    <GridViewColumn Header="Name" Width="240"/>
+                    <GridViewColumn Header="X" Width="120" DisplayMemberBinding="{Binding Coordinates.X}"/>
+                    <GridViewColumn Header="Y" Width="120" DisplayMemberBinding="{Binding Coordinates.Y}"/>
+                    <GridViewColumn Header="Z" Width="120" DisplayMemberBinding="{Binding Coordinates.Z}"/>
+
+
+                </GridView>
+            </ListView.View>-->
+            <ListView.ItemTemplate>
+                <DataTemplate >
+                    <Grid >
+                        <Grid.ColumnDefinitions >
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0" Text="{Binding Name}"></TextBox>
+                        <TextBox Grid.Column="1" Text="{Binding Coordinates.X}"></TextBox>
+                        <TextBox Grid.Column="2" Text="{Binding Coordinates.Y}"></TextBox>
+                        <TextBox Grid.Column="3" Text="{Binding Coordinates.Z}"></TextBox>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Text}"></TextBlock>
+        <WindowsFormsHost Grid.Column="0" Grid.Row="0" Initialized="OpenTkControl_Initialized"
                   helpers:SizeObserver.Observe="True"
                   helpers:SizeObserver.ObservedHeight="{Binding Scene.Height, Mode=OneWayToSource}"
                   helpers:SizeObserver.ObservedWidth="{Binding Scene.Width, Mode=OneWayToSource}"
                   />
+
     </Grid>
 </Window>
