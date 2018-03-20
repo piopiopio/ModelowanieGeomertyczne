@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Security.Policy;
 using System.Windows.Forms;
 using System.Windows.Navigation;
@@ -30,16 +31,31 @@ namespace ModelowanieGeometryczne.ViewModel
         private bool _stereoscopy;
         private ObservableCollection<Point> _pointsCollection;//
         //private List<Point> _pointsCollection = new List<Point>();
-        private List<Point> _selectedPointsCollection;
-
+        private ObservableCollection<Point> _selectedPointsCollection;
+        private bool _moveSelectedPointsWithCoursor = false;
+   
 
         #endregion Private Fields
 
         #region Public Properties
 
+        public bool MoveSelectedPointsWithCoursor
+        {
+            get { return _moveSelectedPointsWithCoursor; }
+            set
+            {
+                _moveSelectedPointsWithCoursor = value;
+                OnPropertyChanged("MoveSelectedPointsWithCoursor");
+            }
+        }
+
         public Cursor Cursor
         {
-            get { return _cursor; }
+            get
+            {
+                return _cursor;
+              
+            }
             private set
             {
                 _cursor = value;
@@ -47,7 +63,9 @@ namespace ModelowanieGeometryczne.ViewModel
             }
         }
 
-        public List<Point> SelectedPointsCollection
+
+
+        public ObservableCollection<Point> SelectedPointsCollection
         {
             get { return _selectedPointsCollection; }
             set
@@ -168,10 +186,10 @@ namespace ModelowanieGeometryczne.ViewModel
             Torus = new Torus();
             // _projection = MatrixProvider.ProjectionMatrix(100);
             //M = _projection;
-            SelectedPointsCollection = new List<Point>();
+            SelectedPointsCollection = new ObservableCollection<Point>();
             PointsCollection = new ObservableCollection<Point>();
             PointsCollection.Add(new Point(0, 0, 10));
-            PointsCollection.Add(new Point(0, 1, 0));
+            PointsCollection.Add(new Point(0, 0, 0));
             PointsCollection.Add(new Point(1, 1, -1));
 
             Cursor = new Cursor();
@@ -340,6 +358,54 @@ namespace ModelowanieGeometryczne.ViewModel
         #endregion Private Methods
         #region Public Methods
 
+        public void MoveCursor(double dx, double dy, double dz)
+        {
+            _cursor.Coordinates += new Vector4d(dx, dy, dz, 0);
+            if (_moveSelectedPointsWithCoursor)
+            {
+                MoveSelectedPoints(dx, dy, dz);
+            }
+
+
+        }
+
+        public void MoveSelectedPoints(double dx, double dy, double dz)
+        {
+            foreach (var p in _selectedPointsCollection)
+            {
+                p.X += dx;
+                p.Y += dy;
+                p.Z += dz;
+            }
+        }
+
+        public void SelectPointByCursor()
+        {   
+          //  _selectedPointsCollection.Clear();
+            const double epsilon = 0.2;
+            var c = _cursor.Coordinates;
+            var temp = c;
+            foreach (var p in _pointsCollection)
+            {
+            temp=new Vector4d(c.X-p.X, c.Y-p.Y, c.Z-p.Z,0);
+                
+                if (temp.Length< epsilon)
+                {
+                    if (_selectedPointsCollection.Contains(p))
+                    {       
+                        p.Selected = false;
+                        _selectedPointsCollection.Remove(p);
+                    }
+                    else
+                    {
+                        p.Selected = true;
+                        _selectedPointsCollection.Add(p);  
+                    }
+
+                }
+
+            }
+        }
         public void DeleteSelectedPoints()
         {
             ObservableCollection<Point> _pointsToDelete = new ObservableCollection<Point>();

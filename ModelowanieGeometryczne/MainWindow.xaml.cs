@@ -20,6 +20,17 @@ using OpenTK;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBox = System.Windows.Forms.MessageBox;
 
+//Poruszanie kursorem: 8 y+; 2 y-; 4 x+; 6x-; - z-; + z+;
+
+//Dodawanie punktu w miejscu kursora: 5
+
+//Wł/Wył przesuwanie punktu kursorem
+
+//Zeznacz punkty w pobliżu: Enter
+
+//Kasuj punkty: Del
+
+
 namespace ModelowanieGeometryczne
 {
     /// <summary>
@@ -30,6 +41,7 @@ namespace ModelowanieGeometryczne
         #region Private fields
         private GLControl _glControl;
         private MainViewModel _mainViewModel;
+        private const double increment = 0.1;
         #endregion Private fields
 
         public MainWindow()
@@ -70,56 +82,56 @@ namespace ModelowanieGeometryczne
 
         void _glControl_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            const double increment = 0.1;
-            if (e.KeyCode == Keys.NumPad4)
-            {
-                _mainViewModel.Scene.Cursor.MoveCursor(-increment, 0, 0);
-                Paint();
+ 
+            //if (e.KeyCode == Keys.NumPad4)
+            //{
+            //    _mainViewModel.Scene.MoveCursor(-increment, 0, 0);
+            //    Paint();
 
-            }
+            //}
 
-            if (e.KeyCode == Keys.NumPad6)
-            {
-                _mainViewModel.Scene.Cursor.MoveCursor(increment, 0, 0);
-                Paint();
+            //if (e.KeyCode == Keys.NumPad6)
+            //{
+            //    _mainViewModel.Scene.MoveCursor(increment, 0, 0);
+            //    Paint();
 
-            }
-
-
-            if (e.KeyCode == Keys.NumPad8)
-            {
-                _mainViewModel.Scene.Cursor.MoveCursor(0,increment, 0);
-                Paint();
-
-            }
+            //}
 
 
-            if (e.KeyCode == Keys.NumPad2)
-            {
-                _mainViewModel.Scene.Cursor.MoveCursor(0,-increment, 0);
-                Paint(); 
-            }
+            //if (e.KeyCode == Keys.NumPad8)
+            //{
+            //    _mainViewModel.Scene.MoveCursor(0,increment, 0);
+            //    Paint();
 
-            if (e.KeyCode == Keys.Add)
-            {
-                _mainViewModel.Scene.Cursor.MoveCursor(0, 0, increment);
-                Paint();
-
-            }
-
-            if (e.KeyCode == Keys.Subtract)
-            {
-                _mainViewModel.Scene.Cursor.MoveCursor(0,0, -increment);
-                Paint();
-            }
+            //}
 
 
+            //if (e.KeyCode == Keys.NumPad2)
+            //{
+            //    _mainViewModel.Scene.MoveCursor(0,-increment, 0);
+            //    Paint(); 
+            //}
 
-            if (e.KeyCode == Keys.NumPad5)
-            {
-                _mainViewModel.Scene.AddPointByCursor();
-                Paint();
-            }
+            //if (e.KeyCode == Keys.Add)
+            //{
+            //    _mainViewModel.Scene.MoveCursor(0, 0, increment);
+            //    Paint();
+
+            //}
+
+            //if (e.KeyCode == Keys.Subtract)
+            //{
+            //    _mainViewModel.Scene.MoveCursor(0,0, -increment);
+            //    Paint();
+            //}
+
+
+
+            //if (e.KeyCode == Keys.NumPad5)
+            //{
+            //    _mainViewModel.Scene.AddPointByCursor();
+            //    Paint();
+            //}
 
             //if (e.KeyCode == Keys.Delete)
             //{
@@ -154,6 +166,8 @@ namespace ModelowanieGeometryczne
                 _mainViewModel.Text = "Right";
                 _mainViewModel.Scene.MouseMoveTranslate(e.X, e.Y);
                 Paint();
+
+
             }
         }
 
@@ -191,6 +205,70 @@ namespace ModelowanieGeometryczne
                 Paint();
 
             }
+
+            if (e.Key == Key.Enter)
+            {
+                _mainViewModel.Scene.SelectPointByCursor();
+                Paint();
+            }
+
+            if (e.Key == Key.NumPad0)
+            {
+                _mainViewModel.Scene.MoveSelectedPointsWithCoursor = !_mainViewModel.Scene.MoveSelectedPointsWithCoursor;
+                Paint();
+            }
+
+            
+            if (e.Key == Key.NumPad4)
+            {
+                _mainViewModel.Scene.MoveCursor(-increment, 0, 0);
+                Paint();
+
+            }
+
+            if (e.Key == Key.NumPad6)
+            {
+                _mainViewModel.Scene.MoveCursor(increment, 0, 0);
+                Paint();
+
+            }
+
+
+            if (e.Key == Key.NumPad8)
+            {
+                _mainViewModel.Scene.MoveCursor(0, increment, 0);
+                Paint();
+
+            }
+
+
+            if (e.Key == Key.NumPad2)
+            {
+                _mainViewModel.Scene.MoveCursor(0, -increment, 0);
+                Paint();
+            }
+
+            if (e.Key == Key.Add)
+            {
+                _mainViewModel.Scene.MoveCursor(0, 0, increment);
+                Paint();
+
+            }
+
+            if (e.Key == Key.Subtract)
+            {
+                _mainViewModel.Scene.MoveCursor(0, 0, -increment);
+                Paint();
+            }
+
+
+
+            if (e.Key == Key.NumPad5)
+            {
+                _mainViewModel.Scene.AddPointByCursor();
+                Paint();
+            }
+
         }
 
         private void PointsListView_MouseUp(object sender, MouseButtonEventArgs e)
@@ -202,6 +280,11 @@ namespace ModelowanieGeometryczne
         {
             Paint();
         }
+
+
+
+   
+      
 
 
 

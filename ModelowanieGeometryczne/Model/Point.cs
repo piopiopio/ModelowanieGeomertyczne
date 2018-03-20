@@ -41,16 +41,32 @@ namespace ModelowanieGeometryczne.Model
         public double X
         {
             get { return _coordinates.X; }
+            set
+            {
+                _coordinates.X = value;
+                OnPropertyChanged("X");
+            }
         }
 
         public double Y
         {
             get { return _coordinates.Y; }
+            set
+            {
+                _coordinates.Y = value;
+                OnPropertyChanged("Y");
+            }
+
         }
 
         public double Z
         {
             get { return _coordinates.Z; }
+            set
+            {
+                _coordinates.Z = value;
+                OnPropertyChanged("Z");
+            }
         }
 
         public Vector4d Coordinates

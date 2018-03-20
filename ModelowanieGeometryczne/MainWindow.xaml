@@ -8,8 +8,9 @@
         KeyDown="MainWindow_OnKeyDown"
         mc:Ignorable="d"
         WindowState="Maximized"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Modelowanie Geometryczne" Height="350" Width="525">
 
+    
     <d:Window.DataContext>
         <viewModel:MainViewModel/>
     </d:Window.DataContext>
@@ -84,9 +85,9 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="X" Width="120" DisplayMemberBinding="{Binding X}"/>
-                    <GridViewColumn Header="Y" Width="120" DisplayMemberBinding="{Binding Y}"/>
-                    <GridViewColumn Header="Z" Width="120" DisplayMemberBinding="{Binding Z}"/>
+                    <GridViewColumn Header="X" Width="120" DisplayMemberBinding="{Binding X, StringFormat=N2}"/>
+                    <GridViewColumn Header="Y" Width="120" DisplayMemberBinding="{Binding Y, StringFormat=N2}"/>
+                    <GridViewColumn Header="Z" Width="120" DisplayMemberBinding="{Binding Z, StringFormat=N2}"/>
                     <GridViewColumn Header="IsSelected" Width="120" DisplayMemberBinding="{Binding Selected}"/>
                 </GridView>
             </ListView.View>
@@ -106,14 +107,15 @@
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="1" Text="{Binding Scene.Cursor.CursorCoordinates}"></TextBlock>
             <TextBlock Grid.Row="2" Text="{Binding Scene.Cursor.CursorWindowCoordinates}"></TextBlock>
+            <TextBlock Grid.Row="3" Text="{Binding Scene.MoveSelectedPointsWithCoursor, StringFormat=Move selected point with cursor: {0}}"></TextBlock>
         </Grid>
         
       
         <WindowsFormsHost Name="OpentkWindow" Grid.Column="0" Grid.Row="0" Initialized="OpenTkControl_Initialized" 
                   helpers:SizeObserver.Observe="True"
                   helpers:SizeObserver.ObservedHeight="{Binding Scene.Height, Mode=OneWayToSource}"
-                  helpers:SizeObserver.ObservedWidth="{Binding Scene.Width, Mode=OneWayToSource}"
-                  />
+                  helpers:SizeObserver.ObservedWidth="{Binding Scene.Width, Mode=OneWayToSource}" 
+                          />
 
     </Grid>
 </Window>
