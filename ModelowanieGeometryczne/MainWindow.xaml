@@ -108,6 +108,7 @@
             <TextBlock Grid.Row="1" Text="{Binding Scene.Cursor.CursorCoordinates}"></TextBlock>
             <TextBlock Grid.Row="2" Text="{Binding Scene.Cursor.CursorWindowCoordinates}"></TextBlock>
             <TextBlock Grid.Row="3" Text="{Binding Scene.MoveSelectedPointsWithCoursor, StringFormat=Move selected point with cursor: {0}}"></TextBlock>
+            <TextBlock Grid.Row="4" Text="{Binding Text}"></TextBlock>
         </Grid>
         
       

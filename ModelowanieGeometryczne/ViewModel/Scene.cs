@@ -27,8 +27,9 @@ namespace ModelowanieGeometryczne.ViewModel
         private double _x, _y, _x0, _y0, _alphaX, _alphaY, _alphaZ;
         private double _scale;
         private Matrix4d M;
-        private Matrix4d _projection;
+        private Matrix4 _projection;
         private bool _stereoscopy;
+        Tuple<int, int> _mouseCoordinates;
         private ObservableCollection<Point> _pointsCollection;//
         //private List<Point> _pointsCollection = new List<Point>();
         private ObservableCollection<Point> _selectedPointsCollection;
@@ -38,6 +39,12 @@ namespace ModelowanieGeometryczne.ViewModel
         #endregion Private Fields
 
         #region Public Properties
+
+        public Tuple<int, int> MouseCoordinates
+        {
+            get { return _mouseCoordinates; }
+            set { _mouseCoordinates = value; }
+        }
 
         public bool MoveSelectedPointsWithCoursor
         {
@@ -227,7 +234,7 @@ namespace ModelowanieGeometryczne.ViewModel
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.LoadIdentity();
             var scaleMatrix = MatrixProvider.ScaleMatrix(_scale);
-            var translateMatrix = MatrixProvider.TranslateMatrix(_x / 700, -_y / 400, 0);
+            var translateMatrix = MatrixProvider.TranslateMatrix(_x / 720, -_y / 450, 0);
             var rotate = MatrixProvider.RotateXMatrix(_alphaX) * MatrixProvider.RotateYMatrix(_alphaY) * MatrixProvider.RotateZMatrix(_alphaZ);
 
             //TODO: Matrix multiplication
@@ -380,14 +387,42 @@ namespace ModelowanieGeometryczne.ViewModel
         }
 
         public void SelectPointByCursor()
-        {   
-          //  _selectedPointsCollection.Clear();
+        {
+            //  _selectedPointsCollection.Clear();
             const double epsilon = 0.2;
             var c = _cursor.Coordinates;
             var temp = c;
             foreach (var p in _pointsCollection)
             {
-            temp=new Vector4d(c.X-p.X, c.Y-p.Y, c.Z-p.Z,0);
+                temp = new Vector4d(c.X - p.X, c.Y - p.Y, c.Z - p.Z, 0);
+
+                if (temp.Length < epsilon)
+                {
+                    if (_selectedPointsCollection.Contains(p))
+                    {
+                        p.Selected = false;
+                        _selectedPointsCollection.Remove(p);
+                    }
+                    else
+                    {
+                        p.Selected = true;
+                        _selectedPointsCollection.Add(p);
+                    }
+
+                }
+            }
+            
+        }
+
+        public void SelectPointByMouse()
+        {   
+          //  _selectedPointsCollection.Clear();
+            const double epsilon = 20;
+            Vector4d c = new Vector4d(_x0-1440.0/2.0, _y0-750.0/2.0, 0,0);
+            var temp = c;
+            foreach (var p in _pointsCollection)
+            {
+            temp=new Vector4d(c.X-p.X_Window, -c.Y-p.Y_Window, 0,0);
                 
                 if (temp.Length< epsilon)
                 {
@@ -405,6 +440,7 @@ namespace ModelowanieGeometryczne.ViewModel
                 }
 
             }
+          
         }
         public void DeleteSelectedPoints()
         {

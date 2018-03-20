@@ -69,6 +69,29 @@ namespace ModelowanieGeometryczne.Model
             }
         }
 
+        public double X_Window
+        {
+            get { return _windowCoordinates.X; }
+            set
+            {
+                _windowCoordinates.X = value;
+                OnPropertyChanged("X");
+            }
+        }
+
+        public double Y_Window
+        {
+            get { return _windowCoordinates.Y; }
+            set
+            {
+                _windowCoordinates.Y = value;
+                OnPropertyChanged("Y");
+            }
+
+        }
+
+
+
         public Vector4d Coordinates
         {
             get { return _coordinates;}
@@ -105,6 +128,8 @@ namespace ModelowanieGeometryczne.Model
             Matrix4d projekcja = MatrixProvider.ProjectionMatrix();
             _windowCoordinates = projekcja.Multiply(transformacja.Multiply(_coordinates));
             GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
+            _windowCoordinates.X = _windowCoordinates.X*1440/2;
+            _windowCoordinates.Y = _windowCoordinates.Y * 750 / 2;
             GL.End();
 
         }
@@ -127,6 +152,7 @@ namespace ModelowanieGeometryczne.Model
             GL.Vertex2(windowCoordinates2.X, windowCoordinates2.Y);
 
             _windowCoordinates = _windowCoordinates/2 + windowCoordinates2/2;
+
 
             GL.End();
               

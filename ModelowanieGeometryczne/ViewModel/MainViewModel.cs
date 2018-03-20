@@ -13,7 +13,7 @@ namespace ModelowanieGeometryczne.ViewModel
         #region Public Properties
         public MainViewModel()
         {
-            Text = "test";
+           
 
             Scene = new Scene();
         }

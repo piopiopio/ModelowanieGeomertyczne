@@ -51,7 +51,7 @@ namespace ModelowanieGeometryczne
             DataContext = _mainViewModel;
             _mainViewModel.Scene.RefreshScene += Scene_RefreshScene;
             _mainViewModel.Scene.Torus.RefreshTorus += Torus_RefreshTorus;
-            
+
         }
 
         #region Public Properties
@@ -78,67 +78,10 @@ namespace ModelowanieGeometryczne
         }
 
 
-    
+
 
         void _glControl_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
- 
-            //if (e.KeyCode == Keys.NumPad4)
-            //{
-            //    _mainViewModel.Scene.MoveCursor(-increment, 0, 0);
-            //    Paint();
-
-            //}
-
-            //if (e.KeyCode == Keys.NumPad6)
-            //{
-            //    _mainViewModel.Scene.MoveCursor(increment, 0, 0);
-            //    Paint();
-
-            //}
-
-
-            //if (e.KeyCode == Keys.NumPad8)
-            //{
-            //    _mainViewModel.Scene.MoveCursor(0,increment, 0);
-            //    Paint();
-
-            //}
-
-
-            //if (e.KeyCode == Keys.NumPad2)
-            //{
-            //    _mainViewModel.Scene.MoveCursor(0,-increment, 0);
-            //    Paint(); 
-            //}
-
-            //if (e.KeyCode == Keys.Add)
-            //{
-            //    _mainViewModel.Scene.MoveCursor(0, 0, increment);
-            //    Paint();
-
-            //}
-
-            //if (e.KeyCode == Keys.Subtract)
-            //{
-            //    _mainViewModel.Scene.MoveCursor(0,0, -increment);
-            //    Paint();
-            //}
-
-
-
-            //if (e.KeyCode == Keys.NumPad5)
-            //{
-            //    _mainViewModel.Scene.AddPointByCursor();
-            //    Paint();
-            //}
-
-            //if (e.KeyCode == Keys.Delete)
-            //{
-            //    _mainViewModel.Scene.DeleteSelectedPoints();
-            //    Paint();
-
-            //}
 
         }
 
@@ -150,14 +93,23 @@ namespace ModelowanieGeometryczne
         void _glControl_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             _mainViewModel.Scene.SetCurrentCoordinate(e.X, e.Y);
+            if (e.Button == MouseButtons.Left)
+            {
+                _mainViewModel.Scene.SelectPointByMouse();
+                Paint();
+            }
         }
 
         void _glControl_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             _mainViewModel.Text = "x:" + e.X + " y:" + e.Y;
+            //_mainViewModel.Scene.MouseCoordinates = new Tuple<int, int>(e.X, e.Y);
+
+
             if (e.Button == MouseButtons.Left)
             {
-                _mainViewModel.Text = "Left";
+                // _mainViewModel.Scene.SelectPointByMouse();
+                //_mainViewModel.Text = "Left";
                 //_mainViewModel.MouseMove(e);
                 //RepaintGlControl();
             }
@@ -218,7 +170,7 @@ namespace ModelowanieGeometryczne
                 Paint();
             }
 
-            
+
             if (e.Key == Key.NumPad4)
             {
                 _mainViewModel.Scene.MoveCursor(-increment, 0, 0);
@@ -283,13 +235,13 @@ namespace ModelowanieGeometryczne
 
 
 
-   
-      
 
 
 
-   
-   
+
+
+
+
 
 
 

@@ -24,12 +24,23 @@ namespace ModelowanieGeometryczne.Model
         }
 
         public string CursorWindowCoordinates
-        {
+        {   //TODO: Hardcoded
+            //Zmienić na parametryczne rozdzielczość okna
             get { return "Cursor window coordinates: X:" + String.Format("{0:0.##}",_windowCoordinate.X) + " Y:" + String.Format("{0:0.##}",_windowCoordinate.Y) + " Z:" + String.Format("{0:0.##}",_windowCoordinate.Z); }
-           // get { return "Cursor window coordinates: X:" + _windowCoordinate.X + " Y:" + _windowCoordinate.Y + " Z:" + _windowCoordinate.Z; }
+        
+       
         }
         #endregion Public Properties
 
+        public Vector4d WindowCoordinate
+        {
+            get { return _windowCoordinate;}
+            set
+            {
+                _windowCoordinate = value;
+                OnPropertyChanged("CursorWindowCoordinates");
+            }
+        }
         public Vector4d Coordinates
         {
             get { return _coordinates; }
@@ -38,7 +49,7 @@ namespace ModelowanieGeometryczne.Model
                 _coordinates = value;
                 CreateVertices();
                 OnPropertyChanged("CursorCoordinates");
-                OnPropertyChanged("CursorWindowCoordinates");
+             
             }
         }
         #region Private Methods
@@ -95,7 +106,8 @@ namespace ModelowanieGeometryczne.Model
 
             GL.End();
 
-            _windowCoordinate = _projection.Multiply(transformacja.Multiply(_coordinates));
+            var temp = _projection.Multiply(transformacja.Multiply(_coordinates));
+            WindowCoordinate = new Vector4d(temp.X * 720, temp.Y * 375, 0, 0);
         }
 
         public void Draw(Matrix4d transformacja)
@@ -121,7 +133,10 @@ namespace ModelowanieGeometryczne.Model
             GL.Vertex2(_projection.Multiply(vertex).X, _projection.Multiply(vertex).Y);
 
             GL.End();
-            _windowCoordinate = _projection.Multiply(transformacja.Multiply(_coordinates));
+            var temp = _projection.Multiply(transformacja.Multiply(_coordinates));
+            WindowCoordinate = new Vector4d(temp.X * 720, temp.Y * 375,0,0);
+
+
         }
 
         #endregion Public Methods
