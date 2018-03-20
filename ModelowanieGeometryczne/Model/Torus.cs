@@ -23,6 +23,9 @@ namespace ModelowanieGeometryczne.Model
 {
     public class Torus : ViewModelBase
     {
+        //TODO: dodano
+       
+
         public event PropertyChangedEventHandler RefreshTorus;
         #region Private fields
         private double _r;

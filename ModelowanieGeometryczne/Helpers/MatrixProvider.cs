@@ -8,6 +8,8 @@ namespace ModelowanieGeometryczne.Helpers
     {   //TODO: ScaleMatrix, TranslateMatrix, ProjectionMatrix
         private static double _r = 10.0;
         private static double _e = 0.05;
+        
+
 
         public static Matrix4d ScaleMatrix(double s)
         {

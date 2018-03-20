@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Security.Policy;
 using System.Windows.Forms;
 using System.Windows.Navigation;
 using ModelowanieGeometryczne.Helpers;
 using ModelowanieGeometryczne.Model;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using Cursor = ModelowanieGeometryczne.Model.Cursor;
 
 namespace ModelowanieGeometryczne.ViewModel
 {
@@ -16,6 +18,8 @@ namespace ModelowanieGeometryczne.ViewModel
         public event PropertyChangedEventHandler RefreshScene;
 
         #region Private Fields
+
+        private Cursor _cursor;
         private Torus _torus;
         private double _height;
         private double _width;
@@ -33,23 +37,32 @@ namespace ModelowanieGeometryczne.ViewModel
 
         #region Public Properties
 
-
-        public List<Point> SelectedPointsCollection 
+        public Cursor Cursor
         {
-            get { return _selectedPointsCollection;}
+            get { return _cursor; }
+            private set
+            {
+                _cursor = value;
+                OnPropertyChanged("Cursor");
+            }
+        }
+
+        public List<Point> SelectedPointsCollection
+        {
+            get { return _selectedPointsCollection; }
             set
             {
-                _selectedPointsCollection=value;
+                _selectedPointsCollection = value;
             }
         }
 
 
-        public ObservableCollection<Point> PointsCollection 
+        public ObservableCollection<Point> PointsCollection
         {
-            get { return _pointsCollection;}
+            get { return _pointsCollection; }
             set
             {
-                _pointsCollection=value;
+                _pointsCollection = value;
                 OnPropertyChanged("PointsCollection");
             }
         }
@@ -146,21 +159,23 @@ namespace ModelowanieGeometryczne.ViewModel
             _scale = 0.1;
             //_x = -2*700;
             //_y = 2*400;
-            _x =0;
-            _y =0;
+            _x = 0;
+            _y = 0;
             _alphaX = 0;
             _alphaY = 0;
             _alphaZ = 0;
             M = Matrix4d.Identity;
             Torus = new Torus();
-           // _projection = MatrixProvider.ProjectionMatrix(100);
+            // _projection = MatrixProvider.ProjectionMatrix(100);
             //M = _projection;
             SelectedPointsCollection = new List<Point>();
-            PointsCollection=new ObservableCollection<Point>();
-            PointsCollection.Add(new Point(0,0,10));
+            PointsCollection = new ObservableCollection<Point>();
+            PointsCollection.Add(new Point(0, 0, 10));
             PointsCollection.Add(new Point(0, 1, 0));
             PointsCollection.Add(new Point(1, 1, -1));
-            
+
+            Cursor = new Cursor();
+
         }
         #endregion Public Properties
 
@@ -208,8 +223,8 @@ namespace ModelowanieGeometryczne.ViewModel
             _y = 0;
             //GL.MultMatrix(ref _projection);
             //GL.MultMatrix(ref M);
-           
-            
+
+
 
 
             //TODO: wywoływanie rysowania torusa      
@@ -225,6 +240,16 @@ namespace ModelowanieGeometryczne.ViewModel
             //}
 
 
+            if (Stereoscopy)
+            {
+                Cursor.DrawStereoscopy(M);
+
+            }
+            else
+            {
+                Cursor.Draw(M);
+
+            }
 
             foreach (var i in _pointsCollection)
             {
@@ -242,6 +267,7 @@ namespace ModelowanieGeometryczne.ViewModel
             }
 
 
+
             GL.Flush();
 
         }
@@ -249,7 +275,7 @@ namespace ModelowanieGeometryczne.ViewModel
         private void SetViewPort()
         {
             GL.Viewport(0, 0, 1440, 750);
-          //  GL.Viewport(0, 0, 750, 750);
+            //  GL.Viewport(0, 0, 750, 750);
         }
 
         private void InitializeLights()
@@ -260,6 +286,7 @@ namespace ModelowanieGeometryczne.ViewModel
             GL.Light(LightName.Light0, LightParameter.Position, new[] { 0.0f, 5.0f, 10.0f, 1.0f });
             GL.Enable(EnableCap.Light0);
         }
+
 
         private void DrawAxis()
         {
@@ -312,6 +339,30 @@ namespace ModelowanieGeometryczne.ViewModel
 
         #endregion Private Methods
         #region Public Methods
+
+        public void DeleteSelectedPoints()
+        {
+            ObservableCollection<Point> _pointsToDelete = new ObservableCollection<Point>();
+            foreach (var p in _pointsCollection)
+            {
+                if (p.Selected == true)
+                {
+                    _pointsToDelete.Add(p);
+                }
+            }
+            foreach (var p in _pointsToDelete)
+            {
+                if (p.Selected == true)
+                {
+                    _pointsCollection.Remove(p);
+                }
+            }
+
+        }
+        public void AddPointByCursor()
+        {
+            PointsCollection.Add(new Point(_cursor.Coordinates.X, _cursor.Coordinates.Y, _cursor.Coordinates.Z));
+        }
         public void MouseMoveTranslate(int x, int y)
         {
             _x = x - _x0;

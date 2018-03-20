@@ -17,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using OpenTK;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace ModelowanieGeometryczne
@@ -38,6 +39,7 @@ namespace ModelowanieGeometryczne
             DataContext = _mainViewModel;
             _mainViewModel.Scene.RefreshScene += Scene_RefreshScene;
             _mainViewModel.Scene.Torus.RefreshTorus += Torus_RefreshTorus;
+            
         }
 
         #region Public Properties
@@ -59,8 +61,73 @@ namespace ModelowanieGeometryczne
             _glControl.MouseWheel += _glControl_MouseWheel;
             _glControl.MouseMove += _glControl_MouseMove;
             _glControl.MouseDown += _glControl_MouseDown;
-
+            _glControl.KeyDown += _glControl_KeyDown;
             (sender as WindowsFormsHost).Child = _glControl;
+        }
+
+
+    
+
+        void _glControl_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            const double increment = 0.1;
+            if (e.KeyCode == Keys.NumPad4)
+            {
+                _mainViewModel.Scene.Cursor.MoveCursor(-increment, 0, 0);
+                Paint();
+
+            }
+
+            if (e.KeyCode == Keys.NumPad6)
+            {
+                _mainViewModel.Scene.Cursor.MoveCursor(increment, 0, 0);
+                Paint();
+
+            }
+
+
+            if (e.KeyCode == Keys.NumPad8)
+            {
+                _mainViewModel.Scene.Cursor.MoveCursor(0,increment, 0);
+                Paint();
+
+            }
+
+
+            if (e.KeyCode == Keys.NumPad2)
+            {
+                _mainViewModel.Scene.Cursor.MoveCursor(0,-increment, 0);
+                Paint(); 
+            }
+
+            if (e.KeyCode == Keys.Add)
+            {
+                _mainViewModel.Scene.Cursor.MoveCursor(0, 0, increment);
+                Paint();
+
+            }
+
+            if (e.KeyCode == Keys.Subtract)
+            {
+                _mainViewModel.Scene.Cursor.MoveCursor(0,0, -increment);
+                Paint();
+            }
+
+
+
+            if (e.KeyCode == Keys.NumPad5)
+            {
+                _mainViewModel.Scene.AddPointByCursor();
+                Paint();
+            }
+
+            //if (e.KeyCode == Keys.Delete)
+            //{
+            //    _mainViewModel.Scene.DeleteSelectedPoints();
+            //    Paint();
+
+            //}
+
         }
 
         void Torus_RefreshTorus(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -113,10 +180,36 @@ namespace ModelowanieGeometryczne
         }
         #endregion Private Methods
 
-        private void Points_SelectionChanged(object sender, SelectionChangedEventArgs e)
+
+
+        private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
         {
 
+            if (e.Key == Key.Delete)
+            {
+                _mainViewModel.Scene.DeleteSelectedPoints();
+                Paint();
+
+            }
         }
-        
+
+        private void PointsListView_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            Paint();
+        }
+
+        private void PointsListView_KeyUp(object sender, KeyEventArgs e)
+        {
+            Paint();
+        }
+
+
+
+   
+   
+
+
+
+
     }
 }

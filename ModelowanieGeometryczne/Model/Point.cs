@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Drawing;
 using System.Windows.Media.Media3D;
 using ModelowanieGeometryczne.Helpers;
+using ModelowanieGeometryczne.ViewModel;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
@@ -11,10 +12,12 @@ using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 
 namespace ModelowanieGeometryczne.Model
 {
-    public class Point
+    public class Point:ViewModelBase
     {
         private Vector4d _coordinates;
+        private Vector4d _windowCoordinates;
         private string _name;
+        private bool _selected;
         #region Private Methods
         #endregion Private Methods
         #region Public Properties
@@ -23,6 +26,16 @@ namespace ModelowanieGeometryczne.Model
         {
             get { return _name; }
             set { _name = value; }
+        }
+
+        public bool Selected
+        {
+            get { return _selected; }
+            set
+            {
+                _selected = value; 
+                OnPropertyChanged("Selected");
+            }
         }
 
         public double X
@@ -65,11 +78,17 @@ namespace ModelowanieGeometryczne.Model
         {
             //Matrix4d projekcja = MatrixProvider.ProjectionMatrix(100);
             GL.Begin(BeginMode.Points);
-            GL.Color3(1.0, 1.0, 1.0);
+            if (_selected)
+            {
+                GL.Color3(0.0,1.0,0.0);
+            }
+            else
+            {
+                GL.Color3(1.0, 1.0, 1.0);
+            }
             Matrix4d projekcja = MatrixProvider.ProjectionMatrix();
-            var avertex = transformacja.Multiply(_coordinates);
-            var vertex = projekcja.Multiply(avertex);
-            GL.Vertex2(vertex.X, vertex.Y);
+            _windowCoordinates = projekcja.Multiply(transformacja.Multiply(_coordinates));
+            GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
             GL.End();
 
         }
@@ -82,16 +101,16 @@ namespace ModelowanieGeometryczne.Model
 
             // TODO: zmiana odleglosciu oczu
             Matrix4d projekcja = MatrixProvider.RightProjectionMatrix();
-            var avertex = transformacja.Multiply(_coordinates);
-            var vertex = projekcja.Multiply(avertex);
-            GL.Vertex2(vertex.X, vertex.Y);
+            _windowCoordinates = projekcja.Multiply(transformacja.Multiply(_coordinates));
+            GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
 
 
             GL.Color3(0, 0, 1.0);
             projekcja = MatrixProvider.LeftProjectionMatrix();
-            avertex = transformacja.Multiply(_coordinates);
-            vertex = projekcja.Multiply(avertex);
-            GL.Vertex2(vertex.X, vertex.Y);
+            var windowCoordinates2 = projekcja.Multiply(transformacja.Multiply(_coordinates));
+            GL.Vertex2(windowCoordinates2.X, windowCoordinates2.Y);
+
+            _windowCoordinates = _windowCoordinates/2 + windowCoordinates2/2;
 
             GL.End();
               
