@@ -34,11 +34,28 @@ namespace ModelowanieGeometryczne.ViewModel
         //private List<Point> _pointsCollection = new List<Point>();
         private ObservableCollection<Point> _selectedPointsCollection;
         private bool _moveSelectedPointsWithCoursor = false;
-   
+        private bool _torusEnabled = false;
+
+
 
         #endregion Private Fields
 
         #region Public Properties
+
+        public bool TorusEnabled
+        {
+            get
+            {
+                return _torusEnabled;
+            }
+            set
+            {
+                _torusEnabled = value;
+                OnPropertyChanged("TorusEnabled");
+                Refresh();
+               
+            }
+        }
 
         public Tuple<int, int> MouseCoordinates
         {
@@ -61,7 +78,7 @@ namespace ModelowanieGeometryczne.ViewModel
             get
             {
                 return _cursor;
-              
+
             }
             private set
             {
@@ -252,17 +269,20 @@ namespace ModelowanieGeometryczne.ViewModel
 
 
 
-            //TODO: wywoływanie rysowania torusa      
-            //if (Stereoscopy)
-            //{
-            //    _torus.DrawStereoscopy(M);
+            //TODO: wywoływanie rysowania torusa    
+            if (TorusEnabled)
+            {
+                if (Stereoscopy)
+                {
+                    _torus.DrawStereoscopy(M);
 
-            //}
-            //else
-            //{
-            //    _torus.Draw(M);
+                }
+                else
+                {
+                    _torus.Draw(M);
 
-            //}
+                }
+            }
 
 
             if (Stereoscopy)
@@ -411,36 +431,36 @@ namespace ModelowanieGeometryczne.ViewModel
 
                 }
             }
-            
+
         }
 
         public void SelectPointByMouse()
-        {   
-          //  _selectedPointsCollection.Clear();
+        {
+            //  _selectedPointsCollection.Clear();
             const double epsilon = 20;
-            Vector4d c = new Vector4d(_x0-1440.0/2.0, _y0-750.0/2.0, 0,0);
+            Vector4d c = new Vector4d(_x0 - 1440.0 / 2.0, _y0 - 750.0 / 2.0, 0, 0);
             var temp = c;
             foreach (var p in _pointsCollection)
             {
-            temp=new Vector4d(c.X-p.X_Window, -c.Y-p.Y_Window, 0,0);
-                
-                if (temp.Length< epsilon)
+                temp = new Vector4d(c.X - p.X_Window, -c.Y - p.Y_Window, 0, 0);
+
+                if (temp.Length < epsilon)
                 {
                     if (_selectedPointsCollection.Contains(p))
-                    {       
+                    {
                         p.Selected = false;
                         _selectedPointsCollection.Remove(p);
                     }
                     else
                     {
                         p.Selected = true;
-                        _selectedPointsCollection.Add(p);  
+                        _selectedPointsCollection.Add(p);
                     }
 
                 }
 
             }
-          
+
         }
         public void DeleteSelectedPoints()
         {

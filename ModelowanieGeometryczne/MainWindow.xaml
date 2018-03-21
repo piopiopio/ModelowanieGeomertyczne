@@ -39,6 +39,7 @@
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
@@ -67,6 +68,9 @@
 
             <TextBlock Grid.Row="7" Grid.Column="0" Text="  stereoscopy: "></TextBlock>
             <CheckBox Grid.Row="7" Grid.Column="1" IsChecked="{Binding  Scene.Stereoscopy}"/>
+
+            <TextBlock Grid.Row="8" Grid.Column="0" Text="  torus:  "></TextBlock>
+            <CheckBox Grid.Row="8" Grid.Column="1" IsChecked="{Binding  Scene.TorusEnabled}"/>
         </Grid>
 
         <ListView Name="PointsListView" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.PointsCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
@@ -108,7 +112,7 @@
             <TextBlock Grid.Row="1" Text="{Binding Scene.Cursor.CursorCoordinates}"></TextBlock>
             <TextBlock Grid.Row="2" Text="{Binding Scene.Cursor.CursorWindowCoordinates}"></TextBlock>
             <TextBlock Grid.Row="3" Text="{Binding Scene.MoveSelectedPointsWithCoursor, StringFormat=Move selected point with cursor: {0}}"></TextBlock>
-            <TextBlock Grid.Row="4" Text="{Binding Text}"></TextBlock>
+            <!--<TextBlock Grid.Row="4" Text="{Binding Text}"></TextBlock>-->
         </Grid>
         
       
