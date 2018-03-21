@@ -136,23 +136,38 @@ namespace ModelowanieGeometryczne.Model
 
         public void DrawStereoscopy(Matrix4d transformacja)
         {
-
+            double StereoscopyMin = 1;
             GL.Begin(BeginMode.Points);
-            GL.Color3(1.0, 0, 0);
+           
 
             // TODO: zmiana odleglosciu oczu
             Matrix4d projekcja = MatrixProvider.RightProjectionMatrix();
-            _windowCoordinates = projekcja.Multiply(transformacja.Multiply(_coordinates));
-            GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
+            var a = projekcja.Multiply(transformacja.Multiply(_coordinates));
+           
 
 
-            GL.Color3(0, 0, 1.0);
+          
             projekcja = MatrixProvider.LeftProjectionMatrix();
-            var windowCoordinates2 = projekcja.Multiply(transformacja.Multiply(_coordinates));
-            GL.Vertex2(windowCoordinates2.X, windowCoordinates2.Y);
+            var b = projekcja.Multiply(transformacja.Multiply(_coordinates));
 
-            _windowCoordinates = _windowCoordinates/2 + windowCoordinates2/2;
+            var c = a - b;
+            c.X = c.X * 1440 / 2;
+            c.Y = c.Y * 750 / 2;
+            if (c.Length < StereoscopyMin)
+            {
+                GL.Color3(1.0, 1.0, 1.0);
+                GL.Vertex2((a.X+b.X)/2, (a.Y+b.Y)/2);
+            }
+            else
+            {
+                GL.Color3(1.0, 0, 0);
+                GL.Vertex2(a.X, a.Y);
+                GL.Color3(0, 0, 1.0);
+                GL.Vertex2(b.X, b.Y);
+            }
 
+            _windowCoordinates.X = (a.X/2 + b.X/2)*1440/2;
+            _windowCoordinates.Y = (a.Y / 2 + b.Y / 2) * 750 / 2;
 
             GL.End();
               
