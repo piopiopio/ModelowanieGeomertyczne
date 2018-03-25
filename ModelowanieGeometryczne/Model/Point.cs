@@ -155,7 +155,7 @@ namespace ModelowanieGeometryczne.Model
             c.Y = c.Y * 750 / 2;
             if (c.Length < StereoscopyMin)
             {
-                GL.Color3(1.0, 1.0, 1.0);
+                GL.Color3(1.0, 0.0, 1.0);
                 GL.Vertex2((a.X+b.X)/2, (a.Y+b.Y)/2);
             }
             else

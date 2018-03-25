@@ -5,11 +5,13 @@ using System.ComponentModel;
 using System.Linq;
 using System.Security.Policy;
 using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Navigation;
 using ModelowanieGeometryczne.Helpers;
 using ModelowanieGeometryczne.Model;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using BezierCurve = ModelowanieGeometryczne.Model.BezierCurve;
 using Cursor = ModelowanieGeometryczne.Model.Cursor;
 
 namespace ModelowanieGeometryczne.ViewModel
@@ -31,11 +33,13 @@ namespace ModelowanieGeometryczne.ViewModel
         private bool _stereoscopy;
         Tuple<int, int> _mouseCoordinates;
         private ObservableCollection<Point> _pointsCollection;//
+        private ObservableCollection<BezierCurve> _bezierCurveCollection;//
+        
         //private List<Point> _pointsCollection = new List<Point>();
         private ObservableCollection<Point> _selectedPointsCollection;
         private bool _moveSelectedPointsWithCoursor = false;
         private bool _torusEnabled = false;
-
+        private ICommand _addBezierCurve;
 
 
         #endregion Private Fields
@@ -89,14 +93,14 @@ namespace ModelowanieGeometryczne.ViewModel
 
 
 
-        public ObservableCollection<Point> SelectedPointsCollection
-        {
-            get { return _selectedPointsCollection; }
-            set
-            {
-                _selectedPointsCollection = value;
-            }
-        }
+        //public ObservableCollection<Point> SelectedPointsCollection
+        //{
+        //    get { return _selectedPointsCollection; }
+        //    set
+        //    {
+        //        _selectedPointsCollection = value;
+        //    }
+        //}
 
 
         public ObservableCollection<Point> PointsCollection
@@ -194,6 +198,9 @@ namespace ModelowanieGeometryczne.ViewModel
             }
         }
 
+        public ICommand AddBezierCurve { get { return _addBezierCurve ?? (_addBezierCurve = new ActionCommand(AddBezierCurveExecuted)); } }
+
+
         public Scene()
         {
             M = Matrix4d.Identity;
@@ -210,8 +217,9 @@ namespace ModelowanieGeometryczne.ViewModel
             Torus = new Torus();
             // _projection = MatrixProvider.ProjectionMatrix(100);
             //M = _projection;
-            SelectedPointsCollection = new ObservableCollection<Point>();
+            _selectedPointsCollection = new ObservableCollection<Point>();
             PointsCollection = new ObservableCollection<Point>();
+            _bezierCurveCollection = new ObservableCollection<BezierCurve>();
             PointsCollection.Add(new Point(0, 0, 10));
             PointsCollection.Add(new Point(0, 0, 0));
             PointsCollection.Add(new Point(1, 1, -1));
@@ -312,6 +320,10 @@ namespace ModelowanieGeometryczne.ViewModel
             }
 
 
+            foreach (var curve in _bezierCurveCollection)
+            {
+                curve.DrawPolyline(M);
+            }
 
             GL.Flush();
 
@@ -323,58 +335,13 @@ namespace ModelowanieGeometryczne.ViewModel
             //  GL.Viewport(0, 0, 750, 750);
         }
 
-        private void InitializeLights()
+        private void AddBezierCurveExecuted()
         {
-            GL.Light(LightName.Light0, LightParameter.Ambient, new[] { 0.2f, 0.2f, 0.2f, 1.0f });
-            GL.Light(LightName.Light0, LightParameter.Diffuse, new[] { 0.3f, 0.3f, 0.3f, 1.0f });
-            GL.Light(LightName.Light0, LightParameter.Specular, new[] { 0.8f, 0.8f, 0.8f, 1.0f });
-            GL.Light(LightName.Light0, LightParameter.Position, new[] { 0.0f, 5.0f, 10.0f, 1.0f });
-            GL.Enable(EnableCap.Light0);
+            _bezierCurveCollection.Add(new BezierCurve(_selectedPointsCollection));
         }
 
 
-        private void DrawAxis()
-        {
 
-            GL.Begin(BeginMode.Lines);
-
-            // draw line for x axis
-            GL.Color3(1.0, 0.0, 0.0);
-            GL.Vertex3(0.0, 0.0, 0.0);
-            GL.Vertex3(1, 0.0, 0.0);
-
-            GL.Vertex3(1.1, 0.0, 0.0);
-            GL.Vertex3(1.2, -0.1, 0.0);
-            GL.Vertex3(1.1, -0.1, 0.0);
-            GL.Vertex3(1.2, 0.0, 0.0);
-
-            // draw line for z axis
-            GL.Color3(0.0, 1.0, 0.0);
-            GL.Vertex3(0.0, 0.0, 0.0);
-            GL.Vertex3(0.0, 1, 0.0);
-
-            GL.Vertex3(0.0, 1.1, 0);
-            GL.Vertex3(0.0, 1.2, 0);
-            GL.Vertex3(0.1, 1.3, 0);
-            GL.Vertex3(0.0, 1.2, 0);
-            GL.Vertex3(-0.1, 1.3, 0);
-            GL.Vertex3(0.0, 1.2, 0);
-
-            // draw line for y axis
-            GL.Color3(0.0, 0.0, 1.0);
-            GL.Vertex3(0.0, 0.0, 0.0);
-            GL.Vertex3(0.0, 0.0, 1.0);
-
-            GL.Vertex3(0.2, 0.0, 1);
-            GL.Vertex3(0.1, 0.0, 1);
-            GL.Vertex3(0.1, 0.0, 1);
-            GL.Vertex3(0.2, 0.1, 1);
-            GL.Vertex3(0.2, 0.1, 1);
-            GL.Vertex3(0.1, 0.1, 1);
-
-            GL.End();
-
-        }
 
         internal void SetCurrentCoordinate(int x, int y)
         {
@@ -387,6 +354,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
         public void MoveCursor(double dx, double dy, double dz)
         {
+
             _cursor.Coordinates += new Vector4d(dx, dy, dz, 0);
             if (_moveSelectedPointsWithCoursor)
             {
@@ -467,14 +435,14 @@ namespace ModelowanieGeometryczne.ViewModel
             ObservableCollection<Point> _pointsToDelete = new ObservableCollection<Point>();
             foreach (var p in _pointsCollection)
             {
-                if (p.Selected == true)
+                if (p.Selected)
                 {
                     _pointsToDelete.Add(p);
                 }
             }
             foreach (var p in _pointsToDelete)
             {
-                if (p.Selected == true)
+                if (p.Selected)
                 {
                     _pointsCollection.Remove(p);
                 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows;
 using ModelowanieGeometryczne.Helpers;
 using ModelowanieGeometryczne.ViewModel;
 using OpenTK;
@@ -84,30 +85,112 @@ namespace ModelowanieGeometryczne.Model
 
         public void DrawStereoscopy(Matrix4d transformacja)
         {
-            GL.Begin(BeginMode.Lines);
-
+            int cursorpointquantity = 500;
+            List<Vector4d> FirstCusorVertices =new List<Vector4d>();
+            List<Vector4d> SecondCusorVertices = new List<Vector4d>();
+            List< Vector4d> FirstCursor = new List<Vector4d>();
+            //GL.Begin(BeginMode.Lines);
+            GL.Begin(BeginMode.Points);
             GL.Color3(1.0, 0.0, 0.0);
 
+            //foreach (var v in vertices)
+            //{
+            //    var vertex = transformacja.Multiply(v);
+            //    GL.Vertex2(_projectionRight.Multiply(vertex).X, _projectionRight.Multiply(vertex).Y);
+
+            //}
+
             foreach (var v in vertices)
             {
                 var vertex = transformacja.Multiply(v);
-                GL.Vertex2(_projectionRight.Multiply(vertex).X, _projectionRight.Multiply(vertex).Y);
+                FirstCusorVertices.Add(_projectionRight.Multiply(vertex));
 
             }
 
+            for (int i = 0; i <=4; i=i+2)
+            {
 
+
+                var dv = (FirstCusorVertices[i] - FirstCusorVertices[i + 1]) / cursorpointquantity;
+
+                for (int j = 0; j <= cursorpointquantity; j++)
+                {
+                    var temp1 = FirstCusorVertices[i] - dv * j;
+                    FirstCursor.Add(temp1);
+                    GL.Vertex2(temp1.X, temp1.Y);
+
+                }
+
+
+
+
+            }
+
+            GL.End();
+            //GL.Begin(BeginMode.Lines);
+            //GL.Color3(0.0, 0.0, 1.0);
+            //foreach (var v in vertices)
+            //{
+            //    var vertex = transformacja.Multiply(v);
+            //    GL.Vertex2(_projectionLeft.Multiply(vertex).X, _projectionLeft.Multiply(vertex).Y);
+            //}
+
+            GL.Begin(BeginMode.Points);
             GL.Color3(0.0, 0.0, 1.0);
+
+
+
+
             foreach (var v in vertices)
             {
                 var vertex = transformacja.Multiply(v);
-                GL.Vertex2(_projectionLeft.Multiply(vertex).X, _projectionLeft.Multiply(vertex).Y);
+                SecondCusorVertices.Add(_projectionLeft.Multiply(vertex));
+
             }
 
+            for (int i = 0; i <= 4; i = i + 2)
+            {
+
+
+                var dv = (FirstCusorVertices[i] - FirstCusorVertices[i + 1]) / cursorpointquantity;
+
+                for (int j = 0; j <= cursorpointquantity; j++)
+                {
+                    var temp1 = SecondCusorVertices[i] - dv * j;
+                   // FirstCursor.Add(temp1);
+
+                    foreach (var v in FirstCursor)
+                    {
+                        var c = v - temp1;
+                        if (c.Length < 0.001)
+                        {
+                            GL.Color3(1.0, 0.0, 1.0);
+                        }
+
+                    }
+                    GL.Vertex2(temp1.X, temp1.Y);
+                    GL.Color3(0.0, 0.0, 1.0);
+
+                    
+
+
+                }
+
+
+
+
+            }
+
+           
 
             GL.End();
 
             var temp = _projection.Multiply(transformacja.Multiply(_coordinates));
             WindowCoordinate = new Vector4d(temp.X * 720, temp.Y * 375, 0, 0);
+
+
+
+
         }
 
         public void Draw(Matrix4d transformacja)

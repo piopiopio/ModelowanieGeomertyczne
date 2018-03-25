@@ -40,6 +40,7 @@
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
@@ -71,6 +72,8 @@
 
             <TextBlock Grid.Row="8" Grid.Column="0" Text="  torus:  "></TextBlock>
             <CheckBox Grid.Row="8" Grid.Column="1" IsChecked="{Binding  Scene.TorusEnabled}"/>
+
+            <Button Grid.Row="9"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curve" Command="{Binding Scene.AddBezierCurve}"></Button>
         </Grid>
 
         <ListView Name="PointsListView" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.PointsCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >

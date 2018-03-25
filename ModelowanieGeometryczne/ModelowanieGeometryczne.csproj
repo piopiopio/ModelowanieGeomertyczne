@@ -66,8 +66,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helpers\ActionCommand.cs" />
     <Compile Include="Helpers\MatrixProvider.cs" />
     <Compile Include="Helpers\SizeObserver.cs" />
+    <Compile Include="Model\BezierCurve.cs" />
     <Compile Include="Model\Cursor.cs" />
     <Compile Include="Model\Point.cs" />
     <Compile Include="Model\Torus.cs" />
