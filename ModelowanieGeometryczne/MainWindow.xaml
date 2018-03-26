@@ -127,16 +127,21 @@
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
-                                <GridViewColumn Header="Points" Width="240" >
+                                <GridViewColumn Header="Points" Width="360" >
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <ListView ItemsSource="{Binding Points}" Height="100">
-                                            </ListView>
+                                            <ListView ItemsSource="{Binding Points}" Height="100" Width="340">
+                                                <ListView.View>
+                                                    <GridView >
+                                                        <GridViewColumn Header="Name" Width="340" DisplayMemberBinding="{Binding Name}"/>
+                                                    </GridView>
+                                                </ListView.View>
+                                       </ListView>
 
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
-
+                                <GridViewColumn Header="IsSelected" Width="120" DisplayMemberBinding="{Binding Selected}"/>
                                 <GridViewColumn Header="Polyline enabled" Width="120" >
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>

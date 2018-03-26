@@ -219,7 +219,7 @@ namespace ModelowanieGeometryczne.ViewModel
             PointsCollection.Add(new Point(2, 4, 0));
             PointsCollection.Add(new Point(4, 4, 0));
             PointsCollection.Add(new Point(4, 6, 0));
-            PointsCollection.Add(new Point(6, 6, 0));
+            //PointsCollection.Add(new Point(6, 6, 0));
             Cursor = new Cursor();
 
         }
@@ -413,7 +413,14 @@ namespace ModelowanieGeometryczne.ViewModel
         }
         public void AddPointByCursor()
         {
-            PointsCollection.Add(new Point(_cursor.Coordinates.X, _cursor.Coordinates.Y, _cursor.Coordinates.Z));
+            var point = new Point(_cursor.Coordinates.X, _cursor.Coordinates.Y, _cursor.Coordinates.Z);
+            PointsCollection.Add(point);
+
+            foreach (var curve in _bezierCurveCollection.Where(c=>c.Selected))
+            {
+                curve.AddPoint(point);
+            }
+
         }
         public void MouseMoveTranslate(int x, int y)
         {
@@ -427,30 +434,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
 
 
-        //public void MouseMoveRotate(System.Windows.Forms.MouseEventArgs e)
-        //    if (e.Button == MouseButtons.Left)
-        //    {
-        //        var translation = Engine3D.Translation;
-        //        translation.X += 0.4 * (e.X - PreviousMousePosition.X);
-        //        translation.Y += 0.4 * (e.Y - PreviousMousePosition.Y);
-        //        Engine3D.Translation = translation;
-        //    }
 
-        //    if (e.Button == MouseButtons.Right)
-        //    {
-        //        var rotation = Engine3D.Rotation;
-        //        rotation.Y += 0.4 * (e.X - PreviousMousePosition.X);
-        //        rotation.X += 0.4 * (e.Y - PreviousMousePosition.Y);
-        //        if (rotation.X < 0)
-        //            rotation.X = 0;
-        //        else if (rotation.X > 90)
-        //            rotation.X = 90;
-        //        Engine3D.Rotation = rotation;
-        //    }
-
-        //    PreviousMousePosition = new Point(e.X, e.Y);
-        //    Render();
-        //}
 
     }
 }
