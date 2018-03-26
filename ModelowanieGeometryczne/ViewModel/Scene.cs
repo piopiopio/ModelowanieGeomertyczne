@@ -34,9 +34,7 @@ namespace ModelowanieGeometryczne.ViewModel
         Tuple<int, int> _mouseCoordinates;
         private ObservableCollection<Point> _pointsCollection;//
         private ObservableCollection<BezierCurve> _bezierCurveCollection;//
-        
-        //private List<Point> _pointsCollection = new List<Point>();
-        private ObservableCollection<Point> _selectedPointsCollection;
+
         private bool _moveSelectedPointsWithCoursor = false;
         private bool _torusEnabled = false;
         private ICommand _addBezierCurve;
@@ -46,6 +44,16 @@ namespace ModelowanieGeometryczne.ViewModel
 
         #region Public Properties
 
+        public ObservableCollection<BezierCurve> BezierCurveCollection
+        {
+            get { return _bezierCurveCollection;}
+            set
+            {
+                _bezierCurveCollection = value;
+                OnPropertyChanged("BezierCurveCollectiont");
+                Refresh();
+            }
+        }
         public bool TorusEnabled
         {
             get
@@ -57,7 +65,7 @@ namespace ModelowanieGeometryczne.ViewModel
                 _torusEnabled = value;
                 OnPropertyChanged("TorusEnabled");
                 Refresh();
-               
+
             }
         }
 
@@ -90,18 +98,6 @@ namespace ModelowanieGeometryczne.ViewModel
                 OnPropertyChanged("Cursor");
             }
         }
-
-
-
-        //public ObservableCollection<Point> SelectedPointsCollection
-        //{
-        //    get { return _selectedPointsCollection; }
-        //    set
-        //    {
-        //        _selectedPointsCollection = value;
-        //    }
-        //}
-
 
         public ObservableCollection<Point> PointsCollection
         {
@@ -215,15 +211,15 @@ namespace ModelowanieGeometryczne.ViewModel
             _alphaZ = 0;
             M = Matrix4d.Identity;
             Torus = new Torus();
-            // _projection = MatrixProvider.ProjectionMatrix(100);
-            //M = _projection;
-            _selectedPointsCollection = new ObservableCollection<Point>();
             PointsCollection = new ObservableCollection<Point>();
             _bezierCurveCollection = new ObservableCollection<BezierCurve>();
-            PointsCollection.Add(new Point(0, 0, 10));
             PointsCollection.Add(new Point(0, 0, 0));
-            PointsCollection.Add(new Point(1, 1, -1));
-
+            PointsCollection.Add(new Point(0, 2, 0));
+            PointsCollection.Add(new Point(2, 2, 0));
+            PointsCollection.Add(new Point(2, 4, 0));
+            PointsCollection.Add(new Point(4, 4, 0));
+            PointsCollection.Add(new Point(4, 6, 0));
+            PointsCollection.Add(new Point(6, 6, 0));
             Cursor = new Cursor();
 
         }
@@ -237,23 +233,7 @@ namespace ModelowanieGeometryczne.ViewModel
         }
 
 
-        private void DefineDrawingMode()
-        {
-            GL.ShadeModel(ShadingModel.Smooth);
-            GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-            GL.Enable(EnableCap.DepthTest);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.One);
-            GL.DepthFunc(DepthFunction.Notequal);
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
 
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Front);
-            GL.FrontFace(FrontFaceDirection.Ccw);
-            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-            GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
-            GL.Enable(EnableCap.Normalize);
-        }
         internal void Render()
         {   //TODO: Render
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -271,11 +251,6 @@ namespace ModelowanieGeometryczne.ViewModel
             _alphaZ = 0;
             _x = 0;
             _y = 0;
-            //GL.MultMatrix(ref _projection);
-            //GL.MultMatrix(ref M);
-
-
-
 
             //TODO: wywoływanie rysowania torusa    
             if (TorusEnabled)
@@ -322,8 +297,12 @@ namespace ModelowanieGeometryczne.ViewModel
 
             foreach (var curve in _bezierCurveCollection)
             {
-                curve.DrawPolyline(M);
+                curve.Draw(M);
+                curve.DrawCurve(M, 0.01);
+
             }
+
+
 
             GL.Flush();
 
@@ -332,12 +311,15 @@ namespace ModelowanieGeometryczne.ViewModel
         private void SetViewPort()
         {
             GL.Viewport(0, 0, 1440, 750);
-            //  GL.Viewport(0, 0, 750, 750);
         }
 
         private void AddBezierCurveExecuted()
         {
-            _bezierCurveCollection.Add(new BezierCurve(_selectedPointsCollection));
+            if (_pointsCollection.Any(point => point.Selected))
+            {
+                BezierCurveCollection.Add(new BezierCurve(_pointsCollection.Where(point => point.Selected)));
+                Refresh();
+            }
         }
 
 
@@ -366,7 +348,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
         public void MoveSelectedPoints(double dx, double dy, double dz)
         {
-            foreach (var p in _selectedPointsCollection)
+            foreach (var p in _pointsCollection.Where(point => point.Selected))
             {
                 p.X += dx;
                 p.Y += dy;
@@ -386,17 +368,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
                 if (temp.Length < epsilon)
                 {
-                    if (_selectedPointsCollection.Contains(p))
-                    {
-                        p.Selected = false;
-                        _selectedPointsCollection.Remove(p);
-                    }
-                    else
-                    {
-                        p.Selected = true;
-                        _selectedPointsCollection.Add(p);
-                    }
-
+                    p.Selected = !p.Selected;
                 }
             }
 
@@ -414,17 +386,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
                 if (temp.Length < epsilon)
                 {
-                    if (_selectedPointsCollection.Contains(p))
-                    {
-                        p.Selected = false;
-                        _selectedPointsCollection.Remove(p);
-                    }
-                    else
-                    {
-                        p.Selected = true;
-                        _selectedPointsCollection.Add(p);
-                    }
-
+                    p.Selected = !p.Selected;
                 }
 
             }

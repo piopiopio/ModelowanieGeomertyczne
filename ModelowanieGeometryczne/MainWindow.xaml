@@ -10,7 +10,7 @@
         WindowState="Maximized"
         Title="Modelowanie Geometryczne" Height="350" Width="525">
 
-    
+
     <d:Window.DataContext>
         <viewModel:MainViewModel/>
     </d:Window.DataContext>
@@ -18,7 +18,7 @@
         <Style TargetType="ListViewItem">
         </Style>
     </Window.Resources>
-    
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="3*"/>
@@ -31,6 +31,7 @@
 
         <Grid Grid.Row="0" Grid.Column="1">
             <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
@@ -73,33 +74,84 @@
             <TextBlock Grid.Row="8" Grid.Column="0" Text="  torus:  "></TextBlock>
             <CheckBox Grid.Row="8" Grid.Column="1" IsChecked="{Binding  Scene.TorusEnabled}"/>
 
+
+
             <Button Grid.Row="9"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curve" Command="{Binding Scene.AddBezierCurve}"></Button>
         </Grid>
 
-        <ListView Name="PointsListView" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.PointsCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
 
-                </Style>
-            </ListView.ItemContainerStyle>
-            <ListView.View>
-                <GridView >
-                    <GridViewColumn Header="Name" Width="240">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBox Text="{Binding Name}"></TextBox>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="X" Width="120" DisplayMemberBinding="{Binding X, StringFormat=N2}"/>
-                    <GridViewColumn Header="Y" Width="120" DisplayMemberBinding="{Binding Y, StringFormat=N2}"/>
-                    <GridViewColumn Header="Z" Width="120" DisplayMemberBinding="{Binding Z, StringFormat=N2}"/>
-                    <GridViewColumn Header="IsSelected" Width="120" DisplayMemberBinding="{Binding Selected}"/>
-                </GridView>
-            </ListView.View>
+            <TabControl>
+                <TabItem Header="Points">
+                    <ListView Name="PointsListView" Grid.Row="0" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.PointsCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.View>
+                            <GridView >
+                                <GridViewColumn Header="Name" Width="240">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Name}"></TextBox>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="X" Width="120" DisplayMemberBinding="{Binding X, StringFormat=N2}"/>
+                                <GridViewColumn Header="Y" Width="120" DisplayMemberBinding="{Binding Y, StringFormat=N2}"/>
+                                <GridViewColumn Header="Z" Width="120" DisplayMemberBinding="{Binding Z, StringFormat=N2}"/>
+                                <GridViewColumn Header="IsSelected" Width="120" DisplayMemberBinding="{Binding Selected}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </TabItem>
+                <TabItem Header="Bezier curves">
 
-        </ListView>
+                    <ListView Name="BezierCurveListView" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.BezierCurveCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.View>
+                            <GridView >
+                                <GridViewColumn Header="Name" Width="240">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Name}"></TextBox>
+
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Points" Width="240" >
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ListView ItemsSource="{Binding Points}" Height="100">
+                                            </ListView>
+
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn Header="Polyline enabled" Width="120" >
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding PolylineEnabled}" Click="ButtonBase_OnClick"></CheckBox>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
+                </TabItem>
+            </TabControl>
+
+        </Grid>
 
         <Grid Grid.Row="2" Grid.Column="1">
             <Grid.RowDefinitions>
@@ -117,8 +169,8 @@
             <TextBlock Grid.Row="3" Text="{Binding Scene.MoveSelectedPointsWithCoursor, StringFormat=Move selected point with cursor: {0}}"></TextBlock>
             <!--<TextBlock Grid.Row="4" Text="{Binding Text}"></TextBlock>-->
         </Grid>
-        
-      
+
+
         <WindowsFormsHost Name="OpentkWindow" Grid.Column="0" Grid.Row="0" Initialized="OpenTkControl_Initialized" 
                   helpers:SizeObserver.Observe="True"
                   helpers:SizeObserver.ObservedHeight="{Binding Scene.Height, Mode=OneWayToSource}"

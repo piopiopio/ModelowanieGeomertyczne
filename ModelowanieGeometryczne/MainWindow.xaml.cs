@@ -208,7 +208,7 @@ namespace ModelowanieGeometryczne
             }
 
             if (e.Key == Key.Subtract)
-            {
+            { 
                 _mainViewModel.Scene.MoveCursor(0, 0, -increment);
                 Paint();
             }
@@ -234,17 +234,9 @@ namespace ModelowanieGeometryczne
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            Paint();
+        }
     }
 }
