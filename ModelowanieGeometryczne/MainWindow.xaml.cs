@@ -146,81 +146,52 @@ namespace ModelowanieGeometryczne
         }
         #endregion Private Methods
 
-
-
         private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
         {
-
-            if (e.Key == Key.Delete)
+            switch (e.Key)
             {
-                _mainViewModel.Scene.DeleteSelectedPoints();
-                Paint();
-
+                case Key.Delete:
+                    _mainViewModel.Scene.DeleteSelectedPoints();
+                    _mainViewModel.Scene.DeleteSelectedCurves();
+                    Paint();
+                    break;
+                case Key.Enter:
+                    _mainViewModel.Scene.SelectPointByCursor();
+                    Paint();
+                    break;
+                case Key.NumPad0:
+                    _mainViewModel.Scene.MoveSelectedPointsWithCoursor = !_mainViewModel.Scene.MoveSelectedPointsWithCoursor;
+                    Paint();
+                    break;
+                case Key.NumPad4:
+                    _mainViewModel.Scene.MoveCursor(-increment, 0, 0);
+                    Paint();
+                    break;
+                case Key.NumPad6:
+                    _mainViewModel.Scene.MoveCursor(increment, 0, 0);
+                    Paint();
+                    break;
+                case Key.NumPad8:
+                    _mainViewModel.Scene.MoveCursor(0, increment, 0);
+                    Paint();
+                    break;
+                case Key.NumPad2:
+                    _mainViewModel.Scene.MoveCursor(0, -increment, 0);
+                    Paint();
+                    break;
+                case Key.Add:
+                    _mainViewModel.Scene.MoveCursor(0, 0, increment);
+                    Paint();
+                    break;
+                case Key.Subtract:
+                    _mainViewModel.Scene.MoveCursor(0, 0, -increment);
+                    Paint();
+                    break;
+                case Key.NumPad5:
+                    _mainViewModel.Scene.AddPointByCursor();
+                    Paint();
+                    break;
             }
-
-            if (e.Key == Key.Enter)
-            {
-                _mainViewModel.Scene.SelectPointByCursor();
-                Paint();
-            }
-
-            if (e.Key == Key.NumPad0)
-            {
-                _mainViewModel.Scene.MoveSelectedPointsWithCoursor = !_mainViewModel.Scene.MoveSelectedPointsWithCoursor;
-                Paint();
-            }
-
-
-            if (e.Key == Key.NumPad4)
-            {
-                _mainViewModel.Scene.MoveCursor(-increment, 0, 0);
-                Paint();
-
-            }
-
-            if (e.Key == Key.NumPad6)
-            {
-                _mainViewModel.Scene.MoveCursor(increment, 0, 0);
-                Paint();
-
-            }
-
-
-            if (e.Key == Key.NumPad8)
-            {
-                _mainViewModel.Scene.MoveCursor(0, increment, 0);
-                Paint();
-
-            }
-
-
-            if (e.Key == Key.NumPad2)
-            {
-                _mainViewModel.Scene.MoveCursor(0, -increment, 0);
-                Paint();
-            }
-
-            if (e.Key == Key.Add)
-            {
-                _mainViewModel.Scene.MoveCursor(0, 0, increment);
-                Paint();
-
-            }
-
-            if (e.Key == Key.Subtract)
-            { 
-                _mainViewModel.Scene.MoveCursor(0, 0, -increment);
-                Paint();
-            }
-
-
-
-            if (e.Key == Key.NumPad5)
-            {
-                _mainViewModel.Scene.AddPointByCursor();
-                Paint();
-            }
-
         }
 
         private void PointsListView_MouseUp(object sender, MouseButtonEventArgs e)
@@ -233,8 +204,7 @@ namespace ModelowanieGeometryczne
             Paint();
         }
 
-
-        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        private void RefreshScene(object sender, RoutedEventArgs e)
         {
             Paint();
         }

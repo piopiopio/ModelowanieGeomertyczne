@@ -46,7 +46,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
         public ObservableCollection<BezierCurve> BezierCurveCollection
         {
-            get { return _bezierCurveCollection;}
+            get { return _bezierCurveCollection; }
             set
             {
                 _bezierCurveCollection = value;
@@ -115,7 +115,6 @@ namespace ModelowanieGeometryczne.ViewModel
             set
             {
                 _stereoscopy = value;
-                //Refresh();
                 OnPropertyChanged("Stereoscopy");
                 Refresh();
             }
@@ -196,14 +195,10 @@ namespace ModelowanieGeometryczne.ViewModel
 
         public ICommand AddBezierCurve { get { return _addBezierCurve ?? (_addBezierCurve = new ActionCommand(AddBezierCurveExecuted)); } }
 
-
         public Scene()
         {
             M = Matrix4d.Identity;
-            // DefineDrawingMode();
             _scale = 0.1;
-            //_x = -2*700;
-            //_y = 2*400;
             _x = 0;
             _y = 0;
             _alphaX = 0;
@@ -213,7 +208,7 @@ namespace ModelowanieGeometryczne.ViewModel
             Torus = new Torus();
             PointsCollection = new ObservableCollection<Point>();
             _bezierCurveCollection = new ObservableCollection<BezierCurve>();
-            PointsCollection.Add(new Point(0, 0, 0));
+            PointsCollection.Add(new Point(0, 0, -50));
             PointsCollection.Add(new Point(0, 2, 0));
             PointsCollection.Add(new Point(2, 2, 0));
             PointsCollection.Add(new Point(2, 4, 0));
@@ -226,16 +221,20 @@ namespace ModelowanieGeometryczne.ViewModel
         #endregion Public Properties
 
         #region Private Methods
+
+        void Refresh(object sender, PropertyChangedEventArgs e)
+        {
+            Refresh();
+        }
+
         private void Refresh()
         {
             if (RefreshScene != null)
                 RefreshScene(this, new PropertyChangedEventArgs("RefreshScene"));
         }
 
-
-
         internal void Render()
-        {   //TODO: Render
+        {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.LoadIdentity();
             var scaleMatrix = MatrixProvider.ScaleMatrix(_scale);
@@ -258,20 +257,16 @@ namespace ModelowanieGeometryczne.ViewModel
                 if (Stereoscopy)
                 {
                     _torus.DrawStereoscopy(M);
-
                 }
                 else
                 {
                     _torus.Draw(M);
-
                 }
             }
-
 
             if (Stereoscopy)
             {
                 Cursor.DrawStereoscopy(M);
-
             }
             else
             {
@@ -284,28 +279,28 @@ namespace ModelowanieGeometryczne.ViewModel
                 if (Stereoscopy)
                 {
                     i.DrawStereoscopy(M);
-
                 }
                 else
                 {
                     i.Draw(M);
-
                 }
-
             }
-
 
             foreach (var curve in _bezierCurveCollection)
             {
-                curve.Draw(M);
-                curve.DrawCurve(M, 0.01);
-
+                if (Stereoscopy)
+                {
+                    curve.DrawPolylineStereoscopy(M);
+                    curve.DrawCurveStereoscopy(M);
+                }
+                else
+                {
+                    curve.DrawPolyline(M);
+                    curve.DrawCurve(M);
+                }
             }
 
-
-
             GL.Flush();
-
         }
 
         private void SetViewPort()
@@ -317,13 +312,12 @@ namespace ModelowanieGeometryczne.ViewModel
         {
             if (_pointsCollection.Any(point => point.Selected))
             {
-                BezierCurveCollection.Add(new BezierCurve(_pointsCollection.Where(point => point.Selected)));
+                var curve = new BezierCurve(_pointsCollection.Where(point => point.Selected));
+                curve.RefreshScene += Refresh;
+                BezierCurveCollection.Add(curve);
                 Refresh();
             }
         }
-
-
-
 
         internal void SetCurrentCoordinate(int x, int y)
         {
@@ -342,8 +336,6 @@ namespace ModelowanieGeometryczne.ViewModel
             {
                 MoveSelectedPoints(dx, dy, dz);
             }
-
-
         }
 
         public void MoveSelectedPoints(double dx, double dy, double dz)
@@ -358,7 +350,6 @@ namespace ModelowanieGeometryczne.ViewModel
 
         public void SelectPointByCursor()
         {
-            //  _selectedPointsCollection.Clear();
             const double epsilon = 0.2;
             var c = _cursor.Coordinates;
             var temp = c;
@@ -371,12 +362,10 @@ namespace ModelowanieGeometryczne.ViewModel
                     p.Selected = !p.Selected;
                 }
             }
-
         }
 
         public void SelectPointByMouse()
         {
-            //  _selectedPointsCollection.Clear();
             const double epsilon = 20;
             Vector4d c = new Vector4d(_x0 - 1440.0 / 2.0, _y0 - 750.0 / 2.0, 0, 0);
             var temp = c;
@@ -388,39 +377,31 @@ namespace ModelowanieGeometryczne.ViewModel
                 {
                     p.Selected = !p.Selected;
                 }
-
             }
-
         }
         public void DeleteSelectedPoints()
         {
-            ObservableCollection<Point> _pointsToDelete = new ObservableCollection<Point>();
-            foreach (var p in _pointsCollection)
+            var temp = _pointsCollection.Where(c => c.Selected).ToList();
+
+            foreach (var p in temp)
             {
-                if (p.Selected)
-                {
-                    _pointsToDelete.Add(p);
-                }
-            }
-            foreach (var p in _pointsToDelete)
-            {
-                if (p.Selected)
-                {
-                    _pointsCollection.Remove(p);
-                }
+                _pointsCollection.Remove(p);
             }
 
+            foreach (var bezierCurve in _bezierCurveCollection)
+            {
+                bezierCurve.RemovePoints(temp);
+            }
         }
         public void AddPointByCursor()
         {
             var point = new Point(_cursor.Coordinates.X, _cursor.Coordinates.Y, _cursor.Coordinates.Z);
             PointsCollection.Add(point);
 
-            foreach (var curve in _bezierCurveCollection.Where(c=>c.Selected))
+            foreach (var curve in _bezierCurveCollection.Where(c => c.Selected))
             {
                 curve.AddPoint(point);
             }
-
         }
         public void MouseMoveTranslate(int x, int y)
         {
@@ -428,14 +409,17 @@ namespace ModelowanieGeometryczne.ViewModel
             _y = y - _y0;
             _x0 = x;
             _y0 = y;
-
         }
         #endregion Public Methods
 
+        internal void DeleteSelectedCurves()
+        {
+            var temp = _bezierCurveCollection.Where(c => c.Selected).ToList();
 
-
-
-
+            foreach (var curve in temp)
+            {
+                _bezierCurveCollection.Remove(curve);
+            }
+        }
     }
 }
-

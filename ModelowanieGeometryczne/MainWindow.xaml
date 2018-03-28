@@ -109,8 +109,8 @@
                         </ListView.View>
                     </ListView>
                 </TabItem>
-                <TabItem Header="Bezier curves">
 
+                <TabItem Header="Bezier curves">
                     <ListView Name="BezierCurveListView" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.BezierCurveCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
@@ -131,12 +131,23 @@
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
                                             <ListView ItemsSource="{Binding Points}" Height="100" Width="340">
+                                                <ListView.Resources>
+                                                    <ContextMenu x:Key="ItemContextMenu">
+                                                        <MenuItem Header="Remove points" Command="{Binding Path=DataContext.RemovePointsCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                                    </ContextMenu>
+                                                </ListView.Resources>
                                                 <ListView.View>
                                                     <GridView >
                                                         <GridViewColumn Header="Name" Width="340" DisplayMemberBinding="{Binding Name}"/>
                                                     </GridView>
                                                 </ListView.View>
-                                       </ListView>
+                                                <ListView.ItemContainerStyle>
+                                                    <Style TargetType="{x:Type ListViewItem}" >
+                                                        <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}"/>
+                                                        <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>
+                                                    </Style>
+                                                </ListView.ItemContainerStyle>
+                                            </ListView>
 
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
@@ -145,7 +156,7 @@
                                 <GridViewColumn Header="Polyline enabled" Width="120" >
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <CheckBox IsChecked="{Binding PolylineEnabled}" Click="ButtonBase_OnClick"></CheckBox>
+                                            <CheckBox IsChecked="{Binding PolylineEnabled}" Click="RefreshScene"></CheckBox>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
