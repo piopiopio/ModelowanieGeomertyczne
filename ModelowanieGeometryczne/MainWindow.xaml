@@ -42,6 +42,7 @@
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
@@ -77,6 +78,7 @@
 
 
             <Button Grid.Row="9"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curve" Command="{Binding Scene.AddBezierCurve}"></Button>
+            <Button Grid.Row="10"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Selected Points to Selected Bezier Curve" Command="{Binding Scene.AddPointsCommand}"></Button>
         </Grid>
 
         <Grid Grid.Row="1">
@@ -134,7 +136,11 @@
                                                 <ListView.Resources>
                                                     <ContextMenu x:Key="ItemContextMenu">
                                                         <MenuItem Header="Remove points" Command="{Binding Path=DataContext.RemovePointsCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                                        <!--<MenuItem Header="Add points" Command="{Binding Path=DataContext.Scene.AddPointsCommand, RelativeSource={RelativeSource AncestorType=ListView, AncestorLevel=2}}"/>-->
+                                     
+                                                     
                                                     </ContextMenu>
+                                                  
                                                 </ListView.Resources>
                                                 <ListView.View>
                                                     <GridView >

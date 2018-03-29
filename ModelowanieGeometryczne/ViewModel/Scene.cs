@@ -38,12 +38,25 @@ namespace ModelowanieGeometryczne.ViewModel
         private bool _moveSelectedPointsWithCoursor = false;
         private bool _torusEnabled = false;
         private ICommand _addBezierCurve;
-
+        private ICommand _addPoints;
 
         #endregion Private Fields
 
         #region Public Properties
-
+        public ICommand AddPointsCommand { get { return _addPoints ?? (_addPoints = new ActionCommand(AddSelectedPointsExecuted)); } }
+        //public ICommand AddBezierCurve { get { return _addBezierCurve ?? (_addBezierCurve = new ActionCommand(AddBezierCurveExecuted)); } }
+        public void AddSelectedPointsExecuted()
+        {
+            foreach (var curve in _bezierCurveCollection.Where(p=>p.Selected))
+            {
+                foreach (var point in _pointsCollection.Where(p=>p.Selected))
+	                {
+		                curve.AddPoint(point);
+	                }
+                
+            }
+            Refresh();
+        }
         public ObservableCollection<BezierCurve> BezierCurveCollection
         {
             get { return _bezierCurveCollection; }
@@ -219,6 +232,8 @@ namespace ModelowanieGeometryczne.ViewModel
 
         }
         #endregion Public Properties
+
+
 
         #region Private Methods
 
