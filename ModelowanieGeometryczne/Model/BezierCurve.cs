@@ -9,10 +9,10 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
 using System.Windows.Shapes;
-using Color = System.Windows.Media.Color;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 using System;
 using System.Windows.Media.Imaging;
+using System.Drawing;
 
 
 
@@ -33,6 +33,9 @@ namespace ModelowanieGeometryczne.Model
         private ICommand _removePoints;
         private bool _polylineEnabled = true;
         private bool _selected;
+
+        const int renderWidth = 1440;
+        const int renderHeight = 750;
 
         #region Private Methods
 
@@ -160,8 +163,12 @@ namespace ModelowanieGeometryczne.Model
                         length += a.Length;
                     }
                     var point = Casteljeu(temp, 0);
+                   
                     var windowCoordinates = projekcja.Multiply(transformacja.Multiply(point));
                     double divisions = 1 / length;
+
+
+
                     for (double t = divisions / 2; t <= 1; t += divisions / 2)
                     {
                         point = Casteljeu(temp, t);
@@ -180,6 +187,141 @@ namespace ModelowanieGeometryczne.Model
 
             GL.End();
         }
+
+        public void DrawCurveStereoscopy(Matrix4d transformacja)
+        {
+
+            GL.Begin(BeginMode.Lines);
+            GL.Color3(0.6, 0.0, 0.0);
+            int j = 0;
+          
+            ObservableCollection<Point> temp = new ObservableCollection<Point>();
+            foreach (var p in _pointsCollection)
+            {
+                j++;
+                temp.Add(p);
+                if (j % 4 == 0 || p == _pointsCollection.Last())
+                {
+                    double length = 0;
+                    for (int i = 0; i < j - 1; i++)
+                    {
+                        Vector4d a = projekcja.Multiply(transformacja.Multiply(temp[i + 1])) - projekcja.Multiply(transformacja.Multiply(temp[i]));
+                        a.X *= 1440;
+                        a.Y *= 750;
+                        length += a.Length;
+                    }
+                    var point = Casteljeu(temp, 0);
+                    var windowCoordinates = projekcjaRight.Multiply(transformacja.Multiply(point));
+                    double divisions = 1 / length;
+                  
+                    for (double t = divisions / 2; t <= 1; t += divisions / 2)
+                    {
+                        point = Casteljeu(temp, t);
+                        GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
+                        windowCoordinates = projekcjaRight.Multiply(transformacja.Multiply(point));
+                        GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
+                        
+                       
+                    }
+                    temp.Clear();
+                    temp.Add(p);
+                    j = 1;
+                }
+
+
+            }
+
+            GL.End();
+
+
+            Bitmap bmp1 = new Bitmap(renderWidth, renderHeight);
+            System.Drawing.Imaging.BitmapData dat = bmp1.LockBits(new System.Drawing.Rectangle(0, 0, renderWidth, renderHeight), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+            GL.ReadPixels(0, 0, renderWidth, renderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat.Scan0);
+            bmp1.UnlockBits(dat);
+            bmp1.Save("D:\\ModelowanieGeometryczne\\a1.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+
+
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Begin(BeginMode.Lines);
+            GL.Color3(0.0, 0.0, 0.6);
+            j = 0;
+            ObservableCollection<Point> temp2 = new ObservableCollection<Point>();
+            foreach (var p in _pointsCollection)
+            {
+                j++;
+                temp2.Add(p);
+                if (j % 4 == 0 || p == _pointsCollection.Last())
+                {
+                    double length = 0;
+                    for (int i = 0; i < j - 1; i++)
+                    {
+                        Vector4d a = projekcja.Multiply(transformacja.Multiply(temp2[i + 1])) - projekcja.Multiply(transformacja.Multiply(temp2[i]));
+                        a.X *= 1440;
+                        a.Y *= 750;
+                        length += a.Length;
+                    }
+                    var point = Casteljeu(temp2, 0);
+                    var windowCoordinates = projekcjaLeft.Multiply(transformacja.Multiply(point));
+                    double divisions = 1 / length;
+                    for (double t = divisions / 2; t <= 1; t += divisions / 2)
+                    {
+                        point = Casteljeu(temp2, t);
+                        //if (point == null) continue;
+                        GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
+                        windowCoordinates = projekcjaLeft.Multiply(transformacja.Multiply(point));
+                        GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
+                        
+
+                    }
+                    temp2.Clear();
+                    temp2.Add(p);
+                    j = 1;
+                }
+            }
+            GL.End();
+
+
+            Bitmap bmp2 = new Bitmap(renderWidth, renderHeight);
+            System.Drawing.Imaging.BitmapData dat2 = bmp2.LockBits(new System.Drawing.Rectangle(0, 0, renderWidth, renderHeight), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+            GL.ReadPixels(0, 0, renderWidth, renderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat2.Scan0);
+            bmp2.UnlockBits(dat2);
+            bmp2.Save("D:\\ModelowanieGeometryczne\\a2.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            Bitmap bmp3 = bmp2;
+            Color temp3, pixeltemp, result;
+
+            //Działa dla dowolnego koloru torusa 1 i torusa 2
+
+            for (int i = 0; i < renderWidth; i++)
+            {
+                for (int ji = 0; ji < renderHeight; ji++)
+                {
+                    temp3 = bmp1.GetPixel(i, ji);
+                    if (temp3.R == 0 && temp3.G == 0 && temp3.B == 0)
+                    {
+
+                    }
+                    else
+                    {
+                        //TODO: Mieszanie koloru
+                        pixeltemp = bmp3.GetPixel(i, ji);
+                        result = Color.FromArgb(Math.Min(temp3.R + pixeltemp.R, 255), Math.Min(temp3.G + pixeltemp.G, 255), Math.Min(temp3.B + pixeltemp.B, 255));
+                        bmp3.SetPixel(i, ji, result);
+                    }
+                }
+            }
+
+
+
+
+
+            dat2 = bmp2.LockBits(new System.Drawing.Rectangle(0, 0, renderWidth, renderHeight), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+            GL.DrawPixels(renderWidth, renderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat2.Scan0);
+            bmp2.UnlockBits(dat2);
+
+        }
+
         public void DrawPolyline(Matrix4d transformacja)
         {
             GL.Begin(BeginMode.Lines);
@@ -198,145 +340,84 @@ namespace ModelowanieGeometryczne.Model
         }
 
         public void DrawPolylineStereoscopy(Matrix4d transformacja)
-        {   ////TODO: Nie działa, bezsensu zasadza działania proby !!!!!
-        //    //GL.Begin(BeginMode.Lines);
-        //    //GL.Color3(0.0, 0.0, 1.0);
-        //    //ObservableCollection<Vector4d> FirstCurveVertices = new ObservableCollection<Vector4d>();
-        //    //if (_polylineEnabled)
-        //    //{
-        //    //    for (int i = 0; i < _pointsCollection.Count - 1; i++)
-        //    //    {
-        //    //        Vector4d windowCoordinates = projekcjaRight.Multiply(transformacja.Multiply(_pointsCollection[i].Coordinates));
-        //    //        GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-        //    //        FirstCurveVertices.Add(windowCoordinates);
-        //    //        windowCoordinates = projekcjaRight.Multiply(transformacja.Multiply(_pointsCollection[i + 1].Coordinates));
-        //    //        GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-        //    //    }
-        //    //    //TODO: add last one: FirstCurveVertices.Add(windowCoordinates)
+        {
 
-        //    const int renderWidth = 1440;
-        //    const int renderHeight = 750;
-        //    GL.Begin(BeginMode.Lines);
-        //    GL.Color3(0.6, 0, 0);
+            GL.Begin(BeginMode.Lines);
+            GL.Color3(0.6, 0.0, 0.0);
+            if (_polylineEnabled)
+            {
+                for (int i = 0; i < _pointsCollection.Count - 1; i++)
+                {
+                    var windowCoordinates = projekcjaRight.Multiply(transformacja.Multiply(_pointsCollection[i].Coordinates));
+                    GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
+                    windowCoordinates = projekcjaRight.Multiply(transformacja.Multiply(_pointsCollection[i + 1].Coordinates));
+                    GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
+                }
+            }
+            GL.End();
+            Bitmap bmp1 = new Bitmap(renderWidth, renderHeight);
+            System.Drawing.Imaging.BitmapData dat = bmp1.LockBits(new System.Drawing.Rectangle(0, 0, renderWidth, renderHeight), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+            GL.ReadPixels(0, 0, renderWidth, renderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat.Scan0);
+            bmp1.UnlockBits(dat);
+            bmp1.Save("D:\\ModelowanieGeometryczne\\a1.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
 
-        //    // TODO: zmiana odleglosciu oczu
-        //    Matrix4d projekcja = projekcjaRight;
-        //    for (int i = 0; i < _pointsCollection.Count - 1; i++)
-        //    {
-        //        //var avertex = transformacja.Multiply(_verticesList[relations.Item1]);
-        //        //var avertex2 = transformacja.Multiply(_verticesList[relations.Item2]);
-        //        //var dx = projekcja.M13 * avertex.Z;
-        //        //var dx2 = projekcja.M13 * avertex2.Z;
-        //        //var vertex = projekcja.Multiply(avertex);
-        //        //var vertex2 = projekcja.Multiply(avertex2);
-        //        //GL.Vertex2(vertex.X, vertex.Y);
-        //        //GL.Vertex2(vertex2.X,vertex2.Y);
-
-        //            Vector4d windowCoordinates = projekcja.Multiply(transformacja.Multiply(_pointsCollection[i].Coordinates));
-        //            GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-        //            windowCoordinates = projekcja.Multiply(transformacja.Multiply(_pointsCollection[i + 1].Coordinates));
-        //            GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-        //    }
-        //    GL.End();
-
-        //    Bitmap bmp1 = new Bitmap(renderWidth, renderHeight);
-        //    System.Drawing.Imaging.BitmapData dat = bmp1.LockBits(new Rectangle(0, 0, renderWidth, renderHeight), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
-        //    GL.ReadPixels(0, 0, renderWidth, renderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat.Scan0);
-        //    bmp1.UnlockBits(dat);
-        //    //bmp1.Save("D:\\ModelowanieGeometryczne\\a1.bmp", ImageFormat.Bmp);
-
-        //    GL.Clear(ClearBufferMask.ColorBufferBit);
-
-
-        //    GL.Begin(BeginMode.Lines);
-        //    GL.Color3(0, 0, 0.9);
-        //    //todo : zmniejszyc e zwiekszyc r
-        //    //TODO: Zrobić stałą wartosc
-        //    for (int i = 0; i < _pointsCollection.Count - 1; i++)
-        //    {
-
-        //        //var avertex = transformacja.Multiply(_verticesList[relations.Item1]);
-        //        //var avertex2 = transformacja.Multiply(_verticesList[relations.Item2]);
-        //        //var dx = projekcja.M13 * avertex.Z;
-        //        //var dx2 = projekcja.M13 * avertex2.Z;
-        //        //var vertex = projekcja.Multiply(avertex);
-        //        //var vertex2 = projekcja.Multiply(avertex2);
-        //        //GL.Vertex2(vertex.X, vertex.Y);
-        //        //GL.Vertex2(vertex2.X, vertex2.Y);
-        //            Vector4d windowCoordinates = projekcja.Multiply(transformacja.Multiply(_pointsCollection[i].Coordinates));
-        //            GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-        //            windowCoordinates = projekcja.Multiply(transformacja.Multiply(_pointsCollection[i + 1].Coordinates));
-        //            GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-
-        //    }
-        //    GL.End();
-
-        //    Bitmap bmp2 = new Bitmap(renderWidth, renderHeight);
-        //    System.Drawing.Imaging.BitmapData dat2 = bmp2.LockBits(new Rectangle(0, 0, renderWidth, renderHeight), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
-        //    GL.ReadPixels(0, 0, renderWidth, renderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat2.Scan0);
-        //    bmp2.UnlockBits(dat2);
-        //   // bmp2.Save("D:\\ModelowanieGeometryczne\\a2.bmp", ImageFormat.Bmp);
-            
-        //   GL.Clear(ClearBufferMask.ColorBufferBit);
-
-        //   Bitmap bmp3=bmp2;
-
-        //   Color temp, pixeltemp, result;
-
-        //   ////Działa dla dowolnego koloru torusa 1 i torusa 2
-
-        //   for (int i = 0; i < renderWidth; i++)
-        //   {
-        //       for (int j = 0; j < renderHeight; j++)
-        //       {
-        //           temp = bmp1.GetPixel(i, j);
-        //           if (temp.R == 0 && temp.G == 0 && temp.B == 0)
-        //           {
-       
-        //           }
-        //           else
-        //           {
-        //               //TODO: Mieszanie koloru
-        //               pixeltemp = bmp3.GetPixel(i, j);
-        //               result = Color.FromArgb(Math.Min(temp.R + pixeltemp.R, 255), Math.Min(temp.G + pixeltemp.G, 255), Math.Min(temp.B + pixeltemp.B, 255));
-        //               bmp3.SetPixel(i, j, result);
-        //           }
-        //       }
-        //   }
-
- 
-
-        //   dat2 = bmp2.LockBits(new Rectangle(0, 0, renderWidth, renderHeight), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
-        //   GL.DrawPixels(renderWidth, renderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat2.Scan0);
-        //   bmp2.UnlockBits(dat2);
+            GL.Begin(BeginMode.Lines);
+            GL.Color3(0.0, 0.0, 0.6);
+            if (_polylineEnabled)
+            {
+                for (int i = 0; i < _pointsCollection.Count - 1; i++)
+                {
+                    var windowCoordinates = projekcjaLeft.Multiply(transformacja.Multiply(_pointsCollection[i].Coordinates));
+                    GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
+                    windowCoordinates = projekcjaLeft.Multiply(transformacja.Multiply(_pointsCollection[i + 1].Coordinates));
+                    GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
+                }
             }
 
-            //if (_polylineEnabled)
-            //{
-            //    for (int i = 0; i < _pointsCollection.Count - 1; i++)
-            //    {
-            //        GL.Color3(1.0, 0.0, 0.0);
+            GL.End();
 
-            //        var windowCoordinates = projekcjaLeft.Multiply(transformacja.Multiply(_pointsCollection[i].Coordinates));
 
-            //        foreach (var v in FirstCurveVertices)
-            //        {
-            //            Vector4d a = v - windowCoordinates;
-            //            if (a.Length < 0.01)
-            //            {
-            //                GL.Color3(1.0, 0.0, 1.0);
-            //            }
+            Bitmap bmp2 = new Bitmap(renderWidth, renderHeight);
+            System.Drawing.Imaging.BitmapData dat2 = bmp2.LockBits(new System.Drawing.Rectangle(0, 0, renderWidth, renderHeight), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+            GL.ReadPixels(0, 0, renderWidth, renderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat2.Scan0);
+            bmp2.UnlockBits(dat2);
+            bmp2.Save("D:\\ModelowanieGeometryczne\\a2.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
 
-            //        }
+            GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            //        GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-            //        windowCoordinates = projekcjaLeft.Multiply(transformacja.Multiply(_pointsCollection[i + 1].Coordinates));
-            //        GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-            //    }
-            //}
+            Bitmap bmp3 = bmp2;
 
-            
-        
+            Color temp, pixeltemp, result;
+
+            ////Działa dla dowolnego koloru torusa 1 i torusa 2
+
+            for (int i = 0; i < renderWidth; i++)
+            {
+                for (int j = 0; j < renderHeight; j++)
+                {
+                    temp = bmp1.GetPixel(i, j);
+                    if (temp.R == 0 && temp.G == 0 && temp.B == 0)
+                    {
+
+                    }
+                    else
+                    {
+                        //TODO: Mieszanie koloru
+                        pixeltemp = bmp3.GetPixel(i, j);
+                        result = Color.FromArgb(Math.Min(temp.R + pixeltemp.R, 255), Math.Min(temp.G + pixeltemp.G, 255), Math.Min(temp.B + pixeltemp.B, 255));
+                        bmp3.SetPixel(i, j, result);
+                    }
+                }
+            }
+
+            dat2 = bmp2.LockBits(new System.Drawing.Rectangle(0, 0, renderWidth, renderHeight), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+            GL.DrawPixels(renderWidth, renderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat2.Scan0);
+            bmp2.UnlockBits(dat2);
+        }
+
+
+
 
 
         internal void RemovePoints(List<Point> points)
@@ -350,75 +431,7 @@ namespace ModelowanieGeometryczne.Model
             }
         }
 
-        public void DrawCurveStereoscopy(Matrix4d transformacja)
-        {
-            //ObservableCollection<Vector4d> FirstCurveVertices = new ObservableCollection<Vector4d>();
-            //GL.Begin(BeginMode.Lines);
-            //GL.Color3(1.0, 0.0, 0.0);
-            //int j = 0;
-            //ObservableCollection<Point> temp = new ObservableCollection<Point>();
-            //foreach (var p in _pointsCollection)
-            //{
-            //    j++;
-            //    temp.Add(p);
-            //    if (j % 4 == 0 || p == _pointsCollection.Last())
-            //    {
 
-            //        double length = 0;
-            //        for (int i = 0; i < j - 1; i++)
-            //        {
-            //            Vector4d a = projekcja.Multiply(transformacja.Multiply(temp[i + 1])) - projekcja.Multiply(transformacja.Multiply(temp[i]));
-            //            a.X *= 1440;
-            //            a.Y *= 750;
-            //            length += a.Length;
-            //        }
-            //        double divisions = 1 / length;
-
-
-            //        var point = Casteljeu(temp, 0);
-            //        var windowCoordinates = projekcjaRight.Multiply(transformacja.Multiply(point));
-            //        for (double t = divisions / 2; t <= 1; t += divisions / 2)
-            //        {
-            //            point = Casteljeu(temp, t);
-            //            //if (point == null) continue;
-            //            GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-            //            FirstCurveVertices.Add(windowCoordinates);
-            //            windowCoordinates = projekcjaRight.Multiply(transformacja.Multiply(point));
-            //            GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-
-            //        }
-
-            //        point = Casteljeu(temp, 0);
-            //        windowCoordinates = projekcjaLeft.Multiply(transformacja.Multiply(point));
-            //        for (double t = divisions / 2; t <= 1; t += divisions / 2)
-            //        {
-            //            GL.Color3(0.0, 0.0, 1.0);
-            //            foreach (var v in FirstCurveVertices)
-            //            {
-            //                Vector4d a = v - windowCoordinates;
-            //                if (a.Length < 0.01)
-            //                {
-            //                    GL.Color3(1.0, 0.0, 1.0);
-            //                }
-
-            //            }
-            //            point = Casteljeu(temp, t);
-            //            //if (point == null) continue;
-            //            GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);     
-            //            windowCoordinates = projekcjaLeft.Multiply(transformacja.Multiply(point));
-            //            GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-
-            //        }
-            //        temp.Clear();
-            //        temp.Add(p);
-            //        j = 1;
-            //    }
-
-
-            //}
-
-            //GL.End();
-        }
 
         #endregion Public Methods
 

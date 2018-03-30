@@ -60,25 +60,18 @@
             <TextBlock Grid.Row="3" Grid.Column="0" Text="  Division_teta: "></TextBlock>
             <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Scene.Torus.Division_teta}"/>
 
-            <TextBlock Grid.Row="4" Grid.Column="0" Text="  alphaX: "></TextBlock>
-            <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Scene.AlphaX}"/>
 
-            <TextBlock Grid.Row="5" Grid.Column="0" Text="  alphaY: "></TextBlock>
-            <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding  Scene.AlphaY}"/>
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="  stereoscopy: "></TextBlock>
+            <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding  Scene.Stereoscopy}"/>
 
-            <TextBlock Grid.Row="6" Grid.Column="0" Text="  alphaZ: "></TextBlock>
-            <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding  Scene.AlphaZ}"/>
-
-            <TextBlock Grid.Row="7" Grid.Column="0" Text="  stereoscopy: "></TextBlock>
-            <CheckBox Grid.Row="7" Grid.Column="1" IsChecked="{Binding  Scene.Stereoscopy}"/>
-
-            <TextBlock Grid.Row="8" Grid.Column="0" Text="  torus:  "></TextBlock>
-            <CheckBox Grid.Row="8" Grid.Column="1" IsChecked="{Binding  Scene.TorusEnabled}"/>
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="  torus:  "></TextBlock>
+            <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding  Scene.TorusEnabled}"/>
 
 
 
-            <Button Grid.Row="9"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curve" Command="{Binding Scene.AddBezierCurve}"></Button>
-            <Button Grid.Row="10"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Selected Points to Selected Bezier Curve" Command="{Binding Scene.AddPointsCommand}"></Button>
+            <Button Grid.Row="6"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curve" Command="{Binding Scene.AddBezierCurve}"></Button>
+            <Button Grid.Row="7"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Selected Points to Selected Bezier Curve" Command="{Binding Scene.AddPointsCommand}"></Button>
+            <Button Grid.Row="8"  Grid.Column="0" Grid.ColumnSpan="2" Content="Undo all rotations" Command="{Binding Scene.UndoAllRotations}"></Button>
         </Grid>
 
         <Grid Grid.Row="1">

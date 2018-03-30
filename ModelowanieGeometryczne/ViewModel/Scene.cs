@@ -26,7 +26,7 @@ namespace ModelowanieGeometryczne.ViewModel
         private Torus _torus;
         private double _height;
         private double _width;
-        private double _x, _y, _x0, _y0, _alphaX, _alphaY, _alphaZ;
+        private double _x, _y, _x0, _y0, _alphaX, _alphaY, _alphaZ, _fi, _teta, _fi0, _teta0;
         private double _scale;
         private Matrix4d M;
         private Matrix4 _projection;
@@ -39,12 +39,19 @@ namespace ModelowanieGeometryczne.ViewModel
         private bool _torusEnabled = false;
         private ICommand _addBezierCurve;
         private ICommand _addPoints;
+        private ICommand _undoAllRotations;
 
         #endregion Private Fields
 
         #region Public Properties
         public ICommand AddPointsCommand { get { return _addPoints ?? (_addPoints = new ActionCommand(AddSelectedPointsExecuted)); } }
-        //public ICommand AddBezierCurve { get { return _addBezierCurve ?? (_addBezierCurve = new ActionCommand(AddBezierCurveExecuted)); } }
+        public ICommand UndoAllRotations { get { return _undoAllRotations ?? (_addBezierCurve = new ActionCommand(UndoAllRotationsExecuted)); } }
+
+        private void UndoAllRotationsExecuted()
+        {
+             M = MatrixProvider.ScaleMatrix(_scale);
+             Refresh();
+        }
         public void AddSelectedPointsExecuted()
         {
             foreach (var curve in _bezierCurveCollection.Where(p=>p.Selected))
@@ -214,15 +221,21 @@ namespace ModelowanieGeometryczne.ViewModel
             _scale = 0.1;
             _x = 0;
             _y = 0;
+            _x0 = 0;
+            _y0 = 0;
             _alphaX = 0;
             _alphaY = 0;
             _alphaZ = 0;
+            _fi = 0;
+            _teta = 0;
+            _fi0 = 0;
+            _teta0 = 0;
             M = Matrix4d.Identity;
             Torus = new Torus();
             PointsCollection = new ObservableCollection<Point>();
             _bezierCurveCollection = new ObservableCollection<BezierCurve>();
-            PointsCollection.Add(new Point(0, 0, -50));
-            PointsCollection.Add(new Point(0, 2, 0));
+            PointsCollection.Add(new Point(0, 0, 0));
+            PointsCollection.Add(new Point(0, 2, 1));
             PointsCollection.Add(new Point(2, 2, 0));
             PointsCollection.Add(new Point(2, 4, 0));
             PointsCollection.Add(new Point(4, 4, 0));
@@ -265,6 +278,10 @@ namespace ModelowanieGeometryczne.ViewModel
             _alphaZ = 0;
             _x = 0;
             _y = 0;
+            _fi = 0;
+            _teta = 0;
+         
+
 
             //TODO: wywoływanie rysowania torusa    
             if (TorusEnabled)
@@ -338,6 +355,12 @@ namespace ModelowanieGeometryczne.ViewModel
         {
             _x0 = x;
             _y0 = y;
+        }
+
+        internal void SetCurrentRotation(int fi, int teta)
+        {
+            _fi0 = fi;
+            _teta0 = teta;
         }
 
         #endregion Private Methods
@@ -435,6 +458,19 @@ namespace ModelowanieGeometryczne.ViewModel
             {
                 _bezierCurveCollection.Remove(curve);
             }
+        }
+
+        internal void MouseMoveRotate(int fi, int teta)
+        { //fi rotate around screen x axis
+            //teta rotate around screen y axis
+            _fi = fi - _fi0;
+            _teta = teta - _teta0;
+            _fi0 = fi;
+            _teta0 = teta;
+
+            _alphaX = 4*_teta/750;
+            _alphaY = 4*_fi/1440;
+            _alphaZ = 0;
         }
     }
 }

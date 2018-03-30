@@ -276,7 +276,7 @@ namespace ModelowanieGeometryczne.Model
            }
            
             //Writable bitmap
-            ////bmp3.Save("D:\\ModelowanieGeometryczne\\a3.bmp", ImageFormat.Bmp);
+            bmp3.Save("D:\\ModelowanieGeometryczne\\a3.bmp", ImageFormat.Bmp);
 
 
 

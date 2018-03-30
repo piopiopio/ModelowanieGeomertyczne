@@ -93,6 +93,7 @@ namespace ModelowanieGeometryczne
         void _glControl_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             _mainViewModel.Scene.SetCurrentCoordinate(e.X, e.Y);
+            _mainViewModel.Scene.SetCurrentRotation(e.X, e.Y);
             if (e.Button == MouseButtons.Left)
             {
                 _mainViewModel.Scene.SelectPointByMouse();
@@ -108,10 +109,8 @@ namespace ModelowanieGeometryczne
 
             if (e.Button == MouseButtons.Left)
             {
-                // _mainViewModel.Scene.SelectPointByMouse();
-                //_mainViewModel.Text = "Left";
-                //_mainViewModel.MouseMove(e);
-                //RepaintGlControl();
+                _mainViewModel.Scene.MouseMoveRotate(e.X, e.Y);
+                Paint();
             }
             if (e.Button == MouseButtons.Right)
             {   //TODO: Mouse event move
