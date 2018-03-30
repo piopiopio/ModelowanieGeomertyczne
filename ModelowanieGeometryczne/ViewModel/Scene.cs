@@ -39,17 +39,18 @@ namespace ModelowanieGeometryczne.ViewModel
         private bool _torusEnabled = false;
         private ICommand _addBezierCurve;
         private ICommand _addPoints;
-        private ICommand _undoAllRotations;
+        private ICommand _undoAllTransformation;
 
         #endregion Private Fields
 
         #region Public Properties
         public ICommand AddPointsCommand { get { return _addPoints ?? (_addPoints = new ActionCommand(AddSelectedPointsExecuted)); } }
-        public ICommand UndoAllRotations { get { return _undoAllRotations ?? (_addBezierCurve = new ActionCommand(UndoAllRotationsExecuted)); } }
+        public ICommand UndoAllTransformation { get { return _undoAllTransformation ?? (_undoAllTransformation = new ActionCommand(UndoAllTransformationExecuted)); } }
 
-        private void UndoAllRotationsExecuted()
+        private void UndoAllTransformationExecuted()
         {
-             M = MatrixProvider.ScaleMatrix(_scale);
+            M = Matrix4d.Identity;
+            _scale = 0.1;
              Refresh();
         }
         public void AddSelectedPointsExecuted()
@@ -217,7 +218,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
         public Scene()
         {
-            M = Matrix4d.Identity;
+
             _scale = 0.1;
             _x = 0;
             _y = 0;
@@ -240,7 +241,6 @@ namespace ModelowanieGeometryczne.ViewModel
             PointsCollection.Add(new Point(2, 4, 0));
             PointsCollection.Add(new Point(4, 4, 0));
             PointsCollection.Add(new Point(4, 6, 0));
-            //PointsCollection.Add(new Point(6, 6, 0));
             Cursor = new Cursor();
 
         }

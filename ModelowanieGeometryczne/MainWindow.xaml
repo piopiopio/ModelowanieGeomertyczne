@@ -71,7 +71,7 @@
 
             <Button Grid.Row="6"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curve" Command="{Binding Scene.AddBezierCurve}"></Button>
             <Button Grid.Row="7"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Selected Points to Selected Bezier Curve" Command="{Binding Scene.AddPointsCommand}"></Button>
-            <Button Grid.Row="8"  Grid.Column="0" Grid.ColumnSpan="2" Content="Undo all rotations" Command="{Binding Scene.UndoAllRotations}"></Button>
+            <Button Grid.Row="8"  Grid.Column="0" Grid.ColumnSpan="2" Content="Undo all rotations" Command="{Binding Scene.UndoAllTransformation}"></Button>
         </Grid>
 
         <Grid Grid.Row="1">

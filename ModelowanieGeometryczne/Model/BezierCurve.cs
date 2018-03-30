@@ -122,7 +122,7 @@ namespace ModelowanieGeometryczne.Model
                 points.Add(points.Last());
             var xValues = new Vector4d(points[0].X, points[1].X, points[2].X, points[3].X);
             var yValues = new Vector4d(points[0].Y, points[1].Y, points[2].Y, points[3].Y);
-            var zValues = new Vector4d(0, 0, 0, 0);
+            var zValues = new Vector4d(points[0].Z, points[1].Z, points[2].Z, points[3].Z);
 
             for (int i = 0; i < counter; i++)
             {
