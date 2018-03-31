@@ -69,9 +69,10 @@
 
 
 
-            <Button Grid.Row="6"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curve" Command="{Binding Scene.AddBezierCurve}"></Button>
-            <Button Grid.Row="7"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Selected Points to Selected Bezier Curve" Command="{Binding Scene.AddPointsCommand}"></Button>
-            <Button Grid.Row="8"  Grid.Column="0" Grid.ColumnSpan="2" Content="Undo all rotations" Command="{Binding Scene.UndoAllTransformation}"></Button>
+            <Button Grid.Row="6"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curves C0" Command="{Binding Scene.AddBezierCurve}"></Button>
+            <Button Grid.Row="7"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curves C2" Command="{Binding Scene.AddBezierCurveC2}"></Button>
+            <Button Grid.Row="8"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Selected Points to Selected Bezier Curve" Command="{Binding Scene.AddPointsCommand}"></Button>
+            <Button Grid.Row="9"  Grid.Column="0" Grid.ColumnSpan="2" Content="Undo all transformations" Command="{Binding Scene.UndoAllTransformation}"></Button>
         </Grid>
 
         <Grid Grid.Row="1">
@@ -80,7 +81,7 @@
             </Grid.RowDefinitions>
 
             <TabControl>
-                <TabItem Header="Points">
+                <TabItem Header="PointsCollection">
                     <ListView Name="PointsListView" Grid.Row="0" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.PointsCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
@@ -122,10 +123,10 @@
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
-                                <GridViewColumn Header="Points" Width="360" >
+                                <GridViewColumn Header="PointsCollection" Width="360" >
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <ListView ItemsSource="{Binding Points}" Height="100" Width="340">
+                                            <ListView ItemsSource="{Binding PointsCollection}" Height="100" Width="340">
                                                 <ListView.Resources>
                                                     <ContextMenu x:Key="ItemContextMenu">
                                                         <MenuItem Header="Remove points" Command="{Binding Path=DataContext.RemovePointsCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>

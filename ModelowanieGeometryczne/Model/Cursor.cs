@@ -90,6 +90,8 @@ namespace ModelowanieGeometryczne.Model
             List<Vector4d> SecondCusorVertices = new List<Vector4d>();
             List< Vector4d> FirstCursor = new List<Vector4d>();
             //GL.Begin(BeginMode.Lines);
+            GL.Enable(EnableCap.VertexProgramPointSize);
+            GL.PointSize(1);
             GL.Begin(BeginMode.Points);
             GL.Color3(1.0, 0.0, 0.0);
 

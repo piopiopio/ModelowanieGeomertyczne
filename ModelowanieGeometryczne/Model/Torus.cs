@@ -282,9 +282,9 @@ namespace ModelowanieGeometryczne.Model
 
            //Color k1 = Color.FromArgb(87, 0, 0);
            //Color k2 = Color.FromArgb(87, 0, 173);
-           //for (int i = 0; i < renderWidth; i++)
+           //for (int i = 0; i < RenderWidth; i++)
            //{
-           //    for (int j = 0; j < renderHeight; j++)
+           //    for (int j = 0; j < RenderHeight; j++)
            //    {
 
 

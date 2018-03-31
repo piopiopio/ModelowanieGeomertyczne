@@ -116,7 +116,11 @@ namespace ModelowanieGeometryczne.Model
         public void Draw(Matrix4d transformacja)
         {
             //Matrix4d projekcja = MatrixProvider.ProjectionMatrix(100);
+            GL.Enable(EnableCap.VertexProgramPointSize);
+            GL.PointSize(6);
             GL.Begin(BeginMode.Points);
+   
+          
             if (_selected)
             {
                 GL.Color3(0.0,1.0,0.0);
@@ -137,6 +141,8 @@ namespace ModelowanieGeometryczne.Model
         public void DrawStereoscopy(Matrix4d transformacja)
         {
             double StereoscopyMin = 1;
+            GL.Enable(EnableCap.VertexProgramPointSize);
+            GL.PointSize(3);
             GL.Begin(BeginMode.Points);
            
 

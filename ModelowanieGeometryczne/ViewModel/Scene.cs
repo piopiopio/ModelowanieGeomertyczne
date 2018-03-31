@@ -11,8 +11,8 @@ using ModelowanieGeometryczne.Helpers;
 using ModelowanieGeometryczne.Model;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using BezierCurve = ModelowanieGeometryczne.Model.BezierCurve;
 using Cursor = ModelowanieGeometryczne.Model.Cursor;
+using BezierCurve = ModelowanieGeometryczne.Model.BezierCurve;
 
 namespace ModelowanieGeometryczne.ViewModel
 {
@@ -33,11 +33,13 @@ namespace ModelowanieGeometryczne.ViewModel
         private bool _stereoscopy;
         Tuple<int, int> _mouseCoordinates;
         private ObservableCollection<Point> _pointsCollection;//
-        private ObservableCollection<BezierCurve> _bezierCurveCollection;//
+        private ObservableCollection<Curve> _bezierCurveCollection;//
+       // private ObservableCollection<BezierCurveC2> _bezierCurveC2Collection;//
 
         private bool _moveSelectedPointsWithCoursor = false;
         private bool _torusEnabled = false;
         private ICommand _addBezierCurve;
+        private ICommand _addBezierCurveC2;
         private ICommand _addPoints;
         private ICommand _undoAllTransformation;
 
@@ -65,16 +67,28 @@ namespace ModelowanieGeometryczne.ViewModel
             }
             Refresh();
         }
-        public ObservableCollection<BezierCurve> BezierCurveCollection
+        public ObservableCollection<Curve> BezierCurveCollection
         {
             get { return _bezierCurveCollection; }
             set
             {
                 _bezierCurveCollection = value;
+                //TODO: poprawić literówkę
                 OnPropertyChanged("BezierCurveCollectiont");
                 Refresh();
             }
         }
+
+        //public ObservableCollection<BezierCurveC2> BezierCurveC2Collection
+        //{
+        //    get { return _bezierCurveC2Collection; }
+        //    set
+        //    {
+        //        _bezierCurveC2Collection = value;
+        //        OnPropertyChanged("BezierCurveC2Collectiont");
+        //        Refresh();
+        //    }
+        //}
         public bool TorusEnabled
         {
             get
@@ -215,7 +229,18 @@ namespace ModelowanieGeometryczne.ViewModel
         }
 
         public ICommand AddBezierCurve { get { return _addBezierCurve ?? (_addBezierCurve = new ActionCommand(AddBezierCurveExecuted)); } }
+        public ICommand AddBezierCurveC2 { get { return _addBezierCurveC2 ?? (_addBezierCurveC2 = new ActionCommand(AddBezierCurveC2Executed)); } }
 
+        private void AddBezierCurveC2Executed()
+        {
+            if (_pointsCollection.Any(point => point.Selected))
+            {
+                var curve = new BezierCurveC2(_pointsCollection.Where(point => point.Selected));
+                curve.RefreshScene += Refresh;
+                BezierCurveCollection.Add(curve);
+                Refresh();
+            }
+        }
         public Scene()
         {
 
@@ -234,7 +259,8 @@ namespace ModelowanieGeometryczne.ViewModel
             M = Matrix4d.Identity;
             Torus = new Torus();
             PointsCollection = new ObservableCollection<Point>();
-            _bezierCurveCollection = new ObservableCollection<BezierCurve>();
+            _bezierCurveCollection = new ObservableCollection<Curve>();
+            //_bezierCurveC2Collection = new ObservableCollection<BezierCurveC2>();
             PointsCollection.Add(new Point(0, 0, 0));
             PointsCollection.Add(new Point(0, 2, 1));
             PointsCollection.Add(new Point(2, 2, 0));

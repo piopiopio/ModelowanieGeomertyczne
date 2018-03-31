@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
 using ModelowanieGeometryczne.Helpers;
-using ModelowanieGeometryczne.ViewModel;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
@@ -21,98 +20,24 @@ using System.Drawing;
 
 namespace ModelowanieGeometryczne.Model
 {
-    public class BezierCurve : ViewModelBase
+    public class BezierCurve : Curve
     {
-        public event PropertyChangedEventHandler RefreshScene;
-        private ObservableCollection<Point> _pointsCollection = new ObservableCollection<Point>();
-        private Matrix4d projekcja = MatrixProvider.ProjectionMatrix();
-        private Matrix4d projekcjaLeft = MatrixProvider.LeftProjectionMatrix();
-        private Matrix4d projekcjaRight = MatrixProvider.RightProjectionMatrix();
-        private static int CurveNumber = 0;
-        private string _name;
-        private ICommand _removePoints;
-        private bool _polylineEnabled = true;
-        private bool _selected;
-
-        const int renderWidth = 1440;
-        const int renderHeight = 750;
-
         #region Private Methods
-
-        private void Refresh()
-        {
-            if (RefreshScene != null)
-                RefreshScene(this, new PropertyChangedEventArgs("RefreshScene"));
-        }
-
         #endregion Private Methods
 
         #region Public Properties
-
-        public ICommand RemovePointsCommand { get { return _removePoints ?? (_removePoints = new ActionCommand(RemoveSelectedPoints)); } }
-
-
-        private void RemoveSelectedPoints()
-        {
-            var temp = _pointsCollection.Where(c => c.Selected).ToList();
-
-            foreach (var point in temp)
-            {
-                _pointsCollection.Remove(point);
-            }
-
-            Refresh();
-        }
-
-        public bool Selected
-        {
-            get { return _selected; }
-            set
-            {
-                _selected = value;
-                OnPropertyChanged("Selected");
-            }
-        }
-
-        public ObservableCollection<Point> Points
-        {
-            get { return _pointsCollection; }
-        }
-
         #endregion Public Properties
 
         #region Private Methods
-
         #endregion Private Methods
 
         #region Public Methods
 
-        public void AddPoint(Point point)
-        {
-            _pointsCollection.Add(point);
-        }
-        public bool PolylineEnabled
-        {
-            get { return _polylineEnabled; }
-            set
-            {
-                _polylineEnabled = value;
-                // OnPropertyChanged("PolylineEnabled");     
-            }
-        }
-
-        public string Name
-        {
-            get { return (_name); }
-            set { _name = value; }
-        }
-
         public BezierCurve(IEnumerable<Point> points)
         {
-
-            _pointsCollection = new ObservableCollection<Point>(points);
-            CurveNumber++;
-            _name = "Bezier curve number " + CurveNumber;
+            CurveType = "C0";
+            PointsCollection = new ObservableCollection<Point>(points);
+            Name = "Bezier curve number " + CurveNumber + " type: "+CurveType;
         }
 
         private Vector4d Casteljeu(ObservableCollection<Point> points, double t)
@@ -142,17 +67,17 @@ namespace ModelowanieGeometryczne.Model
             return new Vector4d(xValues.X, yValues.X, zValues.X, 1);
         }
 
-        public void DrawCurve(Matrix4d transformacja)
+        public override void DrawCurve(Matrix4d transformacja)
         {
             GL.Begin(BeginMode.Lines);
             GL.Color3(1.0, 1.0, 1.0);
             int j = 0;
             ObservableCollection<Point> temp = new ObservableCollection<Point>();
-            foreach (var p in _pointsCollection)
+            foreach (var p in PointsCollection)
             {
                 j++;
                 temp.Add(p);
-                if (j % 4 == 0 || p == _pointsCollection.Last())
+                if (j % 4 == 0 || p == PointsCollection.Last())
                 {
                     double length = 0;
                     for (int i = 0; i < j - 1; i++)
@@ -163,7 +88,7 @@ namespace ModelowanieGeometryczne.Model
                         length += a.Length;
                     }
                     var point = Casteljeu(temp, 0);
-                   
+
                     var windowCoordinates = projekcja.Multiply(transformacja.Multiply(point));
                     double divisions = 1 / length;
 
@@ -188,19 +113,19 @@ namespace ModelowanieGeometryczne.Model
             GL.End();
         }
 
-        public void DrawCurveStereoscopy(Matrix4d transformacja)
+        public override void DrawCurveStereoscopy(Matrix4d transformacja)
         {
 
             GL.Begin(BeginMode.Lines);
             GL.Color3(0.6, 0.0, 0.0);
             int j = 0;
-          
+
             ObservableCollection<Point> temp = new ObservableCollection<Point>();
-            foreach (var p in _pointsCollection)
+            foreach (var p in PointsCollection)
             {
                 j++;
                 temp.Add(p);
-                if (j % 4 == 0 || p == _pointsCollection.Last())
+                if (j % 4 == 0 || p == PointsCollection.Last())
                 {
                     double length = 0;
                     for (int i = 0; i < j - 1; i++)
@@ -213,15 +138,15 @@ namespace ModelowanieGeometryczne.Model
                     var point = Casteljeu(temp, 0);
                     var windowCoordinates = projekcjaRight.Multiply(transformacja.Multiply(point));
                     double divisions = 1 / length;
-                  
+
                     for (double t = divisions / 2; t <= 1; t += divisions / 2)
                     {
                         point = Casteljeu(temp, t);
                         GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
                         windowCoordinates = projekcjaRight.Multiply(transformacja.Multiply(point));
                         GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-                        
-                       
+
+
                     }
                     temp.Clear();
                     temp.Add(p);
@@ -234,9 +159,9 @@ namespace ModelowanieGeometryczne.Model
             GL.End();
 
 
-            Bitmap bmp1 = new Bitmap(renderWidth, renderHeight);
-            System.Drawing.Imaging.BitmapData dat = bmp1.LockBits(new System.Drawing.Rectangle(0, 0, renderWidth, renderHeight), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
-            GL.ReadPixels(0, 0, renderWidth, renderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat.Scan0);
+            Bitmap bmp1 = new Bitmap(RenderWidth, RenderHeight);
+            System.Drawing.Imaging.BitmapData dat = bmp1.LockBits(new System.Drawing.Rectangle(0, 0, RenderWidth, RenderHeight), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+            GL.ReadPixels(0, 0, RenderWidth, RenderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat.Scan0);
             bmp1.UnlockBits(dat);
             bmp1.Save("D:\\ModelowanieGeometryczne\\a1.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
 
@@ -246,11 +171,11 @@ namespace ModelowanieGeometryczne.Model
             GL.Color3(0.0, 0.0, 0.6);
             j = 0;
             ObservableCollection<Point> temp2 = new ObservableCollection<Point>();
-            foreach (var p in _pointsCollection)
+            foreach (var p in PointsCollection)
             {
                 j++;
                 temp2.Add(p);
-                if (j % 4 == 0 || p == _pointsCollection.Last())
+                if (j % 4 == 0 || p == PointsCollection.Last())
                 {
                     double length = 0;
                     for (int i = 0; i < j - 1; i++)
@@ -270,7 +195,7 @@ namespace ModelowanieGeometryczne.Model
                         GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
                         windowCoordinates = projekcjaLeft.Multiply(transformacja.Multiply(point));
                         GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-                        
+
 
                     }
                     temp2.Clear();
@@ -281,9 +206,9 @@ namespace ModelowanieGeometryczne.Model
             GL.End();
 
 
-            Bitmap bmp2 = new Bitmap(renderWidth, renderHeight);
-            System.Drawing.Imaging.BitmapData dat2 = bmp2.LockBits(new System.Drawing.Rectangle(0, 0, renderWidth, renderHeight), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
-            GL.ReadPixels(0, 0, renderWidth, renderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat2.Scan0);
+            Bitmap bmp2 = new Bitmap(RenderWidth, RenderHeight);
+            System.Drawing.Imaging.BitmapData dat2 = bmp2.LockBits(new System.Drawing.Rectangle(0, 0, RenderWidth, RenderHeight), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+            GL.ReadPixels(0, 0, RenderWidth, RenderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat2.Scan0);
             bmp2.UnlockBits(dat2);
             bmp2.Save("D:\\ModelowanieGeometryczne\\a2.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
 
@@ -293,9 +218,9 @@ namespace ModelowanieGeometryczne.Model
 
             //Działa dla dowolnego koloru torusa 1 i torusa 2
 
-            for (int i = 0; i < renderWidth; i++)
+            for (int i = 0; i < RenderWidth; i++)
             {
-                for (int ji = 0; ji < renderHeight; ji++)
+                for (int ji = 0; ji < RenderHeight; ji++)
                 {
                     temp3 = bmp1.GetPixel(i, ji);
                     if (temp3.R == 0 && temp3.G == 0 && temp3.B == 0)
@@ -316,61 +241,61 @@ namespace ModelowanieGeometryczne.Model
 
 
 
-            dat2 = bmp2.LockBits(new System.Drawing.Rectangle(0, 0, renderWidth, renderHeight), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
-            GL.DrawPixels(renderWidth, renderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat2.Scan0);
+            dat2 = bmp2.LockBits(new System.Drawing.Rectangle(0, 0, RenderWidth, RenderHeight), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+            GL.DrawPixels(RenderWidth, RenderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat2.Scan0);
             bmp2.UnlockBits(dat2);
 
         }
 
-        public void DrawPolyline(Matrix4d transformacja)
+        public override void DrawPolyline(Matrix4d transformacja)
         {
             GL.Begin(BeginMode.Lines);
             GL.Color3(1.0, 1.0, 1.0);
-            if (_polylineEnabled)
+            if (PolylineEnabled)
             {
-                for (int i = 0; i < _pointsCollection.Count - 1; i++)
+                for (int i = 0; i < PointsCollection.Count - 1; i++)
                 {
-                    var windowCoordinates = projekcja.Multiply(transformacja.Multiply(_pointsCollection[i].Coordinates));
+                    var windowCoordinates = projekcja.Multiply(transformacja.Multiply(PointsCollection[i].Coordinates));
                     GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-                    windowCoordinates = projekcja.Multiply(transformacja.Multiply(_pointsCollection[i + 1].Coordinates));
+                    windowCoordinates = projekcja.Multiply(transformacja.Multiply(PointsCollection[i + 1].Coordinates));
                     GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
                 }
             }
             GL.End();
         }
 
-        public void DrawPolylineStereoscopy(Matrix4d transformacja)
+        public override void DrawPolylineStereoscopy(Matrix4d transformacja)
         {
 
             GL.Begin(BeginMode.Lines);
             GL.Color3(0.6, 0.0, 0.0);
-            if (_polylineEnabled)
+            if (PolylineEnabled)
             {
-                for (int i = 0; i < _pointsCollection.Count - 1; i++)
+                for (int i = 0; i < PointsCollection.Count - 1; i++)
                 {
-                    var windowCoordinates = projekcjaRight.Multiply(transformacja.Multiply(_pointsCollection[i].Coordinates));
+                    var windowCoordinates = projekcjaRight.Multiply(transformacja.Multiply(PointsCollection[i].Coordinates));
                     GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-                    windowCoordinates = projekcjaRight.Multiply(transformacja.Multiply(_pointsCollection[i + 1].Coordinates));
+                    windowCoordinates = projekcjaRight.Multiply(transformacja.Multiply(PointsCollection[i + 1].Coordinates));
                     GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
                 }
             }
             GL.End();
-            Bitmap bmp1 = new Bitmap(renderWidth, renderHeight);
-            System.Drawing.Imaging.BitmapData dat = bmp1.LockBits(new System.Drawing.Rectangle(0, 0, renderWidth, renderHeight), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
-            GL.ReadPixels(0, 0, renderWidth, renderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat.Scan0);
+            Bitmap bmp1 = new Bitmap(RenderWidth, RenderHeight);
+            System.Drawing.Imaging.BitmapData dat = bmp1.LockBits(new System.Drawing.Rectangle(0, 0, RenderWidth, RenderHeight), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+            GL.ReadPixels(0, 0, RenderWidth, RenderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat.Scan0);
             bmp1.UnlockBits(dat);
             bmp1.Save("D:\\ModelowanieGeometryczne\\a1.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             GL.Begin(BeginMode.Lines);
             GL.Color3(0.0, 0.0, 0.6);
-            if (_polylineEnabled)
+            if (PolylineEnabled)
             {
-                for (int i = 0; i < _pointsCollection.Count - 1; i++)
+                for (int i = 0; i < PointsCollection.Count - 1; i++)
                 {
-                    var windowCoordinates = projekcjaLeft.Multiply(transformacja.Multiply(_pointsCollection[i].Coordinates));
+                    var windowCoordinates = projekcjaLeft.Multiply(transformacja.Multiply(PointsCollection[i].Coordinates));
                     GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-                    windowCoordinates = projekcjaLeft.Multiply(transformacja.Multiply(_pointsCollection[i + 1].Coordinates));
+                    windowCoordinates = projekcjaLeft.Multiply(transformacja.Multiply(PointsCollection[i + 1].Coordinates));
                     GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
                 }
             }
@@ -378,9 +303,9 @@ namespace ModelowanieGeometryczne.Model
             GL.End();
 
 
-            Bitmap bmp2 = new Bitmap(renderWidth, renderHeight);
-            System.Drawing.Imaging.BitmapData dat2 = bmp2.LockBits(new System.Drawing.Rectangle(0, 0, renderWidth, renderHeight), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
-            GL.ReadPixels(0, 0, renderWidth, renderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat2.Scan0);
+            Bitmap bmp2 = new Bitmap(RenderWidth, RenderHeight);
+            System.Drawing.Imaging.BitmapData dat2 = bmp2.LockBits(new System.Drawing.Rectangle(0, 0, RenderWidth, RenderHeight), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+            GL.ReadPixels(0, 0, RenderWidth, RenderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat2.Scan0);
             bmp2.UnlockBits(dat2);
             bmp2.Save("D:\\ModelowanieGeometryczne\\a2.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
 
@@ -392,9 +317,9 @@ namespace ModelowanieGeometryczne.Model
 
             ////Działa dla dowolnego koloru torusa 1 i torusa 2
 
-            for (int i = 0; i < renderWidth; i++)
+            for (int i = 0; i < RenderWidth; i++)
             {
-                for (int j = 0; j < renderHeight; j++)
+                for (int j = 0; j < RenderHeight; j++)
                 {
                     temp = bmp1.GetPixel(i, j);
                     if (temp.R == 0 && temp.G == 0 && temp.B == 0)
@@ -411,30 +336,11 @@ namespace ModelowanieGeometryczne.Model
                 }
             }
 
-            dat2 = bmp2.LockBits(new System.Drawing.Rectangle(0, 0, renderWidth, renderHeight), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
-            GL.DrawPixels(renderWidth, renderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat2.Scan0);
+            dat2 = bmp2.LockBits(new System.Drawing.Rectangle(0, 0, RenderWidth, RenderHeight), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+            GL.DrawPixels(RenderWidth, RenderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat2.Scan0);
             bmp2.UnlockBits(dat2);
         }
 
-
-
-
-
-        internal void RemovePoints(List<Point> points)
-        {
-            foreach (var point in points)
-            {
-                if (_pointsCollection.Contains(point))
-                {
-                    _pointsCollection.Remove(point);
-                }
-            }
-        }
-
-
-
         #endregion Public Methods
-
-
     }
 }
