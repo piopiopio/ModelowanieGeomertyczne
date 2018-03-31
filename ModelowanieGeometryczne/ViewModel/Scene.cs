@@ -262,11 +262,12 @@ namespace ModelowanieGeometryczne.ViewModel
             _bezierCurveCollection = new ObservableCollection<Curve>();
             //_bezierCurveC2Collection = new ObservableCollection<BezierCurveC2>();
             PointsCollection.Add(new Point(0, 0, 0));
-            PointsCollection.Add(new Point(0, 2, 1));
-            PointsCollection.Add(new Point(2, 2, 0));
-            PointsCollection.Add(new Point(2, 4, 0));
-            PointsCollection.Add(new Point(4, 4, 0));
-            PointsCollection.Add(new Point(4, 6, 0));
+            PointsCollection.Add(new Point(1, 1, 0));
+            PointsCollection.Add(new Point(2, 1, 0));
+            PointsCollection.Add(new Point(3, 0, 0));
+            PointsCollection.Add(new Point(2, -1, 0));
+            PointsCollection.Add(new Point(1, -1, 0));
+
             Cursor = new Cursor();
 
         }

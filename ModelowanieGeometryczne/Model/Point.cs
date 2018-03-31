@@ -12,7 +12,7 @@ using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 
 namespace ModelowanieGeometryczne.Model
 {
-    public class Point:ViewModelBase
+    public class Point : ViewModelBase
     {
         private Vector4d _coordinates;
         private Vector4d _windowCoordinates;
@@ -33,7 +33,7 @@ namespace ModelowanieGeometryczne.Model
             get { return _selected; }
             set
             {
-                _selected = value; 
+                _selected = value;
                 OnPropertyChanged("Selected");
             }
         }
@@ -94,7 +94,7 @@ namespace ModelowanieGeometryczne.Model
 
         public Vector4d Coordinates
         {
-            get { return _coordinates;}
+            get { return _coordinates; }
             set { _coordinates = value; }
         }
         #endregion Public Properties
@@ -108,22 +108,22 @@ namespace ModelowanieGeometryczne.Model
             _name = DateTime.Now.ToLongDateString() + "  " + DateTime.Now.ToLongTimeString();
         }
 
-        
+
         #region Private Methods
         #endregion Private Methods
         #region Public Methods
 
-        public void Draw(Matrix4d transformacja)
+        public void Draw(Matrix4d transformacja, int size = 4)
         {
             //Matrix4d projekcja = MatrixProvider.ProjectionMatrix(100);
             GL.Enable(EnableCap.VertexProgramPointSize);
-            GL.PointSize(6);
+            GL.PointSize(size);
             GL.Begin(BeginMode.Points);
-   
-          
+
+
             if (_selected)
             {
-                GL.Color3(0.0,1.0,0.0);
+                GL.Color3(0.0, 1.0, 0.0);
             }
             else
             {
@@ -132,7 +132,7 @@ namespace ModelowanieGeometryczne.Model
             Matrix4d projekcja = MatrixProvider.ProjectionMatrix();
             _windowCoordinates = projekcja.Multiply(transformacja.Multiply(_coordinates));
             GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
-            _windowCoordinates.X = _windowCoordinates.X*1440/2;
+            _windowCoordinates.X = _windowCoordinates.X * 1440 / 2;
             _windowCoordinates.Y = _windowCoordinates.Y * 750 / 2;
             GL.End();
 
@@ -144,15 +144,15 @@ namespace ModelowanieGeometryczne.Model
             GL.Enable(EnableCap.VertexProgramPointSize);
             GL.PointSize(3);
             GL.Begin(BeginMode.Points);
-           
+
 
             // TODO: zmiana odleglosciu oczu
             Matrix4d projekcja = MatrixProvider.RightProjectionMatrix();
             var a = projekcja.Multiply(transformacja.Multiply(_coordinates));
-           
 
 
-          
+
+
             projekcja = MatrixProvider.LeftProjectionMatrix();
             var b = projekcja.Multiply(transformacja.Multiply(_coordinates));
 
@@ -162,7 +162,7 @@ namespace ModelowanieGeometryczne.Model
             if (c.Length < StereoscopyMin)
             {
                 GL.Color3(1.0, 0.0, 1.0);
-                GL.Vertex2((a.X+b.X)/2, (a.Y+b.Y)/2);
+                GL.Vertex2((a.X + b.X) / 2, (a.Y + b.Y) / 2);
             }
             else
             {
@@ -172,11 +172,11 @@ namespace ModelowanieGeometryczne.Model
                 GL.Vertex2(b.X, b.Y);
             }
 
-            _windowCoordinates.X = (a.X/2 + b.X/2)*1440/2;
+            _windowCoordinates.X = (a.X / 2 + b.X / 2) * 1440 / 2;
             _windowCoordinates.Y = (a.Y / 2 + b.Y / 2) * 750 / 2;
 
             GL.End();
-              
+
         }
         #endregion Public Methods
     }
