@@ -196,6 +196,9 @@ namespace ModelowanieGeometryczne.Model
             GL.End();
         }
 
+
+
+
         public override void DrawPolylineStereoscopy(Matrix4d transformacja)
         {
 
@@ -217,6 +220,10 @@ namespace ModelowanieGeometryczne.Model
             GL.ReadPixels(0, 0, RenderWidth, RenderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat.Scan0);
             bmp1.UnlockBits(dat);
             bmp1.Save("D:\\ModelowanieGeometryczne\\a1.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+
+
+
+
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             GL.Begin(BeginMode.Lines);
