@@ -261,7 +261,7 @@ namespace ModelowanieGeometryczne.ViewModel
             PointsCollection = new ObservableCollection<Point>();
             _bezierCurveCollection = new ObservableCollection<Curve>();
             //_bezierCurveC2Collection = new ObservableCollection<BezierCurveC2>();
-            PointsCollection.Add(new Point(0, 0, 0));
+            PointsCollection.Add(new Point(0, 0, 10));
             PointsCollection.Add(new Point(1, 1, 0));
             PointsCollection.Add(new Point(2, 1, 0));
             PointsCollection.Add(new Point(3, 0, 0));
@@ -337,7 +337,7 @@ namespace ModelowanieGeometryczne.ViewModel
             {
                 if (Stereoscopy)
                 {
-                    i.DrawStereoscopy(M);
+                   // i.DrawStereoscopy(M);
                 }
                 else
                 {

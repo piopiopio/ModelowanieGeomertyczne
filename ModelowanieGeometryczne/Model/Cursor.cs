@@ -85,114 +85,49 @@ namespace ModelowanieGeometryczne.Model
 
         public void DrawStereoscopy(Matrix4d transformacja)
         {
-            int cursorpointquantity = 500;
-            List<Vector4d> FirstCusorVertices =new List<Vector4d>();
-            List<Vector4d> SecondCusorVertices = new List<Vector4d>();
-            List< Vector4d> FirstCursor = new List<Vector4d>();
-            //GL.Begin(BeginMode.Lines);
-            GL.Enable(EnableCap.VertexProgramPointSize);
-            GL.PointSize(1);
-            GL.Begin(BeginMode.Points);
-            GL.Color3(1.0, 0.0, 0.0);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+            GL.Begin(BeginMode.Lines);
 
-            //foreach (var v in vertices)
-            //{
-            //    var vertex = transformacja.Multiply(v);
-            //    GL.Vertex2(_projectionRight.Multiply(vertex).X, _projectionRight.Multiply(vertex).Y);
+            GL.Color3(0.6, 0.0, 0.0);
+            var vertex = transformacja.Multiply(vertices[0]);
+            GL.Vertex2(_projectionRight.Multiply(vertex).X, _projectionRight.Multiply(vertex).Y);
+            vertex = transformacja.Multiply(vertices[1]);
+            GL.Vertex2(_projectionRight.Multiply(vertex).X, _projectionRight.Multiply(vertex).Y);
 
-            //}
-
-            foreach (var v in vertices)
-            {
-                var vertex = transformacja.Multiply(v);
-                FirstCusorVertices.Add(_projectionRight.Multiply(vertex));
-
-            }
-
-            for (int i = 0; i <=4; i=i+2)
-            {
+          
+            vertex = transformacja.Multiply(vertices[2]);
+            GL.Vertex2(_projectionRight.Multiply(vertex).X, _projectionRight.Multiply(vertex).Y);
+            vertex = transformacja.Multiply(vertices[3]);
+            GL.Vertex2(_projectionRight.Multiply(vertex).X, _projectionRight.Multiply(vertex).Y);
 
 
-                var dv = (FirstCusorVertices[i] - FirstCusorVertices[i + 1]) / cursorpointquantity;
-
-                for (int j = 0; j <= cursorpointquantity; j++)
-                {
-                    var temp1 = FirstCusorVertices[i] - dv * j;
-                    FirstCursor.Add(temp1);
-                    GL.Vertex2(temp1.X, temp1.Y);
-
-                }
+            vertex = transformacja.Multiply(vertices[4]);
+            GL.Vertex2(_projectionRight.Multiply(vertex).X, _projectionRight.Multiply(vertex).Y);
+            vertex = transformacja.Multiply(vertices[5]);
+            GL.Vertex2(_projectionRight.Multiply(vertex).X, _projectionRight.Multiply(vertex).Y);
 
 
+            GL.Color3(0.0, 0.0, 0.6);
+            vertex = transformacja.Multiply(vertices[0]);
+            GL.Vertex2(_projectionLeft.Multiply(vertex).X, _projectionLeft.Multiply(vertex).Y);
+            vertex = transformacja.Multiply(vertices[1]);
+            GL.Vertex2(_projectionLeft.Multiply(vertex).X, _projectionLeft.Multiply(vertex).Y);
 
 
-            }
+            vertex = transformacja.Multiply(vertices[2]);
+            GL.Vertex2(_projectionLeft.Multiply(vertex).X, _projectionLeft.Multiply(vertex).Y);
+            vertex = transformacja.Multiply(vertices[3]);
+            GL.Vertex2(_projectionLeft.Multiply(vertex).X, _projectionLeft.Multiply(vertex).Y);
 
+
+            vertex = transformacja.Multiply(vertices[4]);
+            GL.Vertex2(_projectionLeft.Multiply(vertex).X, _projectionLeft.Multiply(vertex).Y);
+            vertex = transformacja.Multiply(vertices[5]);
+            GL.Vertex2(_projectionLeft.Multiply(vertex).X, _projectionLeft.Multiply(vertex).Y);
             GL.End();
-            //GL.Begin(BeginMode.Lines);
-            //GL.Color3(0.0, 0.0, 1.0);
-            //foreach (var v in vertices)
-            //{
-            //    var vertex = transformacja.Multiply(v);
-            //    GL.Vertex2(_projectionLeft.Multiply(vertex).X, _projectionLeft.Multiply(vertex).Y);
-            //}
-
-            GL.Begin(BeginMode.Points);
-            GL.Color3(0.0, 0.0, 1.0);
-
-
-
-
-            foreach (var v in vertices)
-            {
-                var vertex = transformacja.Multiply(v);
-                SecondCusorVertices.Add(_projectionLeft.Multiply(vertex));
-
-            }
-
-            for (int i = 0; i <= 4; i = i + 2)
-            {
-
-
-                var dv = (FirstCusorVertices[i] - FirstCusorVertices[i + 1]) / cursorpointquantity;
-
-                for (int j = 0; j <= cursorpointquantity; j++)
-                {
-                    var temp1 = SecondCusorVertices[i] - dv * j;
-                   // FirstCursor.Add(temp1);
-
-                    foreach (var v in FirstCursor)
-                    {
-                        var c = v - temp1;
-                        if (c.Length < 0.001)
-                        {
-                            GL.Color3(1.0, 0.0, 1.0);
-                        }
-
-                    }
-                    GL.Vertex2(temp1.X, temp1.Y);
-                    GL.Color3(0.0, 0.0, 1.0);
-
-                    
-
-
-                }
-
-
-
-
-            }
-
-           
-
-            GL.End();
-
-            var temp = _projection.Multiply(transformacja.Multiply(_coordinates));
+            var temp = _projectionLeft.Multiply(transformacja.Multiply(_coordinates));
             WindowCoordinate = new Vector4d(temp.X * 720, temp.Y * 375, 0, 0);
-
-
-
-
         }
 
         public void Draw(Matrix4d transformacja)
