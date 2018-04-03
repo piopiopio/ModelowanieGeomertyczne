@@ -94,9 +94,10 @@ namespace ModelowanieGeometryczne.Model
                         a.Y *= 750;
                         length += a.Length;
                     }
+                    double divisions = 1 / length;
+
                     var point = Casteljeu(temp2, 0);
                     var windowCoordinates = projekcjaLeft.Multiply(transformacja.Multiply(point));
-                    double divisions = 1 / length;
                     for (double t = divisions / 2; t <= 1; t += divisions / 2)
                     {
                         point = Casteljeu(temp2, t);
@@ -136,50 +137,44 @@ namespace ModelowanieGeometryczne.Model
 
         public override void DrawPolylineStereoscopy(Matrix4d transformacja)
         {
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
-            GL.Begin(BeginMode.Lines);
-            GL.Color3(0.6, 0.0, 0.0);
             if (PolylineEnabled)
             {
+                GL.Enable(EnableCap.Blend);
+                GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+                GL.Begin(BeginMode.Lines);
+                GL.Color3(0.6, 0.0, 0.0);
+
                 for (int i = 0; i < PointsCollection.Count - 1; i++)
                 {
-                    var windowCoordinates = projekcjaRight.Multiply(transformacja.Multiply(PointsCollection[i].Coordinates));
+                    var windowCoordinates =
+                        projekcjaRight.Multiply(transformacja.Multiply(PointsCollection[i].Coordinates));
                     GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-                    windowCoordinates = projekcjaRight.Multiply(transformacja.Multiply(PointsCollection[i + 1].Coordinates));
+                    windowCoordinates =
+                        projekcjaRight.Multiply(transformacja.Multiply(PointsCollection[i + 1].Coordinates));
                     GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
                 }
-            }
 
 
 
+                GL.Color3(0.0, 0.0, 0.6);
 
-
-          
-            
-            GL.Color3(0.0, 0.0, 0.6);
-            if (PolylineEnabled)
-            {
                 for (int i = 0; i < PointsCollection.Count - 1; i++)
                 {
-                    var windowCoordinates = projekcjaLeft.Multiply(transformacja.Multiply(PointsCollection[i].Coordinates));
+                    var windowCoordinates =
+                        projekcjaLeft.Multiply(transformacja.Multiply(PointsCollection[i].Coordinates));
                     GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-                    windowCoordinates = projekcjaLeft.Multiply(transformacja.Multiply(PointsCollection[i + 1].Coordinates));
+                    windowCoordinates =
+                        projekcjaLeft.Multiply(transformacja.Multiply(PointsCollection[i + 1].Coordinates));
                     GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
                 }
+
+
+                GL.End();
+
             }
-
-            GL.End();
-
-
-
-            
-
-
-
-
-
         }
+
+
 
         #endregion Public Methods
     }

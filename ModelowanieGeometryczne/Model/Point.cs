@@ -119,7 +119,7 @@ namespace ModelowanieGeometryczne.Model
             GL.Enable(EnableCap.VertexProgramPointSize);
             GL.PointSize(size);
             GL.Begin(BeginMode.Points);
-
+            
 
             if (_selected)
             {

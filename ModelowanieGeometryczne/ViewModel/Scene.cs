@@ -337,7 +337,7 @@ namespace ModelowanieGeometryczne.ViewModel
             {
                 if (Stereoscopy)
                 {
-                   // i.DrawStereoscopy(M);
+                    i.DrawStereoscopy(M);
                 }
                 else
                 {

@@ -94,7 +94,7 @@ namespace ModelowanieGeometryczne.Model
                 temp.Add(p);
                 if (temp.Count % 4 == 0 || p == PointsCollection.Last())
                 {
-                    var divisions = GetDivisions(transformacja, temp.Count, temp);
+                    var divisions = GetDivisions(transformacja, temp);
                     var point = Casteljeu(temp, 0);
                     var windowCoordinates = projekcja.Multiply(transformacja.Multiply(point));
                     for (double t = divisions / 2; t <= 1; t += divisions / 2)
@@ -138,8 +138,9 @@ namespace ModelowanieGeometryczne.Model
             return new Vector4d(xValues.X, yValues.X, zValues.X, 1);
         }
 
-        private double GetDivisions(Matrix4d transformacja, int j, ObservableCollection<Point> temp)
+        public double GetDivisions(Matrix4d transformacja, ObservableCollection<Point> temp)
         {
+            int j = temp.Count; 
             double length = 0;
             for (int i = 0; i < j - 1; i++)
             {
@@ -150,7 +151,7 @@ namespace ModelowanieGeometryczne.Model
                 length += a.Length;
             }
 
-            return 1 / length;
+            return 0.1 / length;
         }
         #endregion Private Methods
         #region Public Methods
