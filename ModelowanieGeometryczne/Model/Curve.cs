@@ -153,6 +153,21 @@ namespace ModelowanieGeometryczne.Model
 
             return 0.1 / length;
         }
+
+        public double GetDivisions(ObservableCollection<Point> temp)
+        {
+            int j = temp.Count; 
+            double length = 0;
+            for (int i = 0; i < j - 1; i++)
+            {
+                Vector4d a = temp[i + 1].Coordinates - temp[i].Coordinates;
+                a.X *= 1440;
+                a.Y *= 750;
+                length += a.Length;
+            }
+
+            return 0.1 / length;
+        }
         #endregion Private Methods
         #region Public Methods
 

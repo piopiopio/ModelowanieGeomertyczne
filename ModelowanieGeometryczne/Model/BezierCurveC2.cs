@@ -81,9 +81,8 @@ namespace ModelowanieGeometryczne.Model
 
             SetSplineKnots();
 
-            //TODO: adaptacyjny
-            //double divisions = 0.001;
-            double divisions = GetDivisions(transformacja, PointsCollection);
+
+            double divisions = GetDivisions(transformacja, _additionalPointsCollection2);
 
             if (IsBernsteinBasis)
             {
