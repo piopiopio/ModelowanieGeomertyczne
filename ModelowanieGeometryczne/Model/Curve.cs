@@ -14,7 +14,7 @@ namespace ModelowanieGeometryczne.Model
     {
         public event PropertyChangedEventHandler RefreshScene;
 
-        protected Matrix4d projekcja = MatrixProvider.ProjectionMatrix();
+        protected static Matrix4d projekcja = MatrixProvider.ProjectionMatrix();
         protected Matrix4d projekcjaLeft = MatrixProvider.LeftProjectionMatrix();
         protected Matrix4d projekcjaRight = MatrixProvider.RightProjectionMatrix();
         protected static int CurveNumber = 0;
@@ -83,26 +83,101 @@ namespace ModelowanieGeometryczne.Model
         #endregion Public Properties
         #region Private Methods
 
+        public void DrawBezierCurveStereoscopy(Matrix4d transformacja, ObservableCollection<Point> Points )
+        {
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+            GL.Begin(BeginMode.Lines);
+            GL.Color3(0.6, 0.0, 0.0);
+            int j = 0;
+
+            ObservableCollection<Point> temp = new ObservableCollection<Point>();
+            ObservableCollection<Point> transformedProjectedPoints = new ObservableCollection<Point>();
+            foreach (var p in Points)
+            {
+                var a = projekcjaRight.Multiply(transformacja.Multiply(p));
+                transformedProjectedPoints.Add(new Point(a.X, a.Y, a.Z));
+            }
+
+            foreach (var p in transformedProjectedPoints)
+            {
+                j++;
+                temp.Add(p);
+                if (j % 4 == 0 || p == transformedProjectedPoints.Last())
+                {
+                    double divisions = GetDivisions(temp);
+                    var point = Casteljeu(temp, 0);
+                    for (double t = divisions / 2; t <= 1; t += divisions / 2)
+                    {
+                        GL.Vertex2(point.X, point.Y);
+                        point = Casteljeu(temp, t);
+                        GL.Vertex2(point.X, point.Y);
+                    }
+                    temp.Clear();
+                    temp.Add(p);
+                    j = 1;
+                }
+
+
+            }
+
+            GL.Color3(0.0, 0.0, 0.6);
+            j = 0;
+            ObservableCollection<Point> temp2 = new ObservableCollection<Point>();
+            foreach (var p in Points)
+            {
+                j++;
+                temp2.Add(p);
+                if (j % 4 == 0 || p == PointsCollection.Last())
+                {
+                    double divisions = GetDivisions(transformacja, temp2);
+
+                    var point = Casteljeu(temp2, 0);
+                    var windowCoordinates = projekcjaLeft.Multiply(transformacja.Multiply(point));
+                    for (double t = divisions / 2; t <= 1; t += divisions / 2)
+                    {
+                        GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
+
+                        point = Casteljeu(temp2, t);
+                        windowCoordinates = projekcjaLeft.Multiply(transformacja.Multiply(point));
+                        GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
+
+
+                    }
+                    temp2.Clear();
+                    temp2.Add(p);
+                    j = 1;
+                }
+            }
+            GL.End();
+        }
+
         protected void DrawBezierCurve(Matrix4d transformacja, IEnumerable<Point> points)
         {
             GL.Begin(BeginMode.Lines);
             GL.Color3(1.0, 1.0, 1.0);
 
+            ObservableCollection<Point> transformedProjectedPoints = new ObservableCollection<Point>();
             ObservableCollection<Point> temp = new ObservableCollection<Point>();
             foreach (var p in points)
             {
+                var a = projekcjaRight.Multiply(transformacja.Multiply(p));
+                transformedProjectedPoints.Add(new Point(a.X, a.Y, a.Z));
+            }
+
+            foreach (var p in transformedProjectedPoints)
+            {
                 temp.Add(p);
-                if (temp.Count % 4 == 0 || p == PointsCollection.Last())
+                if (temp.Count % 4 == 0 || p == transformedProjectedPoints.Last())
                 {
                     var divisions = GetDivisions(transformacja, temp);
                     var point = Casteljeu(temp, 0);
-                    var windowCoordinates = projekcja.Multiply(transformacja.Multiply(point));
+                 
                     for (double t = divisions / 2; t <= 1; t += divisions / 2)
                     {
+                        GL.Vertex2(point.X, point.Y);
                         point = Casteljeu(temp, t);
-                        GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-                        windowCoordinates = projekcja.Multiply(transformacja.Multiply(point));
-                        GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
+                        GL.Vertex2(point.X, point.Y);
                     }
                     temp.Clear();
                     temp.Add(p);
@@ -176,6 +251,7 @@ namespace ModelowanieGeometryczne.Model
         public abstract void DrawPolyline(Matrix4d transformacja);
         public abstract void DrawPolylineStereoscopy(Matrix4d transformacja);
 
+
         internal void RemovePoints(List<Point> points)
         {
             foreach (var point in points)
@@ -209,6 +285,8 @@ namespace ModelowanieGeometryczne.Model
         {
             PointsCollection.Add(point);
         }
+
+
         #endregion Public Methods
     }
 }

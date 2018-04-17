@@ -34,36 +34,99 @@ namespace ModelowanieGeometryczne.ViewModel
         Tuple<int, int> _mouseCoordinates;
         private ObservableCollection<Point> _pointsCollection;//
         private ObservableCollection<Curve> _bezierCurveCollection;//
-       // private ObservableCollection<BezierCurveC2> _bezierCurveC2Collection;//
+                                                                   // private ObservableCollection<BezierCurveC2> _bezierCurveC2Collection;//
 
         private bool _moveSelectedPointsWithCoursor = false;
         private bool _torusEnabled = false;
+        private ICommand _addBezierPatch;
         private ICommand _addBezierCurve;
         private ICommand _addBezierCurveC2;
+        private ICommand _addBezierCurveC2Interpolation;
         private ICommand _addPoints;
         private ICommand _undoAllTransformation;
 
+        //Bezier patches
+        int _horizontalPatches;
+        int _verticalPatches;
+        double _patchWidth;
+        double _patchHeight;
+        int _patchHorizontalDivision;
+        int _patchVerticalDivision;
+        bool _patchesAreCylinder;
         #endregion Private Fields
 
         #region Public Properties
+
+
+
         public ICommand AddPointsCommand { get { return _addPoints ?? (_addPoints = new ActionCommand(AddSelectedPointsExecuted)); } }
+        public ICommand AddBezierPatch { get { return _addBezierPatch ?? (_addPoints = new ActionCommand(AddBezierPatchExecuted)); } }
         public ICommand UndoAllTransformation { get { return _undoAllTransformation ?? (_undoAllTransformation = new ActionCommand(UndoAllTransformationExecuted)); } }
 
+        public void AddBezierPatchExecuted()
+        {
+
+        }
         private void UndoAllTransformationExecuted()
         {
             M = Matrix4d.Identity;
             _scale = 0.1;
-             Refresh();
+            Refresh();
         }
+
+        public bool PatchesAreCylinder
+        {
+            get { return _patchesAreCylinder; }
+            set { _patchesAreCylinder = value; }
+        }
+        public int PatchHorizontalDivision
+        {
+            get { return _patchHorizontalDivision; }
+            set { _patchHorizontalDivision = value; }
+
+        }
+
+        public int PatchVerticalDivision
+        {
+            get { return _patchVerticalDivision; }
+            set { _patchVerticalDivision = value; }
+
+        }
+
+        public double PatchWidth
+        {
+            get { return _patchWidth; }
+            set { _patchWidth = value; }
+        }
+
+        public double PatchHeight
+        {
+            get { return _patchHeight; }
+            set { _patchHeight = value; }
+        }
+
+        public int HorizontalPatches
+        {
+            get { return _horizontalPatches; }
+            set { _horizontalPatches = value; }
+        }
+
+
+        public int VerticalPatches
+        {
+            get { return _verticalPatches; }
+            set { _verticalPatches = value; }
+        }
+
         public void AddSelectedPointsExecuted()
         {
-            foreach (var curve in _bezierCurveCollection.Where(p=>p.Selected))
+            foreach (var curve in _bezierCurveCollection.Where(p => p.Selected))
             {
-                foreach (var point in _pointsCollection.Where(p=>p.Selected))
-	                {
-		                curve.AddPoint(point);
-	                }
-                
+                foreach (var point in _pointsCollection.Where(p => p.Selected))
+                {
+                    curve.AddPoint(point);
+                }
+
             }
             Refresh();
         }
@@ -230,12 +293,24 @@ namespace ModelowanieGeometryczne.ViewModel
 
         public ICommand AddBezierCurve { get { return _addBezierCurve ?? (_addBezierCurve = new ActionCommand(AddBezierCurveExecuted)); } }
         public ICommand AddBezierCurveC2 { get { return _addBezierCurveC2 ?? (_addBezierCurveC2 = new ActionCommand(AddBezierCurveC2Executed)); } }
+        public ICommand AddBezierCurveC2Interpolation { get { return _addBezierCurveC2Interpolation ?? (_addBezierCurveC2Interpolation = new ActionCommand(AddBezierCurveC2InterpolationExecuted)); } }
 
         private void AddBezierCurveC2Executed()
         {
             if (_pointsCollection.Any(point => point.Selected))
             {
-                var curve = new BezierCurveC2(_pointsCollection.Where(point => point.Selected));
+                var curve = new BezierCurveC2(_pointsCollection.Where(point => point.Selected), false);
+                curve.RefreshScene += Refresh;
+                BezierCurveCollection.Add(curve);
+                Refresh();
+            }
+        }
+
+        private void AddBezierCurveC2InterpolationExecuted()
+        {
+            if (_pointsCollection.Any(point => point.Selected))
+            {
+                var curve = new BezierCurveC2(_pointsCollection.Where(point => point.Selected), true);
                 curve.RefreshScene += Refresh;
                 BezierCurveCollection.Add(curve);
                 Refresh();
@@ -256,18 +331,38 @@ namespace ModelowanieGeometryczne.ViewModel
             _teta = 0;
             _fi0 = 0;
             _teta0 = 0;
+            _horizontalPatches=3;
+            _verticalPatches=3;
+            _patchWidth=1;
+            _patchHeight=1;
+            _patchHorizontalDivision=4;
+            _patchVerticalDivision=4;
+            _patchesAreCylinder=false;
             M = Matrix4d.Identity;
             Torus = new Torus();
             PointsCollection = new ObservableCollection<Point>();
             _bezierCurveCollection = new ObservableCollection<Curve>();
             //_bezierCurveC2Collection = new ObservableCollection<BezierCurveC2>();
-            PointsCollection.Add(new Point(0, 0, 10));
-            PointsCollection.Add(new Point(1, 1, 0));
-            PointsCollection.Add(new Point(2, 1, 0));
-            PointsCollection.Add(new Point(3, 0, 0));
-            PointsCollection.Add(new Point(2, -1, 0));
-            PointsCollection.Add(new Point(1, -1, 0));
-
+            ////PointsCollection.Add(new Point(0, 0, 1));
+            ////PointsCollection.Add(new Point(1, 1, 0));
+            ////PointsCollection.Add(new Point(2, 1, 0));
+            ////PointsCollection.Add(new Point(3, 0, 0));
+            ////PointsCollection.Add(new Point(2, -1, 0));
+            ////PointsCollection.Add(new Point(1, -1, 0));
+            //double a = 0.25;
+            //PointsCollection.Add(new Point(0.5, 0, 0));
+            //PointsCollection.Add(new Point(0.5, a, 0));
+            //PointsCollection.Add(new Point(a, 0.5, 0));
+            //PointsCollection.Add(new Point(0, 0.5, 0));
+            //PointsCollection.Add(new Point(-a, 0.5, 0));
+            //PointsCollection.Add(new Point(-0.5, a, 0));
+            //PointsCollection.Add(new Point(-0.5, 0, 0));
+            //PointsCollection.Add(new Point(-0.5, -a, 0));
+            //PointsCollection.Add(new Point(-a, -0.5, 0));
+            //PointsCollection.Add(new Point(0, -0.5, 0));
+            //PointsCollection.Add(new Point(a, -0.5, 0));
+            //PointsCollection.Add(new Point(0.5, -a, 0));
+            //PointsCollection.Add(new Point(0.5, 0, 0));
             Cursor = new Cursor();
 
         }
@@ -307,7 +402,7 @@ namespace ModelowanieGeometryczne.ViewModel
             _y = 0;
             _fi = 0;
             _teta = 0;
-         
+
 
 
             //TODO: wywoływanie rysowania torusa    
@@ -349,13 +444,15 @@ namespace ModelowanieGeometryczne.ViewModel
             {
                 if (Stereoscopy)
                 {
-                    curve.DrawPolylineStereoscopy(M);
                     curve.DrawCurveStereoscopy(M);
+                    curve.DrawPolylineStereoscopy(M);
+
                 }
                 else
                 {
-                    curve.DrawPolyline(M);
                     curve.DrawCurve(M);
+                    curve.DrawPolyline(M);
+
                 }
             }
 
@@ -495,8 +592,8 @@ namespace ModelowanieGeometryczne.ViewModel
             _fi0 = fi;
             _teta0 = teta;
 
-            _alphaX = 4*_teta/750;
-            _alphaY = 4*_fi/1440;
+            _alphaX = 4 * _teta / 750;
+            _alphaY = 4 * _fi / 1440;
             _alphaZ = 0;
         }
     }

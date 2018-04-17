@@ -44,6 +44,16 @@
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
@@ -67,13 +77,28 @@
 
             <TextBlock Grid.Row="5" Grid.Column="0" Text="  torus:  "></TextBlock>
             <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding  Scene.TorusEnabled}"/>
+            
+            <TextBlock Grid.Row="7" Grid.Column="0" Text="  Horizontal patches:  "></TextBlock>
+            <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding Scene.HorizontalPatches}"/>
+            <TextBlock Grid.Row="8" Grid.Column="0" Text="  Horizontal patches:  "></TextBlock>
+            <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding Scene.VerticalPatches}"/>
+            <TextBlock Grid.Row="9" Grid.Column="0" Text="  Patch width:  "></TextBlock>
+            <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding Scene.PatchWidth}"/>
+            <TextBlock Grid.Row="10" Grid.Column="0" Text="  Patch height:  "></TextBlock>
+            <TextBox Grid.Row="10" Grid.Column="1" Text="{Binding Scene.PatchHeight}"/>
+            <TextBlock Grid.Row="11" Grid.Column="0" Text="  Patch horizontal division:  "></TextBlock>
+            <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding Scene.PatchHorizontalDivision}"/>
+            <TextBlock Grid.Row="12" Grid.Column="0" Text="  Patch vertical division:  "></TextBlock>
+            <TextBox Grid.Row="12" Grid.Column="1" Text="{Binding Scene.PatchVerticalDivision}"/>
+            <TextBlock Grid.Row="13" Grid.Column="0" Text="  Patches are cylinder  "></TextBlock>
+            <CheckBox Grid.Row="13" Grid.Column="1" IsChecked="{Binding  Scene.PatchesAreCylinder}"/>
 
-
-
-            <Button Grid.Row="6"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curves C0" Command="{Binding Scene.AddBezierCurve}"></Button>
-            <Button Grid.Row="7"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curves C2" Command="{Binding Scene.AddBezierCurveC2}"></Button>
-            <Button Grid.Row="8"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Selected Points to Selected Bezier Curve" Command="{Binding Scene.AddPointsCommand}"></Button>
-            <Button Grid.Row="9"  Grid.Column="0" Grid.ColumnSpan="2" Content="Undo all transformations" Command="{Binding Scene.UndoAllTransformation}"></Button>
+            <Button Grid.Row="15"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Patch C0" Command="{Binding Scene.AddBezierPatch}"></Button>
+            <Button Grid.Row="16"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curves C0" Command="{Binding Scene.AddBezierCurve}"></Button>
+            <Button Grid.Row="17"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curves C2" Command="{Binding Scene.AddBezierCurveC2}"></Button>
+            <Button Grid.Row="18"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curves C2 interpolation" Command="{Binding Scene.AddBezierCurveC2Interpolation}"></Button>
+            <Button Grid.Row="19"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Selected Points to Selected Bezier Curve" Command="{Binding Scene.AddPointsCommand}"></Button>
+            <Button Grid.Row="20"  Grid.Column="0" Grid.ColumnSpan="2" Content="Undo all transformations" Command="{Binding Scene.UndoAllTransformation}"></Button>
         </Grid>
 
         <Grid Grid.Row="1">
@@ -132,10 +157,10 @@
                                                     <ContextMenu x:Key="ItemContextMenu">
                                                         <MenuItem Header="Remove points" Command="{Binding Path=DataContext.RemovePointsCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
                                                         <!--<MenuItem Header="Add points" Command="{Binding Path=DataContext.Scene.AddPointsCommand, RelativeSource={RelativeSource AncestorType=ListView, AncestorLevel=2}}"/>-->
-                                     
-                                                     
+
+
                                                     </ContextMenu>
-                                                  
+
                                                 </ListView.Resources>
                                                 <ListView.View>
                                                     <GridView >
