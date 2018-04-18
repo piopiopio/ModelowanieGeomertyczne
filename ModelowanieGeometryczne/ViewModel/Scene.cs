@@ -34,7 +34,7 @@ namespace ModelowanieGeometryczne.ViewModel
         Tuple<int, int> _mouseCoordinates;
         private ObservableCollection<Point> _pointsCollection;//
         private ObservableCollection<Curve> _bezierCurveCollection;//
-                                                                   // private ObservableCollection<BezierCurveC2> _bezierCurveC2Collection;//
+        private ObservableCollection<BezierPatch> _bezierPatchCollection;
 
         private bool _moveSelectedPointsWithCoursor = false;
         private bool _torusEnabled = false;
@@ -60,12 +60,14 @@ namespace ModelowanieGeometryczne.ViewModel
 
 
         public ICommand AddPointsCommand { get { return _addPoints ?? (_addPoints = new ActionCommand(AddSelectedPointsExecuted)); } }
-        public ICommand AddBezierPatch { get { return _addBezierPatch ?? (_addPoints = new ActionCommand(AddBezierPatchExecuted)); } }
+        public ICommand AddBezierPatch { get { return _addBezierPatch ?? (_addBezierPatch = new ActionCommand(AddBezierPatchExecuted)); } }
         public ICommand UndoAllTransformation { get { return _undoAllTransformation ?? (_undoAllTransformation = new ActionCommand(UndoAllTransformationExecuted)); } }
 
         public void AddBezierPatchExecuted()
         {
-
+            var patch = new BezierPatch(HorizontalPatches, VerticalPatches, PatchWidth, PatchHeight, PatchHorizontalDivision, PatchVerticalDivision, PatchesAreCylinder, Cursor.Coordinates);
+            BezierPatchCollection.Add(patch);
+            Refresh();
         }
         private void UndoAllTransformationExecuted()
         {
@@ -196,6 +198,18 @@ namespace ModelowanieGeometryczne.ViewModel
                 OnPropertyChanged("Cursor");
             }
         }
+        public ObservableCollection<BezierPatch> BezierPatchCollection
+        {
+            get { return _bezierPatchCollection; }
+            set
+            {
+                _bezierPatchCollection = value;
+                OnPropertyChanged("BezierPAthCollection");
+                Refresh();
+            }
+        }
+
+
 
         public ObservableCollection<Point> PointsCollection
         {
@@ -331,17 +345,18 @@ namespace ModelowanieGeometryczne.ViewModel
             _teta = 0;
             _fi0 = 0;
             _teta0 = 0;
-            _horizontalPatches=3;
-            _verticalPatches=3;
-            _patchWidth=1;
-            _patchHeight=1;
-            _patchHorizontalDivision=4;
-            _patchVerticalDivision=4;
-            _patchesAreCylinder=false;
+            _horizontalPatches = 3;
+            _verticalPatches = 3;
+            _patchWidth = 1;
+            _patchHeight = 1;
+            _patchHorizontalDivision = 4;
+            _patchVerticalDivision = 4;
+            _patchesAreCylinder = false;
             M = Matrix4d.Identity;
             Torus = new Torus();
             PointsCollection = new ObservableCollection<Point>();
             _bezierCurveCollection = new ObservableCollection<Curve>();
+            BezierPatchCollection = new ObservableCollection<BezierPatch>();
             //_bezierCurveC2Collection = new ObservableCollection<BezierCurveC2>();
             ////PointsCollection.Add(new Point(0, 0, 1));
             ////PointsCollection.Add(new Point(1, 1, 0));
@@ -455,6 +470,12 @@ namespace ModelowanieGeometryczne.ViewModel
 
                 }
             }
+            foreach (var patch in BezierPatchCollection)
+            {
+                patch.Draw(M);
+            }
+
+
 
             GL.Flush();
         }
@@ -508,6 +529,16 @@ namespace ModelowanieGeometryczne.ViewModel
                 p.Y += dy;
                 p.Z += dz;
             }
+
+            foreach (var patch in BezierPatchCollection)
+
+                foreach (var p in patch.Vertices.Where(point => point.Selected))
+                {
+                    p.X += dx;
+                    p.Y += dy;
+                    p.Z += dz;
+                }
+
         }
 
         public void SelectPointByCursor()
@@ -528,7 +559,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
         public void SelectPointByMouse()
         {
-            const double epsilon = 20;
+            const double epsilon = 15;
             Vector4d c = new Vector4d(_x0 - 1440.0 / 2.0, _y0 - 750.0 / 2.0, 0, 0);
             var temp = c;
             foreach (var p in _pointsCollection)
@@ -538,6 +569,19 @@ namespace ModelowanieGeometryczne.ViewModel
                 if (temp.Length < epsilon)
                 {
                     p.Selected = !p.Selected;
+                }
+            }
+
+            foreach (var patch in BezierPatchCollection)
+            {
+                foreach (var point in patch.Vertices)
+                {
+                    temp = new Vector4d(c.X - point.X_Window, -c.Y - point.Y_Window, 0, 0);
+
+                    if (temp.Length < epsilon)
+                    {
+                        point.Selected = !point.Selected;
+                    }
                 }
             }
         }
@@ -581,6 +625,16 @@ namespace ModelowanieGeometryczne.ViewModel
             foreach (var curve in temp)
             {
                 _bezierCurveCollection.Remove(curve);
+            }
+        }
+
+        internal void DeleteSelectedPatches()
+        {
+            var temp = _bezierPatchCollection.Where(c => c.Selected).ToList();
+
+            foreach (var patch in temp)
+            {
+                _bezierPatchCollection.Remove(patch);
             }
         }
 

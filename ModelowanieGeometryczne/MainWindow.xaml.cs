@@ -109,13 +109,14 @@ namespace ModelowanieGeometryczne
 
             if (e.Button == MouseButtons.Left)
             {
-                _mainViewModel.Scene.MouseMoveRotate(e.X, e.Y);
+
+                _mainViewModel.Text = "Right";
+                _mainViewModel.Scene.MouseMoveTranslate(e.X, e.Y);
                 Paint();
             }
             if (e.Button == MouseButtons.Right)
             {   //TODO: Mouse event move
-                _mainViewModel.Text = "Right";
-                _mainViewModel.Scene.MouseMoveTranslate(e.X, e.Y);
+                _mainViewModel.Scene.MouseMoveRotate(e.X, e.Y);
                 Paint();
 
 
@@ -152,6 +153,7 @@ namespace ModelowanieGeometryczne
                 case Key.Delete:
                     _mainViewModel.Scene.DeleteSelectedPoints();
                     _mainViewModel.Scene.DeleteSelectedCurves();
+                    _mainViewModel.Scene.DeleteSelectedPatches();
                     Paint();
                     break;
                 case Key.Enter:
