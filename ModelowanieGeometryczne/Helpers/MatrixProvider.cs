@@ -73,9 +73,35 @@ namespace ModelowanieGeometryczne.Helpers
                 {
                     double t = knots[i + n - 1];
                     nMatrix[j - 1, i - 1] = knots.GetNFunctionValue(j, n, t);
+                    if (i==j)
+                    {
+
+                    }
                 }
 
             return nMatrix;
+        }
+
+
+        public static double[][] CalculateNVectors(this double[] knots, int n, int knotsCount)
+        {
+            //double[][] s = new double[3][];
+            //for (int i = 0; i < 3; i++)
+            //    s[i] = new double[InterpolationPoints.Count() + 2];
+            double[][] nVectors = new double[3][];
+            for (int i = 0; i < 3; i++)
+                nVectors[i] = new double[knotsCount + 2];
+
+            for (int j = 1; j <= knotsCount + 2; j++)
+            {
+
+                nVectors[0][j - 1] = knots.GetNFunctionValue(j, n, knots[n + j - 1+1]); //górne pasmo
+                nVectors[1][j - 1] = knots.GetNFunctionValue(j, n, knots[n + j - 1]); //diagonala
+                nVectors[2][j - 1] = knots.GetNFunctionValue(j, n, knots[n + j - 1-1]); //dolne pasmo
+            }
+
+
+            return nVectors;
         }
 
         public static double GetNFunctionValue(this double[] knots, int i, int n, double ti)
@@ -92,6 +118,35 @@ namespace ModelowanieGeometryczne.Helpers
             double a = (knots[i + n] - knots[i] != 0) ? (ti - knots[i]) / (knots[i + n] - knots[i]) : 0;
             double b = (knots[i + n + 1] - knots[i + 1] != 0) ? (knots[i + n + 1] - ti) / (knots[i + n + 1] - knots[i + 1]) : 0;
             return (a * knots.GetNFunctionValue(i, n - 1, ti)) + (b * knots.GetNFunctionValue(i + 1, n - 1, ti));
+        }
+
+        public static double[] ThomasAlgorithm(double[] a, double[] b, double[] c, double[] f)
+        {
+            //b dolne pasmo
+            //a diagonala
+            //c gorna diagonala
+            //f prawa strona
+
+            var n = b.Length;
+            double[] v = new double[n];
+            double[] y = new double[n];
+
+            var w = a[0];
+            y[0] = f[0] / w;
+
+            for (int i = 2 - 1; i <= n - 1; i++)
+            {
+
+                v[i - 1] = c[i - 1] / w;
+                w = a[i] - b[i] * v[i - 1];
+                y[i] = (f[i] - b[i] * y[i - 1]) / w;
+            }
+
+            for (int j = n - 1 - 1; j >= 1 - 1; j--)
+            {
+                y[j] = y[j] - v[j] * y[j + 1];
+            }
+            return y;
         }
 
         public static double[] GaussElimination(this double[,] a, double[] b)

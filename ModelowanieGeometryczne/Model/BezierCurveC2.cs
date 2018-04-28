@@ -7,6 +7,7 @@ using ModelowanieGeometryczne.Helpers;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
+
 namespace ModelowanieGeometryczne.Model
 {
     public class BezierCurveC2 : Curve
@@ -43,36 +44,59 @@ namespace ModelowanieGeometryczne.Model
         #region Public Methods
 
 
-        private ObservableCollection<Point> CalculateInterpolationDeBoore(Matrix4d transformacja)
-        {//TODO: skasowac tą prowizorkę
+        private void CalculateInterpolationDeBoore()
+        {
             InterpolationPoints = PointsCollection;
-            Matrix4d projekcja = MatrixProvider.ProjectionMatrix();
-            // _windowCoordinates = projekcja.Multiply(transformacja.Multiply(_coordinates));
+
+            double[][] nVectors = CalculateSegments2(InterpolationPoints.Count);
             var mtx = CalculateSegments(InterpolationPoints.Count);
+            
             double[][] s = new double[3][];
             for (int i = 0; i < 3; i++)
                 s[i] = new double[InterpolationPoints.Count() + 2];
             for (int i = -1; i <= InterpolationPoints.Count(); i++)
             {   if (InterpolationPoints.Count() <= 0) break;
+            
+                //TODO: SprawdzIC
                 s[0][i + 1] = ((InterpolationPoints.ElementAt(Math.Min(Math.Max(i, 0), InterpolationPoints.Count() - 1)))).X;
                 s[1][i + 1] = ((InterpolationPoints.ElementAt(Math.Min(Math.Max(i, 0), InterpolationPoints.Count() - 1)))).Y;
                 s[2][i + 1] = ((InterpolationPoints.ElementAt(Math.Min(Math.Max(i, 0), InterpolationPoints.Count() - 1)))).Z;
 
             }
-            double[][] result = { mtx.GaussElimination(s[0]), mtx.GaussElimination(s[1]), mtx.GaussElimination(s[2]) };
-            ObservableCollection<Point> vertices = new ObservableCollection<Point>();
+            ///double[][] result = { mtx.GaussElimination(s[0]), mtx.GaussElimination(s[1]), mtx.GaussElimination(s[2]) };
+            double[][] result = { MatrixProvider.ThomasAlgorithm(nVectors[1], nVectors[2], nVectors[0], s[0]), MatrixProvider.ThomasAlgorithm(nVectors[1], nVectors[2], nVectors[0], s[1]), MatrixProvider.ThomasAlgorithm(nVectors[1], nVectors[2], nVectors[0], s[2]) } ;
+            _pointsCollectionInterpolation.Clear();
+           // ObservableCollection<Point> vertices = new ObservableCollection<Point>();
+
             for (int i = 0; i < InterpolationPoints.Count() + 2; i++)
-                vertices.Add(new Point(result[0][i], result[1][i], result[2][i]));
-            _pointsCollectionInterpolation = vertices;
-            return vertices;
+                _pointsCollectionInterpolation.Add(new Point(result[0][i], result[1][i], result[2][i]));
+
+          //  _pointsCollectionInterpolation = vertices;
+           // return vertices;
         }
 
-        private double[,] CalculateSegments(int knotsCount)
+
+        //private ObservableCollection<Point> CalculateInterpolationDeBoore(Matrix4d transformacja)
+        //{
+        //    InterpolationPoints = PointsCollection;
+        //    Matrix4d projekcja = MatrixProvider.ProjectionMatrix();
+
+
+        //}
+
+            private double[,] CalculateSegments(int knotsCount)
         {
+            //TODO: przerobić setsplineknots
             SetSplineKnots(knotsCount);
             return _knots.CalculateNMatrix(N, knotsCount);
         }
 
+        private double[][] CalculateSegments2(int knotsCount)
+        {
+            //TODO: przerobić setsplineknots
+            SetSplineKnots(knotsCount);
+            return _knots.CalculateNVectors(N, knotsCount);
+        }
 
         public BezierCurveC2(IEnumerable<Point> points, bool interpolation)
         {
@@ -138,11 +162,12 @@ namespace ModelowanieGeometryczne.Model
         {
             if (_interpolation)
             {
-                if (PointsCollection.Count > 3)
-                {
-                   var debor= CalculateInterpolationDeBoore(transformacja);
+                if (PointsCollection.Count > 1 )
+                {//TODO: Wywoływać jedynie przy zmianie ilości punktów lub zmianie współrzędnych punktu. Moze INotifyPropertyChanged
+                    
+                    CalculateInterpolationDeBoore();
                     transformedProjectedPoints.Clear();
-                    foreach (var p in debor)
+                    foreach (var p in _pointsCollectionInterpolation)
                     {
                         var a = projekcjaRight.Multiply(transformacja.Multiply(p));
                         transformedProjectedPoints.Add(new Point(a.X, a.Y, a.Z));
@@ -175,7 +200,7 @@ namespace ModelowanieGeometryczne.Model
                         {
                             if (t >= _knots[3] && t <= _knots[_knots.Length - PolynomialDegree - 4])
                             {
-                                //TODO: Zrobić rysowanie liniami.
+                                
                                 var u = BSplinePoint(t);
                                 var v = BSplinePoint(t + divisions);
 
@@ -427,7 +452,10 @@ namespace ModelowanieGeometryczne.Model
         {
             if (_interpolation)
             {
-                var debor = CalculateInterpolationDeBoore(transformacja);
+                //  var debor = CalculateInterpolationDeBoore(transformacja);
+
+                CalculateInterpolationDeBoore();
+                var debor = _pointsCollectionInterpolation;
                 if (IsBernsteinBasis)
                 {
                     if (PolylineEnabled)

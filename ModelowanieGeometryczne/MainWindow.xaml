@@ -9,7 +9,7 @@
         KeyDown="MainWindow_OnKeyDown"
         mc:Ignorable="d"
         WindowState="Maximized"
-        Title="Modelowanie Geometryczne" Height="350" Width="525">
+        Title="Modelowanie Geometryczne" Height="567.45" Width="1437">
 
 
     <d:Window.DataContext>
@@ -77,7 +77,7 @@
 
             <TextBlock Grid.Row="5" Grid.Column="0" Text="  torus:  "></TextBlock>
             <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding  Scene.TorusEnabled}"/>
-            
+
             <TextBlock Grid.Row="7" Grid.Column="0" Text="  Horizontal/circular patches:  "></TextBlock>
             <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding Scene.HorizontalPatches}"/>
             <TextBlock Grid.Row="8" Grid.Column="0" Text="  Vertical patches:  "></TextBlock>
@@ -107,8 +107,8 @@
             </Grid.RowDefinitions>
 
             <TabControl>
-                
-                
+
+
                 <TabItem Header="PointsCollection">
                     <ListView Name="PointsListView" Grid.Row="0" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.PointsCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
                         <ListView.ItemContainerStyle>
@@ -133,7 +133,7 @@
                         </ListView.View>
                     </ListView>
                 </TabItem>
-                
+
                 <TabItem Header="Bezier patches">
                     <ListView Name="BezierPatchView" Grid.Row="0" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.BezierPatchCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
                         <ListView.ItemContainerStyle>
@@ -221,10 +221,12 @@
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
+                                
+                                
                                 <GridViewColumn Header="Bernstein Basis">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <ContentControl Content="{Binding}">
+                                            <!--<ContentControl Content="{Binding}">
                                                 <ContentControl.Resources>
                                                     <DataTemplate DataType="{x:Type model:BezierCurveC2}">
                                                         <CheckBox IsChecked="{Binding IsBernsteinBasis}"/>
@@ -232,19 +234,22 @@
                                                     <DataTemplate DataType="{x:Type model:BezierCurve}">
                                                     </DataTemplate>
                                                 </ContentControl.Resources>
-                                            </ContentControl>
+                                            </ContentControl>-->
+                                            <CheckBox IsChecked="{Binding IsBernsteinBasis}" Click="RefreshScene"></CheckBox>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
+                                
+                                
                             </GridView>
                         </ListView.View>
                     </ListView>
 
                 </TabItem>
-                
-                
-                
-                
+
+
+
+
             </TabControl>
 
         </Grid>
