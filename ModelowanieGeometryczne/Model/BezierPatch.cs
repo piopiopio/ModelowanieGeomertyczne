@@ -123,9 +123,13 @@ namespace ModelowanieGeometryczne.Model
         //        }
         //    }
 
-        public Vector4d[,] GetPatchMatrix(int i, int j)
+        public Matrix4d GetPatchMatrix(int i, int j)
         {
-            return new Vector4d[,] = { Vector4d.Zero, Vector4d.Zero,Vector4d.Zero,Vector4d.Zero};
+            int ho = 0;
+            int ve = 0;
+            Matrix4d PatchMatrix = new Matrix4d();
+ 
+            return PatchMatrix;
         }
 
         private void SetUpVerticesCylinder()

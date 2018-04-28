@@ -107,80 +107,7 @@
             </Grid.RowDefinitions>
 
             <TabControl>
-                <TabItem Header="Bezier patches">
-                    <ListView Name="BezierPatchView" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.BezierPatchCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="ListViewItem">
-                                <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>
-                            </Style>
-                        </ListView.ItemContainerStyle>
-                        <ListView.View>
-                            <GridView >
-                                <GridViewColumn Header="Name" Width="240">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBox Text="{Binding Name}"></TextBox>
-
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <!--<GridViewColumn Header="PointsCollection" Width="360" >
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <ListView ItemsSource="{Binding Vertices}" Height="100" Width="340">
-                                                
-                                                --><!--<ListView.Resources>
-                                                    <ContextMenu x:Key="ItemContextMenu">
-                                                        <MenuItem Header="Remove points" Command="{Binding Path=DataContext.RemovePointsCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
-                                                        --><!--<MenuItem Header="Add points" Command="{Binding Path=DataContext.Scene.AddPointsCommand, RelativeSource={RelativeSource AncestorType=ListView, AncestorLevel=2}}"/>-->
-                                                      
-                                                    <!--</ContextMenu>
-                                                </ListView.Resources>--><!--
-                                                <ListView.View>
-                                                    <GridView >
-                                                        <GridViewColumn Header="Name" Width="340" DisplayMemberBinding="{Binding Name}"/>
-                                                    </GridView>
-                                                </ListView.View>
-                                                --><!--<ListView.ItemContainerStyle>
-                                                    <Style TargetType="{x:Type ListViewItem}" >
-                                                        <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}"/>
-                                                        <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>-->
-                                                        <!--<Setter Property="IsBernstein" Value="{Binding IsBernstein}"></Setter>--><!--
-                                                    </Style>
-                                                </ListView.ItemContainerStyle>--><!--
-                                            </ListView>
-
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>-->
-                                <GridViewColumn Header="IsSelected" Width="120" DisplayMemberBinding="{Binding Selected}"/>
-                                <GridViewColumn Header="Polyline enabled" Width="120" >
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <CheckBox IsChecked="{Binding PolylineEnabled}" Click="RefreshScene"></CheckBox>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <!--<GridViewColumn Header="Bernstein Basis">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <ContentControl Content="{Binding}">
-                                                <ContentControl.Resources>
-                                                    <DataTemplate DataType="{x:Type model:BezierCurveC2}">
-                                                        <CheckBox IsChecked="{Binding IsBernsteinBasis}"/>
-                                                    </DataTemplate>
-                                                    <DataTemplate DataType="{x:Type model:BezierCurve}">
-                                                    </DataTemplate>
-                                                </ContentControl.Resources>
-                                            </ContentControl>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>-->
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-
-                </TabItem>
+                
                 
                 <TabItem Header="PointsCollection">
                     <ListView Name="PointsListView" Grid.Row="0" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.PointsCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
@@ -206,7 +133,39 @@
                         </ListView.View>
                     </ListView>
                 </TabItem>
+                
+                <TabItem Header="Bezier patches">
+                    <ListView Name="BezierPatchView" Grid.Row="0" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.BezierPatchCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.View>
+                            <GridView >
+                                <GridViewColumn Header="Name" Width="240">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Name}"></TextBox>
 
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn Header="IsSelected" Width="120" DisplayMemberBinding="{Binding Selected}"/>
+                                <GridViewColumn Header="Polyline enabled" Width="120" >
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding PolylineEnabled}" Click="RefreshScene"></CheckBox>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
+                </TabItem>
                 <TabItem Header="Bezier curves">
                     <ListView Name="BezierCurveListView" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.BezierCurveCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
                         <ListView.ItemContainerStyle>

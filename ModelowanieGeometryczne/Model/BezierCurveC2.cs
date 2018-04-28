@@ -16,6 +16,8 @@ namespace ModelowanieGeometryczne.Model
         private ObservableCollection<Point> _additionalPointsCollection = new ObservableCollection<Point>();
         private ObservableCollection<Point> _additionalPointsCollection2 = new ObservableCollection<Point>();
         ObservableCollection<Point> transformedProjectedPoints = new ObservableCollection<Point>();
+
+
         public ObservableCollection<Point> InterpolationPoints { get; set; }
         private double[] _knots;
         private const int PolynomialDegree = 3;
@@ -51,7 +53,7 @@ namespace ModelowanieGeometryczne.Model
             for (int i = 0; i < 3; i++)
                 s[i] = new double[InterpolationPoints.Count() + 2];
             for (int i = -1; i <= InterpolationPoints.Count(); i++)
-            {
+            {   if (InterpolationPoints.Count() <= 0) break;
                 s[0][i + 1] = ((InterpolationPoints.ElementAt(Math.Min(Math.Max(i, 0), InterpolationPoints.Count() - 1)))).X;
                 s[1][i + 1] = ((InterpolationPoints.ElementAt(Math.Min(Math.Max(i, 0), InterpolationPoints.Count() - 1)))).Y;
                 s[2][i + 1] = ((InterpolationPoints.ElementAt(Math.Min(Math.Max(i, 0), InterpolationPoints.Count() - 1)))).Z;
@@ -227,14 +229,12 @@ namespace ModelowanieGeometryczne.Model
                         {
                             if (t >= _knots[3] && t <= _knots[_knots.Length - PolynomialDegree - 4])
                             {
-                                //TODO: Zrobić rysowanie liniami.
+                              
                                 var u = BSplinePoint(t);
                                 var v = BSplinePoint(t + divisions);
 
-                                // var windowCoordinates = projekcja.Multiply(transformacja.Multiply(u.Coordinates));
                                 GL.Vertex2(u.X, u.Y);
 
-                                ///   windowCoordinates = projekcja.Multiply(transformacja.Multiply(v.Coordinates));
                                 GL.Vertex2(v.X, v.Y);
                             }
                         }
@@ -256,6 +256,7 @@ namespace ModelowanieGeometryczne.Model
 
             double a = (knots[i + n] - knots[i] != 0.0) ? (ti - knots[i]) / (knots[i + n] - knots[i]) : 0;
             double b = (knots[i + n + 1] - knots[i + 1] != 0.0) ? (knots[i + n + 1] - ti) / (knots[i + n + 1] - knots[i + 1]) : 0;
+
             return (a * GetNFunctionValue(knots, i, n - 1, ti)) + (b * GetNFunctionValue(knots, i + 1, n - 1, ti));
         }
 
