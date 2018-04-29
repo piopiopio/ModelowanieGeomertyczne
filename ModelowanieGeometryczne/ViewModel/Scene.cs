@@ -138,7 +138,7 @@ namespace ModelowanieGeometryczne.ViewModel
             set
             {
                 _bezierCurveCollection = value;
-                //TODO: poprawić literówkę
+            
                 OnPropertyChanged("BezierCurveCollectiont");
                 Refresh();
             }
@@ -406,7 +406,7 @@ namespace ModelowanieGeometryczne.ViewModel
             var translateMatrix = MatrixProvider.TranslateMatrix(_x / 720, -_y / 450, 0);
             var rotate = MatrixProvider.RotateXMatrix(_alphaX) * MatrixProvider.RotateYMatrix(_alphaY) * MatrixProvider.RotateZMatrix(_alphaZ);
 
-            //TODO: Matrix multiplication
+            //Matrix multiplication
             M = scaleMatrix * translateMatrix * rotate * M;
 
             _scale = 1;
@@ -420,7 +420,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
 
 
-            //TODO: wywoływanie rysowania torusa    
+            //wywoływanie rysowania torusa    
             if (TorusEnabled)
             {
                 if (Stereoscopy)

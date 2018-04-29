@@ -115,7 +115,7 @@ namespace ModelowanieGeometryczne
                 Paint();
             }
             if (e.Button == MouseButtons.Right)
-            {   //TODO: Mouse event move
+            {  
                 _mainViewModel.Scene.MouseMoveRotate(e.X, e.Y);
                 Paint();
 

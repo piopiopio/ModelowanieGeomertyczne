@@ -23,7 +23,7 @@ namespace ModelowanieGeometryczne.Model
 {
     public class Torus : ViewModelBase
     {
-        //TODO: dodano
+      
        
 
         public event PropertyChangedEventHandler RefreshTorus;
@@ -197,7 +197,7 @@ namespace ModelowanieGeometryczne.Model
             GL.Begin(BeginMode.Lines);
             GL.Color3(0.6, 0, 0);
 
-            // TODO: zmiana odleglosciu oczu
+ 
             Matrix4d projekcja = MatrixProvider.RightProjectionMatrix();
             foreach (var relations in _relationsList)
             {
@@ -224,8 +224,8 @@ namespace ModelowanieGeometryczne.Model
 
             GL.Begin(BeginMode.Lines);
             GL.Color3(0, 0, 0.9);
-            //todo : zmniejszyc e zwiekszyc r
-            //TODO: Zrobić stałą wartosc
+            
+          
             projekcja = MatrixProvider.LeftProjectionMatrix();
             foreach (var relations in _relationsList)
             {
@@ -267,7 +267,7 @@ namespace ModelowanieGeometryczne.Model
                    }
                    else
                    {
-                       //TODO: Mieszanie koloru
+                       
                        pixeltemp = bmp3.GetPixel(i, j);
                        result = Color.FromArgb(Math.Min(temp.R + pixeltemp.R, 255), Math.Min(temp.G + pixeltemp.G, 255), Math.Min(temp.B + pixeltemp.B, 255));
                        bmp3.SetPixel(i, j, result);
@@ -295,7 +295,7 @@ namespace ModelowanieGeometryczne.Model
            //        else if (bmp3.GetPixel(i, j).B == 0)
            //        {
 
-           //            //TODO: Blending colors overlapped lines.
+           //            //Blending colors overlapped lines.
 
            //            bmp3.SetPixel(i, j, k1);
            //        }

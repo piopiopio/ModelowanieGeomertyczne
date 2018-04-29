@@ -25,7 +25,7 @@ namespace ModelowanieGeometryczne.Model
         }
 
         public string CursorWindowCoordinates
-        {   //TODO: Hardcoded
+        {   
             //Zmienić na parametryczne rozdzielczość okna
             get { return "Cursor window coordinates: X:" + String.Format("{0:0.##}",_windowCoordinate.X) + " Y:" + String.Format("{0:0.##}",_windowCoordinate.Y) + " Z:" + String.Format("{0:0.##}",_windowCoordinate.Z); }
         

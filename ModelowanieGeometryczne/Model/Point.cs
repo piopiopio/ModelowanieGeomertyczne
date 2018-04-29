@@ -146,7 +146,7 @@ namespace ModelowanieGeometryczne.Model
             GL.Begin(BeginMode.Points);
 
 
-            // TODO: zmiana odleglosciu oczu
+            //zmiana odleglosciu oczu
             Matrix4d projekcja = MatrixProvider.RightProjectionMatrix();
             var a = projekcja.Multiply(transformacja.Multiply(_coordinates));
 
@@ -176,7 +176,16 @@ namespace ModelowanieGeometryczne.Model
             _windowCoordinates.Y = (a.Y / 2 + b.Y / 2) * 750 / 2;
 
             GL.End();
+        }
 
+        public Point Subtract(Point a)
+        {
+            return new Point(Coordinates.X - a.Coordinates.X, Coordinates.Y - a.Coordinates.Y, Coordinates.Z - a.Coordinates.Z);
+        }
+
+        public double Length()
+        {
+            return Math.Sqrt(Coordinates.X * Coordinates.X + Coordinates.Y * Coordinates.Y + Coordinates.Z * Coordinates.Z);
         }
         #endregion Public Methods
     }

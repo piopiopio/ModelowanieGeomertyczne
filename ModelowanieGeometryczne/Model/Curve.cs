@@ -7,6 +7,7 @@ using ModelowanieGeometryczne.Helpers;
 using ModelowanieGeometryczne.ViewModel;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using System.Collections.Specialized;
 
 namespace ModelowanieGeometryczne.Model
 {
@@ -21,7 +22,8 @@ namespace ModelowanieGeometryczne.Model
         protected const int RenderWidth = 1440;
         protected const int RenderHeight = 750;
 
-        private ObservableCollection<Point> _pointsCollection = new ObservableCollection<Point>();
+        protected ObservableCollection<Point> _pointsCollection = new ObservableCollection<Point>();
+      
         private ICommand _removePoints;
         private string _name;
         private bool _polylineEnabled = true;
@@ -29,8 +31,19 @@ namespace ModelowanieGeometryczne.Model
         private string _curveType=null;
 
 
+        public Curve()
+        {
+        }
 
+        private void _pointsCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            recalculatePoints();
+        }
 
+        virtual protected void recalculatePoints()
+        {
+
+        }
 
         #region Private Methods
         #endregion Private Methods
@@ -43,11 +56,20 @@ namespace ModelowanieGeometryczne.Model
         }
         public ICommand RemovePointsCommand { get { return _removePoints ?? (_removePoints = new ActionCommand(RemoveSelectedPoints)); } }
         
-        public ObservableCollection<Point> PointsCollection
+        public virtual ObservableCollection<Point> PointsCollection
         {
-            get { return _pointsCollection; }
-            set { _pointsCollection = value; }
+            get
+            {
+                return _pointsCollection;
+            }
+            set
+            {
+                _pointsCollection = value;
+                _pointsCollection.CollectionChanged += _pointsCollection_CollectionChanged;
+            }
         }
+
+ 
 
         public string Name
         {
