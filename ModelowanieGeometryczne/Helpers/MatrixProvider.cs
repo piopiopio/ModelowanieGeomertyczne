@@ -5,7 +5,7 @@ using OpenTK;
 namespace ModelowanieGeometryczne.Helpers
 {
     public static class MatrixProvider
-    {   //TODO: ScaleMatrix, TranslateMatrix, ProjectionMatrix
+    {   
         private static double _r = 10.0;
         private static double _e = 0.05;
 
@@ -73,7 +73,7 @@ namespace ModelowanieGeometryczne.Helpers
                 {
                     double t = knots[i + n - 1];
                     nMatrix[j - 1, i - 1] = knots.GetNFunctionValue(j, n, t);
-                    if (i==j)
+                    if (i == j)
                     {
 
                     }
@@ -83,6 +83,34 @@ namespace ModelowanieGeometryczne.Helpers
         }
 
 
+        //public static double[][] CalculateNVectors(this double[] knots, int n, int knotsCount)
+        //{
+
+        //    //double[][] nVectors = new double[3][];
+        //    //for (int i = 0; i < 3; i++)
+        //    //    nVectors[i] = new double[knotsCount + 2];
+
+        //    //for (int j = 1; j <= knotsCount + 2; j++)
+        //    //{
+        //    //    nVectors[0][j - 1] = knots.GetNFunctionValue(j, n, knots[n + j - 1+1]); //górne pasmo
+        //    //    nVectors[1][j - 1] = knots.GetNFunctionValue(j, n, knots[n + j - 1]); //diagonala
+        //    //    nVectors[2][j - 1] = knots.GetNFunctionValue(j, n, knots[n + j - 1-1]); //dolne pasmo
+        //    //}
+
+        //    double[][] nVectors = new double[3][];
+        //    for (int i = 0; i < 3; i++)
+        //        nVectors[i] = new double[knotsCount];
+
+        //    for (int j = 1; j <= knotsCount; j++)
+        //    {
+        //        nVectors[0][j - 1] = knots.GetNFunctionValue(j, n, knots[n + j - 1 + 1]); //górne pasmo
+        //        nVectors[1][j - 1] = knots.GetNFunctionValue(j, n, knots[n + j - 1]); //diagonala
+        //        nVectors[2][j - 1] = knots.GetNFunctionValue(j, n, knots[n + j - 1 - 1]); //dolne pasmo
+        //    }
+
+
+        //    return nVectors;
+        //}
         public static double[][] CalculateNVectors(this double[] knots, int n, int knotsCount)
         {
             //double[][] s = new double[3][];
@@ -95,15 +123,14 @@ namespace ModelowanieGeometryczne.Helpers
             for (int j = 1; j <= knotsCount + 2; j++)
             {
 
-                nVectors[0][j - 1] = knots.GetNFunctionValue(j, n, knots[n + j - 1+1]); //górne pasmo
+                nVectors[0][j - 1] = knots.GetNFunctionValue(j, n, knots[n + j - 1 + 1]); //górne pasmo
                 nVectors[1][j - 1] = knots.GetNFunctionValue(j, n, knots[n + j - 1]); //diagonala
-                nVectors[2][j - 1] = knots.GetNFunctionValue(j, n, knots[n + j - 1-1]); //dolne pasmo
+                nVectors[2][j - 1] = knots.GetNFunctionValue(j, n, knots[n + j - 1 - 1]); //dolne pasmo
             }
 
 
             return nVectors;
         }
-
         public static double GetNFunctionValue(this double[] knots, int i, int n, double ti)
         {//TODO: Skasowac duplikacje kodu.
             if (n < 0)
@@ -121,7 +148,7 @@ namespace ModelowanieGeometryczne.Helpers
         }
 
         public static double[] ThomasAlgorithm(double[] a, double[] b, double[] c, double[] f)
-        {
+        {   //Dekompozycja LU dla macierzy trójdiagonalnej
             //b dolne pasmo
             //a diagonala
             //c gorna diagonala
@@ -223,7 +250,7 @@ namespace ModelowanieGeometryczne.Helpers
             return ProjectionMatrix(_r, _e);
         }
 
-        //TODO: StereoscopyProjectionMatrix
+     
         private static Matrix4d ProjectionMatrix(double r, double e)
         {
             Matrix4d result = new Matrix4d(1, 0, e / (2 * r), 0,

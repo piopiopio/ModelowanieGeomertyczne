@@ -6,13 +6,13 @@ using System.Windows.Forms;
 using ModelowanieGeometryczne.Helpers;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-
+using System.Collections.Specialized;
 
 namespace ModelowanieGeometryczne.Model
 {
     public class BezierCurveC2 : Curve
     {
-
+        bool _chord = true;
         private ObservableCollection<Point> _pointsCollectionInterpolation = new ObservableCollection<Point>();
         private ObservableCollection<Point> _additionalPointsCollection = new ObservableCollection<Point>();
         private ObservableCollection<Point> _additionalPointsCollection2 = new ObservableCollection<Point>();
@@ -21,6 +21,7 @@ namespace ModelowanieGeometryczne.Model
 
         public ObservableCollection<Point> InterpolationPoints { get; set; }
         private double[] _knots;
+        private double[] _knotsChord;
         private const int PolynomialDegree = 3;
         private bool _isBernsteinBasis = false;
         private bool _interpolation = false;
@@ -49,30 +50,29 @@ namespace ModelowanieGeometryczne.Model
             InterpolationPoints = PointsCollection;
 
             double[][] nVectors = CalculateSegments2(InterpolationPoints.Count);
-            var mtx = CalculateSegments(InterpolationPoints.Count);
-            
+
+
             double[][] s = new double[3][];
             for (int i = 0; i < 3; i++)
                 s[i] = new double[InterpolationPoints.Count() + 2];
             for (int i = -1; i <= InterpolationPoints.Count(); i++)
-            {   if (InterpolationPoints.Count() <= 0) break;
-            
-                //TODO: SprawdzIC
+            {
+                if (InterpolationPoints.Count() <= 0) break;
+
+
                 s[0][i + 1] = ((InterpolationPoints.ElementAt(Math.Min(Math.Max(i, 0), InterpolationPoints.Count() - 1)))).X;
                 s[1][i + 1] = ((InterpolationPoints.ElementAt(Math.Min(Math.Max(i, 0), InterpolationPoints.Count() - 1)))).Y;
                 s[2][i + 1] = ((InterpolationPoints.ElementAt(Math.Min(Math.Max(i, 0), InterpolationPoints.Count() - 1)))).Z;
 
             }
-            ///double[][] result = { mtx.GaussElimination(s[0]), mtx.GaussElimination(s[1]), mtx.GaussElimination(s[2]) };
-            double[][] result = { MatrixProvider.ThomasAlgorithm(nVectors[1], nVectors[2], nVectors[0], s[0]), MatrixProvider.ThomasAlgorithm(nVectors[1], nVectors[2], nVectors[0], s[1]), MatrixProvider.ThomasAlgorithm(nVectors[1], nVectors[2], nVectors[0], s[2]) } ;
+
+            double[][] result = { MatrixProvider.ThomasAlgorithm(nVectors[1], nVectors[2], nVectors[0], s[0]), MatrixProvider.ThomasAlgorithm(nVectors[1], nVectors[2], nVectors[0], s[1]), MatrixProvider.ThomasAlgorithm(nVectors[1], nVectors[2], nVectors[0], s[2]) };
             _pointsCollectionInterpolation.Clear();
-           // ObservableCollection<Point> vertices = new ObservableCollection<Point>();
+
 
             for (int i = 0; i < InterpolationPoints.Count() + 2; i++)
                 _pointsCollectionInterpolation.Add(new Point(result[0][i], result[1][i], result[2][i]));
 
-          //  _pointsCollectionInterpolation = vertices;
-           // return vertices;
         }
 
 
@@ -84,7 +84,7 @@ namespace ModelowanieGeometryczne.Model
 
         //}
 
-            private double[,] CalculateSegments(int knotsCount)
+        private double[,] CalculateSegments(int knotsCount)
         {
             //TODO: przerobić setsplineknots
             SetSplineKnots(knotsCount);
@@ -103,20 +103,31 @@ namespace ModelowanieGeometryczne.Model
             if (interpolation)
             {
                 CurveType = "C2Interpolation";
-                
+
             }
             else
             {
-                
+
                 CurveType = "C2";
             }
-            PointsCollection = new ObservableCollection<Point>(points);
+
             Name = "Bezier curve number " + CurveNumber + " type: " + CurveType;
             _interpolation = interpolation;
+
+
+            PointsCollection = new ObservableCollection<Point>(points);
+            CalculateInterpolationDeBoore();
+        }
+
+        protected override void recalculatePoints()
+        {
+           // CalculateInterpolationDeBoore();
+
         }
 
         private void CalculateAdditionalPoints(ObservableCollection<Point> PointsCollection)
         {
+
             _additionalPointsCollection.Clear();
             for (int i = 0; i < PointsCollection.Count - 1; i++)
             {
@@ -130,42 +141,79 @@ namespace ModelowanieGeometryczne.Model
 
 
             _additionalPointsCollection2.Add(new Point(_additionalPointsCollection[k].X + (_additionalPointsCollection[k + 1].X - _additionalPointsCollection[k].X) / 2, _additionalPointsCollection[k].Y + (_additionalPointsCollection[k + 1].Y - _additionalPointsCollection[k].Y) / 2, _additionalPointsCollection[k].Z + (_additionalPointsCollection[k + 1].Z - _additionalPointsCollection[k].Z) / 2));
-            _additionalPointsCollection2.Add(_additionalPointsCollection[k+1]);
-            for (k = 3; k < _additionalPointsCollection.Count - 3; k+=2)
-            {//TODO: Zrobić generowanie punktów
+            _additionalPointsCollection2.Add(_additionalPointsCollection[k + 1]);
+            for (k = 3; k < _additionalPointsCollection.Count - 3; k += 2)
+            {
                 _additionalPointsCollection2.Add(_additionalPointsCollection[k]);
                 _additionalPointsCollection2.Add(new Point(_additionalPointsCollection[k].X + (_additionalPointsCollection[k + 1].X - _additionalPointsCollection[k].X) / 2, _additionalPointsCollection[k].Y + (_additionalPointsCollection[k + 1].Y - _additionalPointsCollection[k].Y) / 2, _additionalPointsCollection[k].Z + (_additionalPointsCollection[k + 1].Z - _additionalPointsCollection[k].Z) / 2));
-                _additionalPointsCollection2.Add(_additionalPointsCollection[k+1]);
+                _additionalPointsCollection2.Add(_additionalPointsCollection[k + 1]);
             }
 
             _additionalPointsCollection2.Add(_additionalPointsCollection[k]);
             _additionalPointsCollection2.Add(new Point(_additionalPointsCollection[k].X + (_additionalPointsCollection[k + 1].X - _additionalPointsCollection[k].X) / 2, _additionalPointsCollection[k].Y + (_additionalPointsCollection[k + 1].Y - _additionalPointsCollection[k].Y) / 2, _additionalPointsCollection[k].Z + (_additionalPointsCollection[k + 1].Z - _additionalPointsCollection[k].Z) / 2));
 
-          
+
         }
         private void SetSplineKnots()
         {
             _knots = new double[transformedProjectedPoints.Count + PolynomialDegree + 4];
+
             double interval = 1 / (double)(transformedProjectedPoints.Count + PolynomialDegree + 3);
+
             for (int i = 0; i < transformedProjectedPoints.Count + PolynomialDegree + 4; i++)
+
                 _knots[i] = i * interval;
+
         }
+
+
         private void SetSplineKnots(int count)
         {
             _knots = new double[count + PolynomialDegree + 4];
+            _knotsChord = new double[count];
             double interval = 1 / (double)(count + PolynomialDegree + 3);
+
             for (int i = 0; i < count + PolynomialDegree + 4; i++)
+            {
                 _knots[i] = i * interval;
+
+            }
+
+            double L = 0;
+            foreach (var item in PointsCollection)
+            {
+                L += item.Length();
+            }
+
+            _knotsChord[0] = 0;
+
+            for (int i = 0; i < count-1; i++)
+            {
+                _knotsChord[i+1] = _knotsChord[i]+(PointsCollection[i + 1].Subtract(PointsCollection[i])).Length()/L;
+
+            }
+
+            _knotsChord[count-1] = 1;
+            //if (_chord)
+            //{
+
+            //}
+            //else
+            //{
+
+            //}
         }
+
+
 
         public override void DrawCurve(Matrix4d transformacja)
         {
             if (_interpolation)
             {
-                if (PointsCollection.Count > 1 )
-                {//TODO: Wywoływać jedynie przy zmianie ilości punktów lub zmianie współrzędnych punktu. Moze INotifyPropertyChanged
-                    
-                    CalculateInterpolationDeBoore();
+                if (PointsCollection.Count > 1)
+                {
+
+                    // CalculateInterpolationDeBoore();
                     transformedProjectedPoints.Clear();
                     foreach (var p in _pointsCollectionInterpolation)
                     {
@@ -200,7 +248,7 @@ namespace ModelowanieGeometryczne.Model
                         {
                             if (t >= _knots[3] && t <= _knots[_knots.Length - PolynomialDegree - 4])
                             {
-                                
+
                                 var u = BSplinePoint(t);
                                 var v = BSplinePoint(t + divisions);
 
@@ -254,7 +302,7 @@ namespace ModelowanieGeometryczne.Model
                         {
                             if (t >= _knots[3] && t <= _knots[_knots.Length - PolynomialDegree - 4])
                             {
-                              
+
                                 var u = BSplinePoint(t);
                                 var v = BSplinePoint(t + divisions);
 
@@ -303,6 +351,7 @@ namespace ModelowanieGeometryczne.Model
         {
             if (_interpolation)
             {
+                CalculateInterpolationDeBoore();
                 transformedProjectedPoints.Clear();
                 foreach (var p in _pointsCollectionInterpolation)
                 {
@@ -340,7 +389,7 @@ namespace ModelowanieGeometryczne.Model
                     {
                         if (t >= _knots[3] && t <= _knots[_knots.Length - PolynomialDegree - 4])
                         {
-                            //TODO: Zrobić rysowanie liniami.
+
                             var u = BSplinePoint(t);
                             var v = BSplinePoint(t + divisions);
 
@@ -357,7 +406,7 @@ namespace ModelowanieGeometryczne.Model
                     {
                         if (t >= _knots[3] && t <= _knots[_knots.Length - PolynomialDegree - 4])
                         {
-                            //TODO: Zrobić rysowanie liniami.
+
                             var u = BSplinePoint(t);
                             var v = BSplinePoint(t + divisions);
 
@@ -373,7 +422,7 @@ namespace ModelowanieGeometryczne.Model
                 }
             }
 
-        
+
             else
             {
                 transformedProjectedPoints.Clear();
@@ -413,7 +462,7 @@ namespace ModelowanieGeometryczne.Model
                     {
                         if (t >= _knots[3] && t <= _knots[_knots.Length - PolynomialDegree - 4])
                         {
-                            //TODO: Zrobić rysowanie liniami.
+
                             var u = BSplinePoint(t);
                             var v = BSplinePoint(t + divisions);
 
@@ -430,7 +479,7 @@ namespace ModelowanieGeometryczne.Model
                     {
                         if (t >= _knots[3] && t <= _knots[_knots.Length - PolynomialDegree - 4])
                         {
-                            //TODO: Zrobić rysowanie liniami.
+
                             var u = BSplinePoint(t);
                             var v = BSplinePoint(t + divisions);
 
@@ -446,7 +495,7 @@ namespace ModelowanieGeometryczne.Model
                 }
             }
         }
-        
+
 
         public override void DrawPolyline(Matrix4d transformacja)
         {
