@@ -134,7 +134,7 @@
                     </ListView>
                 </TabItem>
 
-                <TabItem Header="Bezier patches">
+                <TabItem Header="Bezier patches" Height="22" VerticalAlignment="Top">
                     <ListView Name="BezierPatchView" Grid.Row="0" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.BezierPatchCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
@@ -157,6 +157,22 @@
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
                                             <CheckBox IsChecked="{Binding PolylineEnabled}" Click="RefreshScene"></CheckBox>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn Header="Horizontal divisions" Width="120">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding PatchHorizontalDivision}" TextChanged="TextBox_TextChanged"></TextBox>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn Header="Vertical divisions" Width="120">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding PatchVerticalDivision}" TextChanged="TextBox_TextChanged" ></TextBox>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>

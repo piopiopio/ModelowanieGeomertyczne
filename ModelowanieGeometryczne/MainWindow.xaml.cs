@@ -209,5 +209,10 @@ namespace ModelowanieGeometryczne
         {
             Paint();
         }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            Paint();
+        }
     }
 }

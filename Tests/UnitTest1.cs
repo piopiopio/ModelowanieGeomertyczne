@@ -42,12 +42,5 @@ namespace Tests
             
         }
 
-        [TestMethod]
-        public void TestMethod4()
-        {
-            var G = new double[,] { { 1, 2, 3, 4 },{ 5, 6, 7, 8 }, { 9, 10, 11, 12 }, { 13, 14, 15, 16 } };
-            var Bu = new double[] { 1, 2, 3, 4 };
-            var result = MatrixProvider.Multiply(Bu, G, Bu);
-        }
     }
 }

@@ -84,14 +84,27 @@ namespace ModelowanieGeometryczne.ViewModel
         public int PatchHorizontalDivision
         {
             get { return _patchHorizontalDivision; }
-            set { _patchHorizontalDivision = value; }
+            set
+            {
+                _patchHorizontalDivision = value;
+
+                foreach (var item in _bezierPatchCollection)
+                {
+                    item.PatchHorizontalDivision = _patchHorizontalDivision;
+                }
+            }
 
         }
 
         public int PatchVerticalDivision
         {
             get { return _patchVerticalDivision; }
-            set { _patchVerticalDivision = value; }
+            set { _patchVerticalDivision = value;
+                foreach (var item in _bezierPatchCollection)
+                {
+                    item.PatchVerticalDivision = _patchVerticalDivision;
+                }
+            }
 
         }
 
@@ -473,7 +486,8 @@ namespace ModelowanieGeometryczne.ViewModel
             }
             foreach (var patch in BezierPatchCollection)
             {
-                patch.Draw(M);
+                patch.DrawSurface(M);
+                patch.DrawPolyline(M);
             }
 
 
@@ -582,6 +596,7 @@ namespace ModelowanieGeometryczne.ViewModel
                     if (temp.Length < epsilon)
                     {
                         point.Selected = !point.Selected;
+                        return;
                     }
                 }
             }

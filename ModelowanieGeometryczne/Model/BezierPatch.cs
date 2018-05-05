@@ -20,11 +20,67 @@ namespace ModelowanieGeometryczne.Model
         public int VerticalPatches { get; set; }
         public double PatchWidth { get; set; }
         public double PatchHeight { get; set; }
-        public int PatchHorizontalDivision { get; set; }
-        public int PatchVerticalDivision { get; set; }
+        private int _patchHorizontalDivision = 4;
+        private int _patchVerticalDivision = 4;
+
+        public int PatchHorizontalDivision
+        {
+            get
+            {
+                return _patchHorizontalDivision;
+            }
+            set
+            {
+                if ((value >= 3) && (value<20))
+                {
+                    _patchHorizontalDivision = value;
+
+                    if (Surface != null)
+                    {
+                        foreach (var item in Surface)
+                        {
+                            item.v = _patchHorizontalDivision;
+
+                        }
+                    }
+                }
+            }
+        }
+        public int PatchVerticalDivision
+        {
+            get
+            {
+                return _patchVerticalDivision;
+            }
+            set
+            {
+                if ((value >= 3) && (value < 20))
+                {
+                    _patchVerticalDivision = value;
+                    if (Surface != null)
+                    {
+                        foreach (var item in Surface)
+                        {
+                            item.u = _patchVerticalDivision;
+                        }
+                    }
+                }
+            }
+        }
         public bool PatchesAreCylinder { get; set; }
         public Vector4d StartPoint { get; set; }
         private ObservableCollection<Point> _vertices = new ObservableCollection<Point>();
+        bool _polylineEnabled = true;
+
+        public bool PolylineEnabled
+        {
+            get { return _polylineEnabled; }
+            set
+            {
+                _polylineEnabled = value;
+                // OnPropertyChanged("PolylineEnabled");     
+            }
+        }
         public ObservableCollection<Point> Vertices
         {
             get
@@ -44,18 +100,7 @@ namespace ModelowanieGeometryczne.Model
         public bool Selected { get; set; }
         public string Name { get; set; }
         static int PatchNumber { get; set; }
-        private bool _polylineEnabled = false;
-        public bool PolylineEnabled
-        {
-            get
-            {
-                return _polylineEnabled;
-            }
-            set
-            {
-                _polylineEnabled = value;
-            }
-        }
+
 
         public BezierPatch(
             int horizontalPatches,
@@ -111,17 +156,12 @@ namespace ModelowanieGeometryczne.Model
             double dy = PatchHeight / (3 * VerticalPatches);
             Point LocalStartPoint;
             var temp = new Point[4, 4];
-            Patch[][] a = new Patch[3][];
 
-            for (int i = 0; i < 3; i++)
-            {
-                a[i] = new Patch[3];
-            }
 
             for (int i = 0; i < VerticalPatches; i++)
-            {
+            {//i pionowe płatki :
                 for (int j = 0; j < HorizontalPatches; j++)
-                {
+                {//j iteracja pozioma, poziome płatki ..
                     temp = new Point[4, 4];
 
                     LocalStartPoint = new Point(StartPoint.X + 3 * dx * j, StartPoint.Y + 3 * dy * i, StartPoint.Z);
@@ -129,11 +169,27 @@ namespace ModelowanieGeometryczne.Model
                     {
                         for (int l = 0; l < 4; l++)
                         {
-                            temp[k, l] = new Point(LocalStartPoint.X + l * dx, LocalStartPoint.Y + k * dy, LocalStartPoint.Z);
+
+
+
+                            //Wstawianie tych samych punktów na łączeniach
+                            if ((i != 0) && (k == 0))
+                            {
+                                temp[k, l] = Surface[j, i - 1].PatchPoints[3, l];
+                            }
+
+                            else if ((j != 0) && (l == 0))
+                            {
+                                temp[k, l] = Surface[j - 1, i].PatchPoints[k, 3];
+                            }
+                            else
+                            {
+                                temp[k, l] = new Point(LocalStartPoint.X + l * dx, LocalStartPoint.Y + k * dy, LocalStartPoint.Z);
+                            }
                         }
                     }
 
-                    Surface[j, i] = new Patch(temp);
+                    Surface[j, i] = new Patch(temp, _patchVerticalDivision, _patchHorizontalDivision);
 
                 }
             }
@@ -154,7 +210,7 @@ namespace ModelowanieGeometryczne.Model
         {
             //double dx = PatchWidth / HorizontalPatches;
             //double dy = PatchHeight / VerticalPatches;
-            double alpha = (Math.PI * 2.0f) / (3 * HorizontalPatches + 1);
+            //double alpha = (Math.PI * 2.0f) / (3 * HorizontalPatches + 1);
             //if (Vertices.Any())
             //{
             //    Vertices.Clear();
@@ -169,44 +225,77 @@ namespace ModelowanieGeometryczne.Model
             //    }
             //}
 
-            double dx = PatchWidth / (3 * HorizontalPatches);
-            double dy = PatchHeight / (3 * VerticalPatches);
-            Point LocalStartPoint;
-            var temp = new Point[4, 4];
-            Patch[][] a = new Patch[3][];
 
-            for (int i = 0; i < 3; i++)
-            {
-                a[i] = new Patch[3];
-            }
+
+            double alpha = (Math.PI * 2.0f) / (3 * HorizontalPatches);
+            double dx = PatchWidth / (3 * HorizontalPatches);
+
+            double dy = PatchHeight / (3 * VerticalPatches);
+
+
+
+            var temp = new Point[4, 4];
+
 
             for (int i = 0; i < VerticalPatches; i++)
-            {
+            {//i pionowe płatki :
                 for (int j = 0; j < HorizontalPatches; j++)
-                {
+                {//j iteracja pozioma, poziome płatki ..
                     temp = new Point[4, 4];
 
 
-                    LocalStartPoint = new Point(StartPoint.X + 3 * dx * j, StartPoint.Y + 3 * dy * i, StartPoint.Z);
+
+
                     for (int k = 0; k < 4; k++)
                     {
                         for (int l = 0; l < 4; l++)
                         {
-                            temp[k, l] = new Point(LocalStartPoint.X + l * dx, LocalStartPoint.Y + k * dy, LocalStartPoint.Z);
+
+
+
+                            //Wstawianie tych samych punktów na łączeniach
+                            if ((i != 0) && (k == 0))
+                            {
+                                temp[k, l] = Surface[j, i - 1].PatchPoints[3, l];
+                            }
+
+                            else if ((j != 0) && (l == 0))
+                            {
+                                temp[k, l] = Surface[j - 1, i].PatchPoints[k, 3];
+                            }
+                            else
+                            {
+                                temp[k, l] = new Point(PatchWidth * Math.Cos(alpha * (3 * j + l)), StartPoint.Y + (k + i * 3) * dy, PatchWidth * Math.Sin(alpha * (3 * j + l)));
+                                // temp[k, l] = new Point(LocalStartPoint.X + l * dx, LocalStartPoint.Y + k * dy, LocalStartPoint.Z);
+                            }
+
+
                         }
                     }
 
-                    Surface[j, i] = new Patch(temp);
+                    Surface[j, i] = new Patch(temp, _patchVerticalDivision, _patchHorizontalDivision);
 
                 }
             }
-
         }
 
 
 
+        public void DrawPolyline(Matrix4d transformacja)
+        {
+            if (_polylineEnabled)
+            {
+                for (int i = 0; i < HorizontalPatches; i++)
+                {
+                    for (int j = 0; j < VerticalPatches; j++)
+                    {
+                        Surface[i, j].DrawPolyline(transformacja);
+                    }
+                }
+            }
+        }
 
-        public void Draw(Matrix4d transformacja)
+        public void DrawSurface(Matrix4d transformacja)
         {
 
             for (int i = 0; i < HorizontalPatches; i++)
@@ -217,68 +306,8 @@ namespace ModelowanieGeometryczne.Model
                     Surface[i, j].DrawPatch(transformacja);
                 }
             }
-
-
-            //foreach (var point in Vertices)
-            //{
-            //    point.Draw(transformacja);
-            //}
-
-            //if (PolylineEnabled)
-            //{
-            //    drawPolyline(transformacja);
-            //}
         }
 
-        private void drawPolyline(Matrix4d transformacja)
-        {//Przed wywłoaniem tej motody musi zostac wywołane rysowanie punktów aby przeliczyc window coordinates
-            //var projekcja = MatrixProvider.ProjectionMatrix();
-            //double dx = PatchWidth / HorizontalPatches;
-            //double dy = PatchHeight / VerticalPatches;
-            //Vector4d windowCoordinates;
-
-            //GL.Begin(BeginMode.Lines);
-            //GL.Color3(1.0, 1.0, 1.0);
-            //int j = 0;
-            //for (int i = 0; i < (3 * VerticalPatches + 1); i++)
-            //{
-
-
-            //    for (j = 0; j < (3 * HorizontalPatches); j++)
-            //    {//poziome
-            //        windowCoordinates = projekcja.Multiply(transformacja.Multiply(Vertices[j + i * (3 * VerticalPatches + 1)].Coordinates));
-            //        GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-            //        windowCoordinates = projekcja.Multiply(transformacja.Multiply(Vertices[j + 1 + i * (3 * VerticalPatches + 1)].Coordinates));
-            //        GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-
-
-
-            //    }
-
-            //    if (PatchesAreCylinder)
-            //    {
-            //        windowCoordinates = projekcja.Multiply(transformacja.Multiply(Vertices[j + i * (3 * VerticalPatches + 1)].Coordinates));
-            //        GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-            //        windowCoordinates = projekcja.Multiply(transformacja.Multiply(Vertices[0 + i * (3 * VerticalPatches + 1)].Coordinates));
-            //        GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-            //    }
-
-            //}
-
-            //for (int i = 0; i < (3 * VerticalPatches); i++)
-            //{
-            //    for (j = 0; j < (3 * HorizontalPatches + 1); j++)
-            //    {
-
-            //        windowCoordinates = projekcja.Multiply(transformacja.Multiply(Vertices[j + i * (3 * VerticalPatches + 1)].Coordinates));
-            //        GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-            //        windowCoordinates = projekcja.Multiply(transformacja.Multiply(Vertices[j + (i + 1) * (3 * VerticalPatches + 1)].Coordinates));
-            //        GL.Vertex2(windowCoordinates.X, windowCoordinates.Y);
-
-            //    }
-            //}
-            //GL.End();
-        }
         #endregion Public Methods
     }
 }

@@ -14,16 +14,40 @@ namespace ModelowanieGeometryczne.Model
     public class Patch : ViewModelBase
     {
         Point[,] _patchPoints;
-        public int u, v;
+        private int _u, _v; //u-pionowe v-poziome
         public double[] U, V;
         public Point[,] CalculatedPoints;
         Matrix4d projection = MatrixProvider.ProjectionMatrix();
-
-
-        public Patch(Point[,] a, int _u = 10, int _v = 10)
+        public int u
         {
-            u = _u;
-            v = _v;
+            get { return _u; }
+            set
+            {
+                _u = value;
+                CalculateParametrizationVectors();
+                CalculatePoints();
+            }
+        }
+
+        public int v
+        {
+            get { return _v; }
+            set
+            {
+                _v = value;
+                CalculateParametrizationVectors();
+                CalculatePoints();
+            }
+        }
+
+
+
+
+
+        public Patch(Point[,] a, int uu = 10, int vv = 10)
+        {
+            _u = uu;
+            _v = vv;
             _patchPoints = a;
             CalculateParametrizationVectors();
             CalculatePoints();
@@ -55,35 +79,68 @@ namespace ModelowanieGeometryczne.Model
             }
         }
 
+        public void DrawPolyline(Matrix4d transformacja)
+        {
+            GL.Begin(BeginMode.Lines);
+
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4 - 1; j++)
+                {
+
+                    var _windowCoordinates = projection.Multiply(transformacja.Multiply(PatchPoints[i, j].Coordinates));
+                    GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
+
+                    _windowCoordinates = projection.Multiply(transformacja.Multiply(PatchPoints[i, j + 1].Coordinates));
+                    GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
+                }
+            }
+
+            for (int i = 0; i < 4 - 1; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+
+                    var _windowCoordinates = projection.Multiply(transformacja.Multiply(PatchPoints[i, j].Coordinates));
+                    GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
+
+                    _windowCoordinates = projection.Multiply(transformacja.Multiply(PatchPoints[i + 1, j].Coordinates));
+                    GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
+                }
+            }
+
+            GL.End();
+        }
+
         public void DrawPatch(Matrix4d transformacja)
         {
             GL.Begin(BeginMode.Lines);
-            
+
             for (int i = 0; i < U.Length; i++)
             {
-                for (int j = 0; j < V.Length-1; j++)
+                for (int j = 0; j < V.Length - 1; j++)
                 {
                     CalculatedPoints[i, j] = MatrixProvider.Multiply(CalculateB(U[i]), _patchPoints, CalculateB(V[j]));
 
                     var _windowCoordinates = projection.Multiply(transformacja.Multiply(CalculatedPoints[i, j].Coordinates));
                     GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
 
-                    CalculatedPoints[i, j+1] = MatrixProvider.Multiply(CalculateB(U[i]), _patchPoints, CalculateB(V[j+1]));
+                    CalculatedPoints[i, j + 1] = MatrixProvider.Multiply(CalculateB(U[i]), _patchPoints, CalculateB(V[j + 1]));
 
-                    _windowCoordinates = projection.Multiply(transformacja.Multiply(CalculatedPoints[i, j+1].Coordinates));
+                    _windowCoordinates = projection.Multiply(transformacja.Multiply(CalculatedPoints[i, j + 1].Coordinates));
                     GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
                 }
             }
 
-            for (int i = 0; i < U.Length-1; i++)
+            for (int i = 0; i < U.Length - 1; i++)
             {
                 for (int j = 0; j < V.Length; j++)
                 {
                     CalculatedPoints[i, j] = MatrixProvider.Multiply(CalculateB(U[i]), _patchPoints, CalculateB(V[j]));
                     var _windowCoordinates = projection.Multiply(transformacja.Multiply(CalculatedPoints[i, j].Coordinates));
                     GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
-                    CalculatedPoints[i+1, j] = MatrixProvider.Multiply(CalculateB(U[i+1]), _patchPoints, CalculateB(V[j]));
-                    _windowCoordinates = projection.Multiply(transformacja.Multiply(CalculatedPoints[i+1, j].Coordinates));
+                    CalculatedPoints[i + 1, j] = MatrixProvider.Multiply(CalculateB(U[i + 1]), _patchPoints, CalculateB(V[j]));
+                    _windowCoordinates = projection.Multiply(transformacja.Multiply(CalculatedPoints[i + 1, j].Coordinates));
                     GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
                 }
             }
@@ -99,7 +156,7 @@ namespace ModelowanieGeometryczne.Model
             {
                 for (int j = 0; j < V.Length; j++)
                 {
-                    CalculatedPoints[i,j]=MatrixProvider.Multiply(CalculateB(U[i]), _patchPoints, CalculateB(V[j]));
+                    CalculatedPoints[i, j] = MatrixProvider.Multiply(CalculateB(U[i]), _patchPoints, CalculateB(V[j]));
                 }
             }
 
@@ -145,6 +202,10 @@ namespace ModelowanieGeometryczne.Model
             }
 
         }
+
+
+
+
 
         public void SetParametrization(int _u, int _v)
         {
