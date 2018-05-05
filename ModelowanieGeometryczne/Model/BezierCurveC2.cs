@@ -66,6 +66,8 @@ namespace ModelowanieGeometryczne.Model
 
             }
 
+
+
             double[][] result = { MatrixProvider.ThomasAlgorithm(nVectors[1], nVectors[2], nVectors[0], s[0]), MatrixProvider.ThomasAlgorithm(nVectors[1], nVectors[2], nVectors[0], s[1]), MatrixProvider.ThomasAlgorithm(nVectors[1], nVectors[2], nVectors[0], s[2]) };
             _pointsCollectionInterpolation.Clear();
 
@@ -91,11 +93,11 @@ namespace ModelowanieGeometryczne.Model
             return _knots.CalculateNMatrix(N, knotsCount);
         }
 
-        private double[][] CalculateSegments2(int knotsCount)
+        private double[][] CalculateSegments2(int liczbaPunktowUzytkownika)
         {
             //TODO: przerobić setsplineknots
-            SetSplineKnots(knotsCount);
-            return _knots.CalculateNVectors(N, knotsCount);
+            SetSplineKnots(liczbaPunktowUzytkownika);
+            return _knots.CalculateNVectors(N, liczbaPunktowUzytkownika);
         }
 
         public BezierCurveC2(IEnumerable<Point> points, bool interpolation)
@@ -154,6 +156,7 @@ namespace ModelowanieGeometryczne.Model
 
 
         }
+
         private void SetSplineKnots()
         {
             _knots = new double[transformedProjectedPoints.Count + PolynomialDegree + 4];
@@ -166,34 +169,62 @@ namespace ModelowanieGeometryczne.Model
 
         }
 
+        //ObservableCollection<Point> GenerateMiddlepoints()
+        //{            //Tylko dla 3 punktów
+        //    ObservableCollection<Point> PointsCollectionTemp = new ObservableCollection<Point>();
+        //    int m = PointsCollection.Count();
+        //    double k = 4;
+        //    if (m > 0)
+        //    {
+        //        PointsCollectionTemp.Add(PointsCollection[0]);
+        //        for (int i = 0; i < m - 1; i++)
+        //        {
+        //            for (double j = 1; j < 4; j++)
+        //            {
+        //                double a = (k - j) / k;
+        //                double b = j / k;
+        //                PointsCollectionTemp.Add((PointsCollection[i].Multiply(a)).Add(PointsCollection[i+1].Multiply(b)));
+        //            }
+        //            PointsCollectionTemp.Add(PointsCollection[i+1]);
+        //        }
 
+                
+        //    }
+        //    return PointsCollectionTemp;
+        //}
         private void SetSplineKnots(int count)
         {
             _knots = new double[count + PolynomialDegree + 4];
-            _knotsChord = new double[count];
+            _knotsChord = new double[count + PolynomialDegree + 4];
             double interval = 1 / (double)(count + PolynomialDegree + 3);
 
             for (int i = 0; i < count + PolynomialDegree + 4; i++)
             {
                 _knots[i] = i * interval;
-
             }
 
-            double L = 0;
-            foreach (var item in PointsCollection)
-            {
-                L += item.Length();
-            }
+            // ObservableCollection<Point> PointsCollectionTemp = GenerateMiddlepoints();
 
-            _knotsChord[0] = 0;
+            //double L = 0;
+            //foreach (var item in PointsCollectionTemp)
+            //{
+            //    L += item.Length();
+            //}
 
-            for (int i = 0; i < count-1; i++)
-            {
-                _knotsChord[i+1] = _knotsChord[i]+(PointsCollection[i + 1].Subtract(PointsCollection[i])).Length()/L;
 
-            }
+            //_knotsChord[0] = 0;
 
-            _knotsChord[count-1] = 1;
+            //for (int i = 0; i <8; i++)
+            //{
+            //    _knotsChord[i + 1] = _knotsChord[i] + (PointsCollectionTemp[i + 1].Subtract(PointsCollectionTemp[i])).Length() / L;
+
+            //}
+
+
+
+            //_knotsChord[9] = 1;
+            //_knots = _knotsChord;
+
             //if (_chord)
             //{
 
@@ -202,6 +233,7 @@ namespace ModelowanieGeometryczne.Model
             //{
 
             //}
+
         }
 
 

@@ -129,8 +129,8 @@ namespace ModelowanieGeometryczne.Model
             {
                 GL.Color3(1.0, 1.0, 1.0);
             }
-            Matrix4d projekcja = MatrixProvider.ProjectionMatrix();
-            _windowCoordinates = projekcja.Multiply(transformacja.Multiply(_coordinates));
+            Matrix4d projection = MatrixProvider.ProjectionMatrix();
+            _windowCoordinates = projection.Multiply(transformacja.Multiply(_coordinates));
             GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
             _windowCoordinates.X = _windowCoordinates.X * 1440 / 2;
             _windowCoordinates.Y = _windowCoordinates.Y * 750 / 2;
@@ -182,12 +182,28 @@ namespace ModelowanieGeometryczne.Model
         {
             return new Point(Coordinates.X - a.Coordinates.X, Coordinates.Y - a.Coordinates.Y, Coordinates.Z - a.Coordinates.Z);
         }
-
+        public Point Add(Point a)
+        {
+            return new Point(Coordinates.X + a.Coordinates.X, Coordinates.Y + a.Coordinates.Y, Coordinates.Z + a.Coordinates.Z);
+        }
         public double Length()
         {
             return Math.Sqrt(Coordinates.X * Coordinates.X + Coordinates.Y * Coordinates.Y + Coordinates.Z * Coordinates.Z);
         }
+        public Point Multiply(double a)
+        {
+            return new Point(Coordinates.X * a, Coordinates.Y * a, Coordinates.Z * a);
+        }
         #endregion Public Methods
+        public static Point operator *(double a, Point v1)
+        {
+            return new Point(v1.X*a, v1.Y * a, v1.Z * a) ;
+        }
+
+        public static Point operator +(Point v1, Point v2)
+        {
+            return new Point(v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z);
+        }
     }
 }
 

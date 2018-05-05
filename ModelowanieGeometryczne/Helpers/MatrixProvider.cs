@@ -1,11 +1,11 @@
 ﻿using System;
 using OpenTK;
-
+using ModelowanieGeometryczne.Model;
 
 namespace ModelowanieGeometryczne.Helpers
 {
     public static class MatrixProvider
-    {   
+    {
         private static double _r = 10.0;
         private static double _e = 0.05;
 
@@ -116,6 +116,7 @@ namespace ModelowanieGeometryczne.Helpers
             //double[][] s = new double[3][];
             //for (int i = 0; i < 3; i++)
             //    s[i] = new double[InterpolationPoints.Count() + 2];
+
             double[][] nVectors = new double[3][];
             for (int i = 0; i < 3; i++)
                 nVectors[i] = new double[knotsCount + 2];
@@ -235,6 +236,16 @@ namespace ModelowanieGeometryczne.Helpers
         }
 
 
+        public static Point Multiply(double[] Bu, Point[,] G, double[] Bv)
+        {   //return result of Bu*G*Bv'
+
+            //var temp = new double[4] { Bu[0] * G[0,0] + Bu[1] * G[0,1] + Bu[2] * G[0,2] + Bu[3] * G[0,3], Bu[0]*G[1,0]+ Bu[1] * G[1,1] + Bu[2] * G[1,2] + Bu[3] * G[1,3], Bu[0] * G[2,0] + Bu[1] * G[2,1] + Bu[2] * G[2,2] + Bu[3] * G[2,3], Bu[0]*G[3,0]+ Bu[1] * G[3,1] + Bu[2] * G[3,2] + Bu[3] * G[3,3]};
+
+            var temp = new Point[4] { Bu[0] * G[0, 0] + Bu[1] * G[1, 0] + Bu[2] * G[2, 0] + Bu[3] * G[3, 0], Bu[0] * G[0, 1] + Bu[1] * G[1, 1] + Bu[2] * G[2, 1] + Bu[3] * G[3, 1], Bu[0] * G[0, 2] + Bu[1] * G[1, 2] + Bu[2] * G[2, 2] + Bu[3] * G[3, 2], Bu[0] * G[0, 3] + Bu[1] * G[1, 3] + Bu[2] * G[2, 3] + Bu[3] * G[3, 3] };
+            return  Bv[0]* temp[0] + Bv[1]* temp[1] +Bv[2] * temp[2] + Bv[3]* temp[3];
+
+        }
+
         public static Matrix4d ProjectionMatrix()
         {
             return ProjectionMatrix(_r, 0);
@@ -250,7 +261,7 @@ namespace ModelowanieGeometryczne.Helpers
             return ProjectionMatrix(_r, _e);
         }
 
-     
+
         private static Matrix4d ProjectionMatrix(double r, double e)
         {
             Matrix4d result = new Matrix4d(1, 0, e / (2 * r), 0,
