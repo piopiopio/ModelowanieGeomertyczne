@@ -164,7 +164,7 @@
                                 <GridViewColumn Header="Horizontal divisions" Width="120">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding PatchHorizontalDivision}" TextChanged="TextBox_TextChanged"></TextBox>
+                                            <TextBox Text="{Binding PatchHorizontalDivision}" LostFocus="TextBox_LostFocus" ></TextBox>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
@@ -172,7 +172,7 @@
                                 <GridViewColumn Header="Vertical divisions" Width="120">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding PatchVerticalDivision}" TextChanged="TextBox_TextChanged" ></TextBox>
+                                            <TextBox Text="{Binding PatchVerticalDivision}" LostFocus="TextBox_LostFocus" ></TextBox>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>

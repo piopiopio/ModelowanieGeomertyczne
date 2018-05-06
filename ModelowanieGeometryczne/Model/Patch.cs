@@ -15,9 +15,11 @@ namespace ModelowanieGeometryczne.Model
     {
         Point[,] _patchPoints;
         private int _u, _v; //u-pionowe v-poziome
-        public double[] U, V;
+        public double[] U, V, UCurve,VCurve;
         public Point[,] CalculatedPoints;
         Matrix4d projection = MatrixProvider.ProjectionMatrix();
+        int multiplierU = 4;
+        int multiplierV = 4;
         public int u
         {
             get { return _u; }
@@ -82,7 +84,7 @@ namespace ModelowanieGeometryczne.Model
         public void DrawPolyline(Matrix4d transformacja)
         {
             GL.Begin(BeginMode.Lines);
-
+            GL.Color3(1.0, 1.0, 1.0);
             for (int i = 0; i < 4; i++)
             {
                 for (int j = 0; j < 4 - 1; j++)
@@ -115,32 +117,34 @@ namespace ModelowanieGeometryczne.Model
         public void DrawPatch(Matrix4d transformacja)
         {
             GL.Begin(BeginMode.Lines);
-
+            GL.Color3(1.0, 1.0, 1.0);
             for (int i = 0; i < U.Length; i++)
             {
-                for (int j = 0; j < V.Length - 1; j++)
+                //TODO: Wydaje mi sięże żeby wyświetlać gładko to druga pętla musi chodzić gęsto
+                for (int j = 0; j < VCurve.Length - 1; j++)
                 {
-                    CalculatedPoints[i, j] = MatrixProvider.Multiply(CalculateB(U[i]), _patchPoints, CalculateB(V[j]));
+                    var a = MatrixProvider.Multiply(CalculateB(U[i]), _patchPoints, CalculateB(VCurve[j]));
 
-                    var _windowCoordinates = projection.Multiply(transformacja.Multiply(CalculatedPoints[i, j].Coordinates));
+                    var _windowCoordinates = projection.Multiply(transformacja.Multiply(a.Coordinates));
                     GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
 
-                    CalculatedPoints[i, j + 1] = MatrixProvider.Multiply(CalculateB(U[i]), _patchPoints, CalculateB(V[j + 1]));
+                    var b= MatrixProvider.Multiply(CalculateB(U[i]), _patchPoints, CalculateB(VCurve[j + 1]));
 
-                    _windowCoordinates = projection.Multiply(transformacja.Multiply(CalculatedPoints[i, j + 1].Coordinates));
+                    _windowCoordinates = projection.Multiply(transformacja.Multiply(b.Coordinates));
                     GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
                 }
             }
 
-            for (int i = 0; i < U.Length - 1; i++)
+            //TODO: A tu pierwsza 
+            for (int i = 0; i < UCurve.Length - 1; i++)
             {
                 for (int j = 0; j < V.Length; j++)
                 {
-                    CalculatedPoints[i, j] = MatrixProvider.Multiply(CalculateB(U[i]), _patchPoints, CalculateB(V[j]));
-                    var _windowCoordinates = projection.Multiply(transformacja.Multiply(CalculatedPoints[i, j].Coordinates));
+                    var a = MatrixProvider.Multiply(CalculateB(UCurve[i]), _patchPoints, CalculateB(V[j]));
+                    var _windowCoordinates = projection.Multiply(transformacja.Multiply(a.Coordinates));
                     GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
-                    CalculatedPoints[i + 1, j] = MatrixProvider.Multiply(CalculateB(U[i + 1]), _patchPoints, CalculateB(V[j]));
-                    _windowCoordinates = projection.Multiply(transformacja.Multiply(CalculatedPoints[i + 1, j].Coordinates));
+                    var b = MatrixProvider.Multiply(CalculateB(UCurve[i + 1]), _patchPoints, CalculateB(V[j]));
+                    _windowCoordinates = projection.Multiply(transformacja.Multiply(b.Coordinates));
                     GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
                 }
             }
@@ -200,9 +204,50 @@ namespace ModelowanieGeometryczne.Model
             {
                 V[i] = i * deltaV;
             }
-
+            CalculateParametrizatioCurveVectors();
         }
 
+        public void CalculateParametrizatioCurveVectors()
+        {   
+            var uCurve = u * multiplierU;
+            var vCurve = v * multiplierV;
+            UCurve = new double[uCurve];
+            VCurve = new double[vCurve];
+
+            double deltaU = 0;
+            double deltaV = 0;
+
+            if (uCurve > 1)
+            {
+                deltaU = 1.0 / (uCurve - 1);
+            }
+            if (uCurve == 1)
+            {
+                deltaU = 1;
+            }
+
+            for (int i = 0; i < uCurve; i++)
+            {
+                UCurve[i] = i * deltaU;
+            }
+
+
+
+            if (vCurve > 1)
+            {
+                deltaV = 1.0 / (vCurve - 1);
+            }
+            if (vCurve == 1)
+            {
+                deltaV = 1;
+            }
+
+            for (int i = 0; i < vCurve; i++)
+            {
+                VCurve[i] = i * deltaV;
+            }
+
+        }
 
 
 

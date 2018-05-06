@@ -214,5 +214,10 @@ namespace ModelowanieGeometryczne
         {
             Paint();
         }
+
+        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            Paint();
+        }
     }
 }
