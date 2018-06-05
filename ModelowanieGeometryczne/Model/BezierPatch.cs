@@ -22,6 +22,13 @@ namespace ModelowanieGeometryczne.Model
         public double PatchHeight { get; set; }
         private int _patchHorizontalDivision = 4;
         private int _patchVerticalDivision = 4;
+        public bool PatchesAreCylinder { get; set; }
+        public Vector4d StartPoint { get; set; }
+        private ObservableCollection<Point> _vertices = new ObservableCollection<Point>();
+        bool _polylineEnabled = true;
+        public bool Selected { get; set; }
+        public string Name { get; set; }
+        static int PatchNumber { get; set; }
 
         public int PatchHorizontalDivision
         {
@@ -67,10 +74,7 @@ namespace ModelowanieGeometryczne.Model
                 }
             }
         }
-        public bool PatchesAreCylinder { get; set; }
-        public Vector4d StartPoint { get; set; }
-        private ObservableCollection<Point> _vertices = new ObservableCollection<Point>();
-        bool _polylineEnabled = true;
+
 
         public bool PolylineEnabled
         {
@@ -97,9 +101,7 @@ namespace ModelowanieGeometryczne.Model
             }
 
         }
-        public bool Selected { get; set; }
-        public string Name { get; set; }
-        static int PatchNumber { get; set; }
+
 
 
         public BezierPatch(
@@ -265,7 +267,7 @@ namespace ModelowanieGeometryczne.Model
                             }
                             else
                             {
-                                temp[k, l] = new Point(PatchWidth * Math.Cos(alpha * (3 * j + l)), StartPoint.Y + (k + i * 3) * dy, PatchWidth * Math.Sin(alpha * (3 * j + l)));
+                                temp[k, l] = new Point(StartPoint.X + PatchWidth * Math.Cos(alpha * (3 * j + l)), StartPoint.Y + (k + i * 3) * dy, StartPoint.Z + PatchWidth * Math.Sin(alpha * (3 * j + l)));
                                 // temp[k, l] = new Point(LocalStartPoint.X + l * dx, LocalStartPoint.Y + k * dy, LocalStartPoint.Z);
                             }
 

@@ -97,6 +97,13 @@ namespace ModelowanieGeometryczne.Model
             get { return _coordinates; }
             set { _coordinates = value; }
         }
+
+
+        public Vector4d WindowCoordinates
+        {
+            get { return new Vector4d(X_Window, Y_Window, 0, 1); }
+            set { }
+        }
         #endregion Public Properties
 
         public Point(double x, double y, double z)

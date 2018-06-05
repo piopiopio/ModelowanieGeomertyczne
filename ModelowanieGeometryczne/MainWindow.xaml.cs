@@ -154,6 +154,7 @@ namespace ModelowanieGeometryczne
                     _mainViewModel.Scene.DeleteSelectedPoints();
                     _mainViewModel.Scene.DeleteSelectedCurves();
                     _mainViewModel.Scene.DeleteSelectedPatches();
+                    _mainViewModel.Scene.DeleteSelectedPatchesC2();
                     Paint();
                     break;
                 case Key.Enter:

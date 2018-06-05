@@ -93,6 +93,7 @@
             <TextBlock Grid.Row="13" Grid.Column="0" Text="  Patches are cylinder  "></TextBlock>
             <CheckBox Grid.Row="13" Grid.Column="1" IsChecked="{Binding  Scene.PatchesAreCylinder}"/>
 
+            <Button Grid.Row="14"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Patch C2" Command="{Binding Scene.AddBezierPatchC2}"></Button>
             <Button Grid.Row="15"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Patch C0" Command="{Binding Scene.AddBezierPatch}"></Button>
             <Button Grid.Row="16"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curves C0" Command="{Binding Scene.AddBezierCurve}"></Button>
             <Button Grid.Row="17"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curves C2" Command="{Binding Scene.AddBezierCurveC2}"></Button>
@@ -182,6 +183,56 @@
                     </ListView>
 
                 </TabItem>
+
+                <TabItem Header="Bezier patches C2" Height="22" VerticalAlignment="Top">
+                    <ListView Name="BezierPatchViewC2" Grid.Row="0" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.BezierPatchC2Collection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.View>
+                            <GridView >
+                                <GridViewColumn Header="Name" Width="240">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Name}"></TextBox>
+
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn Header="IsSelected" Width="120" DisplayMemberBinding="{Binding Selected}"/>
+                                <GridViewColumn Header="Polyline enabled" Width="120" >
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding PolylineEnabled}" Click="RefreshScene"></CheckBox>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn Header="Horizontal divisions" Width="120">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding PatchHorizontalDivision}" LostFocus="TextBox_LostFocus" ></TextBox>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn Header="Vertical divisions" Width="120">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding PatchVerticalDivision}" LostFocus="TextBox_LostFocus" ></TextBox>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
+                </TabItem>
+                
                 <TabItem Header="Bezier curves">
                     <ListView Name="BezierCurveListView" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.BezierCurveCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
                         <ListView.ItemContainerStyle>

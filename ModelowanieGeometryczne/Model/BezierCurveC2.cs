@@ -14,6 +14,7 @@ namespace ModelowanieGeometryczne.Model
     {
         bool _chord = true;
         private ObservableCollection<Point> _pointsCollectionInterpolation = new ObservableCollection<Point>();
+
         private ObservableCollection<Point> _additionalPointsCollection = new ObservableCollection<Point>();
         private ObservableCollection<Point> _additionalPointsCollection2 = new ObservableCollection<Point>();
         ObservableCollection<Point> transformedProjectedPoints = new ObservableCollection<Point>();
@@ -49,7 +50,7 @@ namespace ModelowanieGeometryczne.Model
         {
             InterpolationPoints = PointsCollection;
 
-            double[][] nVectors = CalculateSegments2(InterpolationPoints.Count);
+            
 
 
             double[][] s = new double[3][];
@@ -68,6 +69,7 @@ namespace ModelowanieGeometryczne.Model
 
 
 
+            double[][] nVectors = CalculateSegments2(InterpolationPoints.Count);
             double[][] result = { MatrixProvider.ThomasAlgorithm(nVectors[1], nVectors[2], nVectors[0], s[0]), MatrixProvider.ThomasAlgorithm(nVectors[1], nVectors[2], nVectors[0], s[1]), MatrixProvider.ThomasAlgorithm(nVectors[1], nVectors[2], nVectors[0], s[2]) };
             _pointsCollectionInterpolation.Clear();
 
@@ -88,14 +90,14 @@ namespace ModelowanieGeometryczne.Model
 
         private double[,] CalculateSegments(int knotsCount)
         {
-            //TODO: przerobić setsplineknots
+          
             SetSplineKnots(knotsCount);
             return _knots.CalculateNMatrix(N, knotsCount);
         }
 
         private double[][] CalculateSegments2(int liczbaPunktowUzytkownika)
         {
-            //TODO: przerobić setsplineknots
+          
             SetSplineKnots(liczbaPunktowUzytkownika);
             return _knots.CalculateNVectors(N, liczbaPunktowUzytkownika);
         }
@@ -195,7 +197,7 @@ namespace ModelowanieGeometryczne.Model
         private void SetSplineKnots(int count)
         {
             _knots = new double[count + PolynomialDegree + 4];
-            _knotsChord = new double[count + PolynomialDegree + 4];
+            //_knotsChord = new double[count + PolynomialDegree + 4];
             double interval = 1 / (double)(count + PolynomialDegree + 3);
 
             for (int i = 0; i < count + PolynomialDegree + 4; i++)
@@ -203,36 +205,33 @@ namespace ModelowanieGeometryczne.Model
                 _knots[i] = i * interval;
             }
 
-            // ObservableCollection<Point> PointsCollectionTemp = GenerateMiddlepoints();
-
-            //double L = 0;
-            //foreach (var item in PointsCollectionTemp)
-            //{
-            //    L += item.Length();
-            //}
-
-
-            //_knotsChord[0] = 0;
-
-            //for (int i = 0; i <8; i++)
-            //{
-            //    _knotsChord[i + 1] = _knotsChord[i] + (PointsCollectionTemp[i + 1].Subtract(PointsCollectionTemp[i])).Length() / L;
-
-            //}
 
 
 
-            //_knotsChord[9] = 1;
-            //_knots = _knotsChord;
+            //_knots = new double[count + N + 4];
 
-            //if (_chord)
-            //{
 
-            //}
-            //else
-            //{
 
-            //}
+            //for (int i = 0; i < count + N + 4; i++)
+            //    _knots[i] = i * interval;
+
+
+
+            //    double totalDistance = 0;
+            //    double[] distances = new double[count - 1];
+
+            //    for (int i = 0; i < count - 1; i++)
+            //    {
+            //        distances[i] = (InterpolationPoints.ElementAt(Math.Max(0, Math.Min(i + 1, InterpolationPoints.Count - 1))).WindowCoordinates
+            //            - InterpolationPoints.ElementAt(Math.Max(0, Math.Min(i, InterpolationPoints.Count - 1))).WindowCoordinates).Length;
+            //        totalDistance += distances[i];
+            //    }
+
+            //    double inter = (count - 1) * interval;
+            //    for (int i = N; i < N + distances.Length; i++)
+            //        _knots[i] = _knots[Math.Max(0, Math.Min(i - 1, InterpolationPoints.Count - 1))] + ((distances[Math.Max(0, Math.Min(i - , InterpolationPoints.Count - 1))] * inter) / totalDistance);
+
+
 
         }
 
@@ -295,6 +294,9 @@ namespace ModelowanieGeometryczne.Model
 
                     }
                 }
+
+
+
             }
             else
             {

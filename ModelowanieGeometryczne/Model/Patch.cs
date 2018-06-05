@@ -27,7 +27,7 @@ namespace ModelowanieGeometryczne.Model
             {
                 _u = value;
                 CalculateParametrizationVectors();
-                CalculatePoints();
+
             }
         }
 
@@ -38,7 +38,7 @@ namespace ModelowanieGeometryczne.Model
             {
                 _v = value;
                 CalculateParametrizationVectors();
-                CalculatePoints();
+
             }
         }
 
@@ -52,16 +52,13 @@ namespace ModelowanieGeometryczne.Model
             _v = vv;
             _patchPoints = a;
             CalculateParametrizationVectors();
-            CalculatePoints();
+
         }
 
         public Patch()
         {
             _patchPoints = new Point[4, 4];
-            //for (int i = 0; i < 4; i++)
-            //{
-            //    _patchPoints[i] = new Point[4];
-            //}
+
         }
 
         public Point[,] PatchPoints
@@ -120,7 +117,6 @@ namespace ModelowanieGeometryczne.Model
             GL.Color3(1.0, 1.0, 1.0);
             for (int i = 0; i < U.Length; i++)
             {
-                //TODO: Wydaje mi sięże żeby wyświetlać gładko to druga pętla musi chodzić gęsto
                 for (int j = 0; j < VCurve.Length - 1; j++)
                 {
                     var a = MatrixProvider.Multiply(CalculateB(U[i]), _patchPoints, CalculateB(VCurve[j]));
@@ -135,7 +131,7 @@ namespace ModelowanieGeometryczne.Model
                 }
             }
 
-            //TODO: A tu pierwsza 
+   
             for (int i = 0; i < UCurve.Length - 1; i++)
             {
                 for (int j = 0; j < V.Length; j++)
@@ -152,20 +148,7 @@ namespace ModelowanieGeometryczne.Model
             GL.End();
         }
 
-        public void CalculatePoints()
-        {
 
-            CalculatedPoints = new Point[U.Length, V.Length];
-            for (int i = 0; i < U.Length; i++)
-            {
-                for (int j = 0; j < V.Length; j++)
-                {
-                    CalculatedPoints[i, j] = MatrixProvider.Multiply(CalculateB(U[i]), _patchPoints, CalculateB(V[j]));
-                }
-            }
-
-
-        }
 
         public void CalculateParametrizationVectors()
         {
