@@ -217,8 +217,10 @@ namespace ModelowanieGeometryczne
 
             _patchPoints = new Point[verticalPatches + 3, horizontalPatches + 3];
             _additionalPoints = new Point[1 + 3 * VerticalPatches, 1 + 3 * horizontalPatches];
-            _additionalPoints2 = new Point[1 + 3 * VerticalPatches, 1 + 3 * horizontalPatches];
 
+
+            //_additionalPoints2 = new Point[1 + 3 * VerticalPatches, 1 + 3 * horizontalPatches];
+            _additionalPoints2 = new Point[3 + VerticalPatches, 3 + horizontalPatches];
             if (patchesAreCylinder)
             {
                 SetUpVerticesCylinder();
@@ -253,8 +255,8 @@ namespace ModelowanieGeometryczne
 
         private void SetUpPatchVertices()
         {
-            double dx = PatchWidth / (3 * HorizontalPatches);
-            double dy = PatchHeight / (3 * VerticalPatches);
+            double dx = PatchWidth / (3+HorizontalPatches-1);
+            double dy = PatchHeight / (3+VerticalPatches-1);
 
             // var temp = new Point[4, 4];
 
@@ -277,7 +279,8 @@ namespace ModelowanieGeometryczne
 
         public void DrawPoints(Matrix4d transformacja)
         {
-            for (int i = 0; i < _patchPoints.GetLength(0); i++)
+           
+             for (int i = 0; i < _patchPoints.GetLength(0); i++)
             {
                 for (int j = 0; j < _patchPoints.GetLength(1); j++)
                 {
@@ -307,26 +310,7 @@ namespace ModelowanieGeometryczne
                 }
             }
 
-            //for (int k = 0; k < _patchPoints.GetLength(1); k++)
-            //{
 
-            //    var tempCollection = new ObservableCollection<Point>();
-
-            //    for (int i = 0; i < _patchPoints.GetLength(0); i++)
-            //    {
-            //        tempCollection.Add(_patchPoints[i,k]);
-            //    }
-            //    int d = 0;
-            //    CalculateAdditionalPoints(tempCollection);
-
-            //    foreach (var item in _additionalPointsCollection2)
-            //    {//Może warto zmienić kolejność indeksów na d,k teraz k,d?
-            //        _additionalPoints[d, k] = item;
-            //        d++;
-            //    }
-            //}
-
-            //_additionalPoints2 = _additionalPoints;
 
 
             for (int k = 0; k < _additionalPoints2.GetLength(1); k++)
