@@ -290,31 +290,53 @@ namespace ModelowanieGeometryczne
             //Fragment do wyznaczania punktów beziera
             //Wywoływać tylko przy zmianie _pathPoints!!!!!!!!!!
 
-            //for (int k = 0; k < _patchPoints.GetLength(0); k++)
+            for (int k = 0; k < _patchPoints.GetLength(0); k++)
+            {
+
+                var tempCollection = new ObservableCollection<Point>();
+                for (int i = 0; i < _patchPoints.GetLength(1); i++)
+                {
+                    tempCollection.Add(_patchPoints[k, i]);
+                }
+                int d = 0;
+                CalculateAdditionalPoints(tempCollection);
+                foreach (var item in _additionalPointsCollection2)
+                {
+                    _additionalPoints2[k, d] = item;
+                    d++;
+                }
+            }
+
+            //for (int k = 0; k < _patchPoints.GetLength(1); k++)
             //{
 
             //    var tempCollection = new ObservableCollection<Point>();
-            //    for (int i = 0; i < _patchPoints.GetLength(1); i++)
+
+            //    for (int i = 0; i < _patchPoints.GetLength(0); i++)
             //    {
-            //        tempCollection.Add(_patchPoints[k, i]);
+            //        tempCollection.Add(_patchPoints[i,k]);
             //    }
             //    int d = 0;
             //    CalculateAdditionalPoints(tempCollection);
+
             //    foreach (var item in _additionalPointsCollection2)
-            //    {
-            //        _additionalPoints2[k, d] = item;
+            //    {//Może warto zmienić kolejność indeksów na d,k teraz k,d?
+            //        _additionalPoints[d, k] = item;
             //        d++;
             //    }
             //}
 
-            for (int k = 0; k < _patchPoints.GetLength(1); k++)
+            //_additionalPoints2 = _additionalPoints;
+
+
+            for (int k = 0; k < _additionalPoints2.GetLength(1); k++)
             {
 
                 var tempCollection = new ObservableCollection<Point>();
 
-                for (int i = 0; i < _patchPoints.GetLength(0); i++)
+                for (int i = 0; i < _additionalPoints2.GetLength(0); i++)
                 {
-                    tempCollection.Add(_patchPoints[i,k]);
+                    tempCollection.Add(_additionalPoints2[i, k]);
                 }
                 int d = 0;
                 CalculateAdditionalPoints(tempCollection);
@@ -326,16 +348,15 @@ namespace ModelowanieGeometryczne
                 }
             }
 
-            _additionalPoints2 = _additionalPoints;
 
 
+            //Rysowanie punktów
 
-
-            for (int i = 0; i < _additionalPoints2.GetLength(0); i++)
+            for (int i = 0; i < _additionalPoints.GetLength(0); i++)
             {
-                for (int j = 0; j < _additionalPoints2.GetLength(1); j++)
+                for (int j = 0; j < _additionalPoints.GetLength(1); j++)
                 {
-                    _additionalPoints2[i, j].Draw(transformacja);
+                    _additionalPoints[i, j].Draw(transformacja);
                 }
             }
         }
