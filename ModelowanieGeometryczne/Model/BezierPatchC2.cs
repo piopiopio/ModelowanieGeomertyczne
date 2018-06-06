@@ -15,8 +15,16 @@ namespace ModelowanieGeometryczne
 
     public class BezierPatchC2
     {
-
         public Point[,] _patchPoints;
+        public Point[,] PatchPoints
+        {
+            get { return _patchPoints; }
+            set
+            {
+                _patchPoints = value;
+               // CalculateBezierPoints();
+            }
+        }
         public Point[,] _additionalPoints;
         public Point[,] _additionalPoints2;
 
@@ -120,42 +128,42 @@ namespace ModelowanieGeometryczne
                 GL.Begin(BeginMode.Lines);
                 GL.Color3(1.0, 1.0, 1.0);
 
-                for (int i = 0; i < _patchPoints.GetLength(0); i++)
+                for (int i = 0; i < PatchPoints.GetLength(0); i++)
                 {
-                    for (int j = 0; j < _patchPoints.GetLength(1) - 1; j++)
+                    for (int j = 0; j < PatchPoints.GetLength(1) - 1; j++)
                     {
 
-                        var _windowCoordinates = projection.Multiply(transformacja.Multiply(_patchPoints[i, j].Coordinates));
+                        var _windowCoordinates = projection.Multiply(transformacja.Multiply(PatchPoints[i, j].Coordinates));
                         GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
 
-                        _windowCoordinates = projection.Multiply(transformacja.Multiply(_patchPoints[i, j + 1].Coordinates));
+                        _windowCoordinates = projection.Multiply(transformacja.Multiply(PatchPoints[i, j + 1].Coordinates));
                         GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
                     }
                 }
 
-                for (int i = 0; i < _patchPoints.GetLength(0) - 1; i++)
+                for (int i = 0; i < PatchPoints.GetLength(0) - 1; i++)
                 {
-                    for (int j = 0; j < _patchPoints.GetLength(1); j++)
+                    for (int j = 0; j < PatchPoints.GetLength(1); j++)
                     {
 
-                        var _windowCoordinates = projection.Multiply(transformacja.Multiply(_patchPoints[i, j].Coordinates));
+                        var _windowCoordinates = projection.Multiply(transformacja.Multiply(PatchPoints[i, j].Coordinates));
                         GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
 
-                        _windowCoordinates = projection.Multiply(transformacja.Multiply(_patchPoints[i + 1, j].Coordinates));
+                        _windowCoordinates = projection.Multiply(transformacja.Multiply(PatchPoints[i + 1, j].Coordinates));
                         GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
                     }
                 }
 
                 if (PatchesAreCylinder)
                 {
-                    for (int i = 0; i < _patchPoints.GetLength(0); i++)
+                    for (int i = 0; i < PatchPoints.GetLength(0); i++)
                     {
 
 
-                        var _windowCoordinates = projection.Multiply(transformacja.Multiply(_patchPoints[i, 0].Coordinates));
+                        var _windowCoordinates = projection.Multiply(transformacja.Multiply(PatchPoints[i, 0].Coordinates));
                         GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
 
-                        _windowCoordinates = projection.Multiply(transformacja.Multiply(_patchPoints[i, _patchPoints.GetLength(1) - 1].Coordinates));
+                        _windowCoordinates = projection.Multiply(transformacja.Multiply(PatchPoints[i, PatchPoints.GetLength(1) - 1].Coordinates));
                         GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
 
                     }
@@ -215,12 +223,12 @@ namespace ModelowanieGeometryczne
 
 
 
-            _patchPoints = new Point[verticalPatches + 3, horizontalPatches + 3];
-            _additionalPoints = new Point[1 + 3 * VerticalPatches, 1 + 3 * horizontalPatches];
+           _patchPoints = new Point[verticalPatches + 3, horizontalPatches + 3];
+            _additionalPoints = new Point[1 + 3 * VerticalPatches, 1 + 3 * HorizontalPatches];
 
 
-            //_additionalPoints2 = new Point[1 + 3 * VerticalPatches, 1 + 3 * horizontalPatches];
-            _additionalPoints2 = new Point[3 + VerticalPatches, 3 + horizontalPatches];
+            _additionalPoints2 = new Point[verticalPatches + 3, 1 + 3 * HorizontalPatches];
+            //_additionalPoints2 = new Point[3 + VerticalPatches, 3 + horizontalPatches];
             if (patchesAreCylinder)
             {
                 SetUpVerticesCylinder();
@@ -233,7 +241,7 @@ namespace ModelowanieGeometryczne
 
             PatchNumber++;
             Name = "Bezier patch number " + PatchNumber + " type: C2";
-
+            CalculateBezierPoints();
         }
 
         private void SetUpVerticesCylinder()
@@ -255,8 +263,8 @@ namespace ModelowanieGeometryczne
 
         private void SetUpPatchVertices()
         {
-            double dx = PatchWidth / (3+HorizontalPatches-1);
-            double dy = PatchHeight / (3+VerticalPatches-1);
+            double dx = PatchWidth / (3 + HorizontalPatches - 1);
+            double dy = PatchHeight / (3 + VerticalPatches - 1);
 
             // var temp = new Point[4, 4];
 
@@ -276,30 +284,18 @@ namespace ModelowanieGeometryczne
             }
         }
 
-
-        public void DrawPoints(Matrix4d transformacja)
+        public void CalculateBezierPoints()
         {
-           
-             for (int i = 0; i < _patchPoints.GetLength(0); i++)
-            {
-                for (int j = 0; j < _patchPoints.GetLength(1); j++)
-                {
-                    _patchPoints[i, j].Draw(transformacja);
-                }
-            }
-
-
-
             //Fragment do wyznaczania punktów beziera
             //Wywoływać tylko przy zmianie _pathPoints!!!!!!!!!!
 
-            for (int k = 0; k < _patchPoints.GetLength(0); k++)
+            for (int k = 0; k < PatchPoints.GetLength(0); k++)
             {
 
                 var tempCollection = new ObservableCollection<Point>();
-                for (int i = 0; i < _patchPoints.GetLength(1); i++)
+                for (int i = 0; i < PatchPoints.GetLength(1); i++)
                 {
-                    tempCollection.Add(_patchPoints[k, i]);
+                    tempCollection.Add(PatchPoints[k, i]);
                 }
                 int d = 0;
                 CalculateAdditionalPoints(tempCollection);
@@ -312,6 +308,7 @@ namespace ModelowanieGeometryczne
 
 
 
+            _additionalPointsCollection2.Clear();
 
             for (int k = 0; k < _additionalPoints2.GetLength(1); k++)
             {
@@ -331,6 +328,21 @@ namespace ModelowanieGeometryczne
                     d++;
                 }
             }
+        }
+        public void DrawPoints(Matrix4d transformacja)
+        {
+
+            for (int i = 0; i < PatchPoints.GetLength(0); i++)
+            {
+                for (int j = 0; j < PatchPoints.GetLength(1); j++)
+                {
+                    PatchPoints[i, j].Draw(transformacja);
+                }
+            }
+
+
+            //TODO: Przenieść do funkcji rysującej płatek
+            CalculateBezierPoints();
 
 
 
