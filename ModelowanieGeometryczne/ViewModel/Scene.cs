@@ -506,7 +506,8 @@ namespace ModelowanieGeometryczne.ViewModel
             foreach (var patch in BezierPatchC2Collection)
             {
                 patch.DrawPoints(M);
-                patch.DrawPolyline(M);
+                //patch.DrawPolyline(M);
+                patch.DrawPatch(M);
 
             }
 
@@ -590,6 +591,7 @@ namespace ModelowanieGeometryczne.ViewModel
                             patch.PatchPoints[i, j].X += dx;
                             patch.PatchPoints[i, j].Y += dy;
                             patch.PatchPoints[i, j].Z += dz;
+                            patch.CalculateBezierPoints();
                         }
                     }
                 }
