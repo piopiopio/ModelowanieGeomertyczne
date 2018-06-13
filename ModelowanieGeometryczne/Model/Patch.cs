@@ -112,7 +112,8 @@ namespace ModelowanieGeometryczne.Model
         }
 
         public void DrawPatch(Matrix4d transformacja)
-        {
+        {//TODO: Pamiętać przeliczone punkty, liczyć od nowa tylko po zmianie kolekcji.
+            
             GL.Begin(BeginMode.Lines);
             GL.Color3(1.0, 1.0, 1.0);
             for (int i = 0; i < U.Length; i++)

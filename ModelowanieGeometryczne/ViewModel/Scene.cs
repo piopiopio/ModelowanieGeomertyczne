@@ -68,6 +68,9 @@ namespace ModelowanieGeometryczne.ViewModel
         public ICommand AddBezierPatch { get { return _addBezierPatch ?? (_addBezierPatch = new ActionCommand(AddBezierPatchExecuted)); } }
         public ICommand AddBezierPatchC2 { get { return _addBezierPatchC2 ?? (_addBezierPatchC2 = new ActionCommand(AddBezierPatchC2Executed)); } }
 
+
+        public ImportExport ExchangeObject;
+
         public void AddBezierPatchC2Executed()
         {
             var patch = new BezierPatchC2(HorizontalPatches, VerticalPatches, PatchWidth, PatchHeight, PatchHorizontalDivision, PatchVerticalDivision, PatchesAreCylinder, Cursor.Coordinates);
@@ -395,6 +398,7 @@ namespace ModelowanieGeometryczne.ViewModel
             _bezierCurveCollection = new ObservableCollection<Curve>();
             BezierPatchCollection = new ObservableCollection<BezierPatch>();
             BezierPatchC2Collection = new ObservableCollection<BezierPatchC2>();
+            ExchangeObject = new ImportExport(BezierPatchC2Collection, BezierPatchCollection, PointsCollection, _bezierCurveCollection);
             //_bezierCurveC2Collection = new ObservableCollection<BezierCurveC2>();
             //PointsCollection.Add(new Point(1, 1, 0));
             //PointsCollection.Add(new Point(-5, 1, 0));
@@ -413,7 +417,47 @@ namespace ModelowanieGeometryczne.ViewModel
 
 
         #region Private Methods
+        public void ClearScene()
+        {
+            BezierPatchC2Collection.Clear();
+            BezierPatchCollection.Clear();
+            BezierCurveCollection.Clear();
+        }
+        public void LoadScene()
+        {
+            ClearScene();
+            OpenFileDialog op = new OpenFileDialog();
+            op.Title = "Open";
+            op.Filter = "Load users|*.json; *.json";
+            if (op.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+               // try
+               // {
+                    // DeserializeDataSet(op.FileName);
+                    ExchangeObject.LoadJson(op.FileName);
+               // }
+               // catch
+               // {
+               //     System.Windows.MessageBox.Show("File read error");
+               // }
+            }
 
+            Render();
+        }
+
+        public void SaveScene()
+        {
+
+            SaveFileDialog sa = new SaveFileDialog();
+            sa.Title = "Save";
+            sa.Filter = "Save users|*.json; *.json";
+            ExchangeObject.PrepareToSave();
+            if (sa.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                ExchangeObject.SaveJson(sa.FileName);
+            }
+
+        }
         void Refresh(object sender, PropertyChangedEventArgs e)
         {
             Refresh();
@@ -506,12 +550,13 @@ namespace ModelowanieGeometryczne.ViewModel
             foreach (var patch in BezierPatchC2Collection)
             {
                 patch.DrawPoints(M);
-                //patch.DrawPolyline(M);
+                patch.DrawPolyline(M);
                 patch.DrawPatch(M);
 
             }
 
             GL.Flush();
+           
         }
 
         private void SetViewPort()

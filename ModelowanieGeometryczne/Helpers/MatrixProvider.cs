@@ -246,7 +246,7 @@ namespace ModelowanieGeometryczne.Helpers
             return  Bv[0]* temp[0] + Bv[1]* temp[1] +Bv[2] * temp[2] + Bv[3]* temp[3];
 
         }
-
+    
         public static Matrix4d ProjectionMatrix()
         {
             return ProjectionMatrix(_r, 0);

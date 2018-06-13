@@ -9,7 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Forms;
+
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -18,7 +18,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using OpenTK;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
-using MessageBox = System.Windows.Forms.MessageBox;
+using System.Windows.Forms;
+
 
 //Poruszanie kursorem: 8 y+; 2 y-; 4 x+; 6x-; - z-; + z+;
 
@@ -219,6 +220,18 @@ namespace ModelowanieGeometryczne
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             Paint();
+        }
+
+        private void Import_Click(object sender, RoutedEventArgs e)
+        {
+            _mainViewModel.Scene.LoadScene();
+            _glControl.SwapBuffers();
+        }
+
+        private void Export_Click(object sender, RoutedEventArgs e)
+        {
+            _mainViewModel.Scene.SaveScene();
+
         }
     }
 }

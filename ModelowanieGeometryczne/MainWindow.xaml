@@ -19,7 +19,13 @@
         <Style TargetType="ListViewItem">
         </Style>
     </Window.Resources>
-
+    <DockPanel >
+    <Menu DockPanel.Dock="Top">
+        <MenuItem Header="File">
+            <MenuItem Header="Import" Click="Import_Click" />
+            <MenuItem Header="Export" Click="Export_Click"/>
+            </MenuItem>
+    </Menu>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="3*"/>
@@ -203,6 +209,7 @@
                                 </GridViewColumn>
 
                                 <GridViewColumn Header="IsSelected" Width="120" DisplayMemberBinding="{Binding Selected}"/>
+                                
                                 <GridViewColumn Header="Polyline enabled" Width="120" >
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
@@ -211,10 +218,11 @@
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
 
+
                                 <GridViewColumn Header="Horizontal divisions" Width="120">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding PatchHorizontalDivision}" LostFocus="TextBox_LostFocus" ></TextBox>
+                                            <TextBox Text="{Binding v}" LostFocus="TextBox_LostFocus" ></TextBox>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
@@ -222,10 +230,26 @@
                                 <GridViewColumn Header="Vertical divisions" Width="120">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding PatchVerticalDivision}" LostFocus="TextBox_LostFocus" ></TextBox>
+                                            <TextBox Text="{Binding u}" LostFocus="TextBox_LostFocus" ></TextBox>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
+                                <GridViewColumn Header="Show Bernstein points" Width="150" >
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding ShowBernstein}" Click="RefreshScene"></CheckBox>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                
+                                <GridViewColumn Header="Show control points" Width="150" >
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding ShowControlPoints}" Click="RefreshScene"></CheckBox>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
 
                             </GridView>
                         </ListView.View>
@@ -346,4 +370,5 @@
                           />
 
     </Grid>
+</DockPanel >
 </Window>

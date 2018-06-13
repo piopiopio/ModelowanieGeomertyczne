@@ -20,15 +20,44 @@ namespace ModelowanieGeometryczne.Model
         public int VerticalPatches { get; set; }
         public double PatchWidth { get; set; }
         public double PatchHeight { get; set; }
-        private int _patchHorizontalDivision = 4;
-        private int _patchVerticalDivision = 4;
+        public int _patchHorizontalDivision = 4;
+        public int _patchVerticalDivision = 4;
         public bool PatchesAreCylinder { get; set; }
         public Vector4d StartPoint { get; set; }
         private ObservableCollection<Point> _vertices = new ObservableCollection<Point>();
-        bool _polylineEnabled = true;
+        bool _polylineEnabled = false;
         public bool Selected { get; set; }
         public string Name { get; set; }
         static int PatchNumber { get; set; }
+        Point[,] AllPointsArray;
+
+        public Point[,] GetAllPointsInOneArray()
+        {
+            Point[,] PointsArray = new Point[VerticalPatches * 3 + 1, HorizontalPatches* 3 + 1];
+
+
+
+            for (int i = 0; i < VerticalPatches ; i++)
+            {
+                for (int j = 0; j < HorizontalPatches; j++)
+                {
+
+
+                    for (int ip = 0; ip < 4; ip++)
+                    {
+                        for (int jp = 0; jp < 4; jp++)
+                        {
+                            PointsArray[ip + i * 3, jp + j * 3] = Surface[j,i].PatchPoints[ip, jp];
+                        }
+
+                    }
+
+
+                }
+
+            }
+            return PointsArray;
+        }
 
         public int PatchHorizontalDivision
         {
@@ -38,7 +67,7 @@ namespace ModelowanieGeometryczne.Model
             }
             set
             {
-                if ((value >= 3) && (value<20))
+                if ((value >= 3) && (value < 20))
                 {
                     _patchHorizontalDivision = value;
 
@@ -102,7 +131,87 @@ namespace ModelowanieGeometryczne.Model
 
         }
 
+        public Point[,] _patchPoints;
+        public Point[,] PatchPoints
+        {
+            get { return _patchPoints; }
+            set
+            {
+                _patchPoints = value;
 
+            }
+        }
+
+        public BezierPatch(
+                                    int horizontalPatches,
+            int verticalPatches,
+
+            int patchHorizontalDivision,
+            int patchVerticalDivision,
+            bool cylinder,
+            Point[,] pointsToAdd,
+             string name1
+            )
+        {
+            HorizontalPatches = horizontalPatches;
+            VerticalPatches = verticalPatches;
+            _patchHorizontalDivision = patchHorizontalDivision;
+            _patchVerticalDivision = patchVerticalDivision;
+            PatchesAreCylinder = cylinder;
+            PatchPoints = pointsToAdd;
+            Name = name1;
+            Surface = new Patch[HorizontalPatches, VerticalPatches];
+            AllPointsArray = pointsToAdd;
+
+            PlaceVerticesToPatches4x4();
+            // CalculateParametrizationVectors();
+            //CalculateBezierPoints();
+        }
+
+        public void PlaceVerticesToPatches4x4()
+        {//TODO: Uzupełnić rozmieszczenie punktów
+            var temp = new Point[4, 4];
+            int k = 0;
+            int h = 0;
+            for (int PatchesI = 0; PatchesI < VerticalPatches; PatchesI++)
+            {
+                h = 0;
+                for (int PatchesJ = 0; PatchesJ < HorizontalPatches; PatchesJ++)
+                {
+                    temp = new Point[4, 4];
+                    for (int i = 0; i < 4; i++)
+                    {
+                        for (int j = 0; j < 4; j++)
+                        {
+
+                            if ((PatchesI != 0) && (i == 0))
+                            {
+
+                                temp[i, j] = PatchPoints[i + 4 * PatchesI - k, j + 4 * PatchesJ - h];
+                            }
+
+                            else if ((PatchesJ != 0) && (j == 0))
+                            {
+
+                                temp[i, j] = PatchPoints[i + 4 * PatchesI - k, j + 4 * PatchesJ - h];
+                            }
+                            else
+                            {
+                                temp[i, j] = PatchPoints[i + 4 * PatchesI - k, j + 4 * PatchesJ - h];
+                            }
+
+                        }
+
+                    }
+                    h++;
+
+                    Surface[PatchesJ, PatchesI] = new Patch(temp, _patchVerticalDivision, _patchHorizontalDivision);
+                }
+                k++;
+            }
+
+
+        }
 
         public BezierPatch(
             int horizontalPatches,
@@ -129,7 +238,7 @@ namespace ModelowanieGeometryczne.Model
 
 
             Surface = new Patch[HorizontalPatches, VerticalPatches];
-
+            AllPointsArray = new Point[HorizontalPatches * 3 + 1, VerticalPatches * 3 + 1];
 
 
 
@@ -148,6 +257,7 @@ namespace ModelowanieGeometryczne.Model
 
 
         }
+
 
 
         #region Public Methods
