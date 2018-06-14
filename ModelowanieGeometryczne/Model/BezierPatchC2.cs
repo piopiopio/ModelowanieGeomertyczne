@@ -16,6 +16,7 @@ namespace ModelowanieGeometryczne
     public class BezierPatchC2 : PointExchange
     {
         Point[,] _curvesPatchPoints;
+        Point[,] _curvesPatchPoints1;
         public Point[,] _patchPoints;
         public Point[,] _curvePatchPoints;
 
@@ -52,8 +53,10 @@ namespace ModelowanieGeometryczne
         public string Name { get; set; }
         static int PatchNumber { get; set; }
         Matrix4d projection = MatrixProvider.ProjectionMatrix();
+        int multiplier = 3;
 
-        public double[] U, V;//, UCurve, VCurve;
+
+        public double[] U, V, UCurve, VCurve;
         private int _u = 4;
         private int _v = 4;
 
@@ -344,6 +347,47 @@ namespace ModelowanieGeometryczne
                 }
             }
         }
+        public void CalculateParametrizatioCurveVectors()
+        {
+            var uCurve = u * multiplier;
+            var vCurve = v * multiplier;
+            UCurve = new double[uCurve];
+            VCurve = new double[vCurve];
+
+            double deltaU = 0;
+            double deltaV = 0;
+
+            if (uCurve > 1)
+            {
+                deltaU = 1.0 / (uCurve - 1);
+            }
+            if (uCurve == 1)
+            {
+                deltaU = 1;
+            }
+
+            for (int i = 0; i < uCurve; i++)
+            {
+                UCurve[i] = i * deltaU;
+            }
+
+
+
+            if (vCurve > 1)
+            {
+                deltaV = 1.0 / (vCurve - 1);
+            }
+            if (vCurve == 1)
+            {
+                deltaV = 1;
+            }
+
+            for (int i = 0; i < vCurve; i++)
+            {
+                VCurve[i] = i * deltaV;
+            }
+
+        }
 
         public void CalculateParametrizationVectors()
         {
@@ -382,6 +426,7 @@ namespace ModelowanieGeometryczne
             {
                 V[i] = i * deltaV;
             }
+            CalculateParametrizatioCurveVectors();
 
         }
 
@@ -409,33 +454,65 @@ namespace ModelowanieGeometryczne
 
             if (PatchesAreCylinder)
             {
-                _curvesPatchPoints = new Point[1 + (_u - 1) * VerticalPatches, 1 + (_v - 1) * (HorizontalPatches + 3)];
-                int ii = 0;
-                int jj = 0;
+                //_curvesPatchPoints = new Point[1 + (_u - 1) * VerticalPatches, 1 + (_v - 1) * (HorizontalPatches + 3)];
+                //int ii = 0;
+                //int jj = 0;
 
-                for (ii = 0; ii < VerticalPatches; ii++)
+                //for (ii = 0; ii < VerticalPatches; ii++)
+                //{
+                //    for (jj = 0; jj < HorizontalPatches + 3; jj++)
+                //    {
+
+                //        _pointsToDrawSinglePatch = Copy4x4PieceOfPointsCollecion(3 * ii, 3 * jj);
+                //        for (int i = 0; i < U.Length; i++)
+                //        {
+                //            for (int j = 0; j < V.Length; j++)
+                //            {
+                //                _curvesPatchPoints[(_u - 1) * ii + i, (_v - 1) * jj + j] = MatrixProvider.Multiply(CalculateB(U[i]), _pointsToDrawSinglePatch, CalculateB(V[j]));
+                //            }
+                //        }
+
+
+                //    }
+                //}
+                _curvesPatchPoints = new Point[1 + (_u - 1) * VerticalPatches, 1 + (_v * multiplier - 1) * (HorizontalPatches+3)];
+                _curvesPatchPoints1 = new Point[(1 + (_u * multiplier - 1) * VerticalPatches), 1 + (_v - 1) * (HorizontalPatches+3)];
+
+
+                for (int ii = 0; ii < VerticalPatches; ii++)
                 {
-                    for (jj = 0; jj < HorizontalPatches + 3; jj++)
+                    for (int jj = 0; jj < HorizontalPatches+3; jj++)
                     {
 
                         _pointsToDrawSinglePatch = Copy4x4PieceOfPointsCollecion(3 * ii, 3 * jj);
                         for (int i = 0; i < U.Length; i++)
                         {
+                            for (int j = 0; j < VCurve.Length; j++)
+                            {
+                                _curvesPatchPoints[(_u - 1) * ii + i, (_v * multiplier - 1) * jj + j] = MatrixProvider.Multiply(CalculateB(U[i]), _pointsToDrawSinglePatch, CalculateB(VCurve[j]));
+                            }
+                        }
+
+
+                        for (int i = 0; i < UCurve.Length; i++)
+                        {
                             for (int j = 0; j < V.Length; j++)
                             {
-                                _curvesPatchPoints[(_u - 1) * ii + i, (_v - 1) * jj + j] = MatrixProvider.Multiply(CalculateB(U[i]), _pointsToDrawSinglePatch, CalculateB(V[j]));
+                                _curvesPatchPoints1[(_u * multiplier - 1) * ii + i, (_v - 1) * jj + j] = MatrixProvider.Multiply(CalculateB(UCurve[i]), _pointsToDrawSinglePatch, CalculateB(V[j]));
                             }
                         }
 
 
                     }
                 }
-
             }
 
             else
             {
-                _curvesPatchPoints = new Point[1 + (_u - 1) * VerticalPatches, 1 + (_v - 1) * HorizontalPatches];
+                _curvesPatchPoints = new Point[1 + (_u - 1) * VerticalPatches, (1 + (_v* multiplier - 1) * HorizontalPatches)];
+                _curvesPatchPoints1 = new Point[(1 + (_u* multiplier - 1) * VerticalPatches), (1 + (_v - 1) * HorizontalPatches) ];
+
+
                 for (int ii = 0; ii < VerticalPatches; ii++)
                 {
                     for (int jj = 0; jj < HorizontalPatches; jj++)
@@ -444,11 +521,22 @@ namespace ModelowanieGeometryczne
                         _pointsToDrawSinglePatch = Copy4x4PieceOfPointsCollecion(3 * ii, 3 * jj);
                         for (int i = 0; i < U.Length; i++)
                         {
-                            for (int j = 0; j < V.Length; j++)
+                            for (int j = 0; j < VCurve.Length; j++)
                             {
-                                _curvesPatchPoints[(_u - 1) * ii + i, (_v - 1) * jj + j] = MatrixProvider.Multiply(CalculateB(U[i]), _pointsToDrawSinglePatch, CalculateB(V[j]));
+                                _curvesPatchPoints[(_u - 1) * ii + i, (_v * multiplier - 1) * jj + j] = MatrixProvider.Multiply(CalculateB(U[i]), _pointsToDrawSinglePatch, CalculateB(VCurve[j]));
                             }
                         }
+
+
+                        for (int i = 0; i < UCurve.Length; i++)
+                        {
+                            for (int j = 0; j < V.Length; j++)
+                            {
+                                _curvesPatchPoints1[(_u * multiplier - 1) * ii + i, (_v - 1) * jj + j] = MatrixProvider.Multiply(CalculateB(UCurve[i]), _pointsToDrawSinglePatch, CalculateB(V[j]));
+                            }
+                        }
+
+
                     }
                 }
             }
@@ -465,23 +553,26 @@ namespace ModelowanieGeometryczne
             GL.Color3(1.0, 1.0, 1.0);
 
 
-            for (int i = 0; i < _curvesPatchPoints.GetLength(0) - 1; i++)
+            for (int i = 0; i < _curvesPatchPoints1.GetLength(0) - 1; i++)
             {
-                for (int j = 0; j < _curvesPatchPoints.GetLength(1); j++)
+                for (int j = 0; j < _curvesPatchPoints1.GetLength(1); j++)
                 {
 
                     // if (_curvesPatchPoints[i + 1, j] == null || _curvesPatchPoints[i, j] == null) break;
 
-                    var _windowCoordinates = projection.Multiply(transformacja.Multiply(_curvesPatchPoints[i, j].Coordinates));
+                    var _windowCoordinates = projection.Multiply(transformacja.Multiply(_curvesPatchPoints1[i, j].Coordinates));
                     GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
 
 
-                    _windowCoordinates = projection.Multiply(transformacja.Multiply(_curvesPatchPoints[i + 1, j].Coordinates));
+                    _windowCoordinates = projection.Multiply(transformacja.Multiply(_curvesPatchPoints1[i + 1, j].Coordinates));
 
                     GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
                 }
 
             }
+
+
+
 
             for (int i = 0; i < _curvesPatchPoints.GetLength(0); i++)
             {
