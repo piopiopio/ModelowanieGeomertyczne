@@ -39,6 +39,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
         private bool _moveSelectedPointsWithCoursor = false;
         private bool _torusEnabled = false;
+        private ICommand _clearScene;
         private ICommand _addBezierPatch;
         private ICommand _addBezierPatchC2;
         private ICommand _addBezierCurve;
@@ -345,9 +346,18 @@ namespace ModelowanieGeometryczne.ViewModel
             }
         }
 
+
+        public ICommand ClearSceneICommand { get { return _clearScene ?? (_clearScene = new ActionCommand(ClearSceneExecuted)); } }
         public ICommand AddBezierCurve { get { return _addBezierCurve ?? (_addBezierCurve = new ActionCommand(AddBezierCurveExecuted)); } }
         public ICommand AddBezierCurveC2 { get { return _addBezierCurveC2 ?? (_addBezierCurveC2 = new ActionCommand(AddBezierCurveC2Executed)); } }
         public ICommand AddBezierCurveC2Interpolation { get { return _addBezierCurveC2Interpolation ?? (_addBezierCurveC2Interpolation = new ActionCommand(AddBezierCurveC2InterpolationExecuted)); } }
+
+
+        private void ClearSceneExecuted()
+        {
+            ClearScene();
+            Refresh();
+        }
 
         private void AddBezierCurveC2Executed()
         {
@@ -419,27 +429,29 @@ namespace ModelowanieGeometryczne.ViewModel
         #region Private Methods
         public void ClearScene()
         {
+            PointsCollection.Clear();
             BezierPatchC2Collection.Clear();
             BezierPatchCollection.Clear();
             BezierCurveCollection.Clear();
         }
         public void LoadScene()
         {
-            ClearScene();
+           
             OpenFileDialog op = new OpenFileDialog();
             op.Title = "Open";
             op.Filter = "Load users|*.json; *.json";
             if (op.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-               // try
-               // {
+                try
+                {
                     // DeserializeDataSet(op.FileName);
+                    ClearScene();
                     ExchangeObject.LoadJson(op.FileName);
-               // }
-               // catch
-               // {
-               //     System.Windows.MessageBox.Show("File read error");
-               // }
+                }
+                catch
+                {
+                    System.Windows.MessageBox.Show("File read error");
+                }
             }
 
             Render();
@@ -452,6 +464,7 @@ namespace ModelowanieGeometryczne.ViewModel
             sa.Title = "Save";
             sa.Filter = "Save users|*.json; *.json";
             ExchangeObject.PrepareToSave();
+
             if (sa.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 ExchangeObject.SaveJson(sa.FileName);
@@ -616,17 +629,18 @@ namespace ModelowanieGeometryczne.ViewModel
                     p.X += dx;
                     p.Y += dy;
                     p.Z += dz;
+
                 }
+
+                
+
+                patch.RecalculatePatches();
+
             }
 
             foreach (var patch in BezierPatchC2Collection)
             {
-                //foreach (var p in patch._patchPoints.Where(point => point.Selected))
-                //{
-                //    p.X += dx;
-                //    p.Y += dy;
-                //    p.Z += dz;
-                //}
+
                 for (int i=0; i< patch.PatchPoints.GetLength(0); i++)
                 {
                     for (int j = 0; j < patch.PatchPoints.GetLength(1); j++)
@@ -690,6 +704,25 @@ namespace ModelowanieGeometryczne.ViewModel
                         return;
                     }
                 }
+
+
+                //foreach (var item in patch.Surface)
+                //{
+                //    for (int i = 0; i < 4; i++)
+                //    {
+                //        for (int j = 0; j < 4; j++)
+                //        {
+
+                //            temp = new Vector4d(c.X - item.PatchPoints[i, j].WindowCoordinates.X, -c.Y - item.PatchPoints[i, j].WindowCoordinates.X, 0, 0);
+                //            if (temp.Length < epsilon)
+                //            {
+                //                item.PatchPoints[i, j].Selected = true;// !item.PatchPoints[i, j].Selected;
+
+                //            }
+                //        }
+                //    }
+
+                //}
             }
 
             foreach (var patch in BezierPatchC2Collection)

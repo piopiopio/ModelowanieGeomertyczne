@@ -28,7 +28,7 @@ namespace ModelowanieGeometryczne.Model
         private string _name;
         private bool _polylineEnabled = true;
         private bool _selected;
-        private string _curveType=null;
+        private string _curveType="C0";
 
 
         public Curve()

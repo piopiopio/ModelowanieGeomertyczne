@@ -233,5 +233,7 @@ namespace ModelowanieGeometryczne
             _mainViewModel.Scene.SaveScene();
 
         }
+
+
     }
 }

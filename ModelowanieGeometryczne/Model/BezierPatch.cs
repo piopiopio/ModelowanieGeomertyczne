@@ -59,6 +59,63 @@ namespace ModelowanieGeometryczne.Model
             return PointsArray;
         }
 
+        public void PlacePoints(Point[,] PointsArray=null)
+        {
+            if (PointsArray == null)
+            {
+                PointsArray=GetAllPointsInOneArray();
+            }
+            Point[,] temp;
+            if (PatchesAreCylinder)
+            {
+                for (int i = 0; i < VerticalPatches; i++)
+                {//i pionowe płatki :
+                    for (int j = 0; j < HorizontalPatches; j++)
+                    {//j iteracja pozioma, poziome płatki ..
+                        temp = new Point[4, 4];
+
+
+
+
+                        for (int k = 0; k < 4; k++)
+                        {
+                            for (int l = 0; l < 4; l++)
+                            {
+
+
+
+                                //Wstawianie tych samych punktów na łączeniach
+                                if ((i != 0) && (k == 0))
+                                {
+                                    temp[k, l] = Surface[j, i - 1].PatchPoints[3, l];
+                                }
+
+                                else if ((j != 0) && (l == 0))
+                                {
+                                    temp[k, l] = Surface[j - 1, i].PatchPoints[k, 3];
+                                }
+                                else
+                                {
+                                    temp[k, l] = PointsArray[3 * i + k, 3 * j + l];
+                                    // temp[k, l] = new Point(LocalStartPoint.X + l * dx, LocalStartPoint.Y + k * dy, LocalStartPoint.Z);
+                                }
+
+
+                            }
+                        }
+
+                        Surface[j, i] = new Patch(temp, _patchVerticalDivision, _patchHorizontalDivision);
+
+                    }
+                }
+            }
+            else
+            {
+
+            }
+        }
+
+
         public int PatchHorizontalDivision
         {
             get
@@ -82,6 +139,31 @@ namespace ModelowanieGeometryczne.Model
                 }
             }
         }
+
+        double _rotationZ=0;
+        double _rotationZOld = 0;
+        public double RotationZ
+        {
+            get { return _rotationZ; }
+            set {
+                _rotationZ = value;
+                ModelowanieGeometryczne.Model.Point[,] PointsTemporaryCollection = GetAllPointsInOneArray();
+                for (int i = 0; i < PointsTemporaryCollection.GetLength(0); i++)
+                {
+                    for (int j = 0; j < PointsTemporaryCollection.GetLength(1); j++)
+                    {
+                        PointsTemporaryCollection[i, j] = MatrixProvider.MultiplyP(MatrixProvider.RotateZMatrix((Math.PI / 180) * (_rotationZ - _rotationZOld)), PointsTemporaryCollection[i, j]);
+                    }
+                }
+
+
+                PatchPoints= PointsTemporaryCollection;
+                PlaceVerticesToPatches4x4();
+                RecalculatePatches();
+                _rotationZOld = RotationZ;
+            }
+        }
+
         public int PatchVerticalDivision
         {
             get
@@ -142,6 +224,17 @@ namespace ModelowanieGeometryczne.Model
             }
         }
 
+
+        public void RecalculatePatches()
+        {
+            foreach (var item in Surface)
+            {
+                item.CalculateParametrizationVectors();
+                item.CalculateCurvesPatchPoints();
+            }
+
+        }
+
         public BezierPatch(
                                     int horizontalPatches,
             int verticalPatches,
@@ -169,45 +262,108 @@ namespace ModelowanieGeometryczne.Model
         }
 
         public void PlaceVerticesToPatches4x4()
-        {//TODO: Uzupełnić rozmieszczenie punktów
-            var temp = new Point[4, 4];
-            int k = 0;
-            int h = 0;
-            for (int PatchesI = 0; PatchesI < VerticalPatches; PatchesI++)
+        {//TODO: ujednolic placeverticestoPatches i placepoints-> tu jest połączone wersja teraz
+
+      
+        
+            if (PatchesAreCylinder)
             {
-                h = 0;
-                for (int PatchesJ = 0; PatchesJ < HorizontalPatches; PatchesJ++)
-                {
-                    temp = new Point[4, 4];
-                    for (int i = 0; i < 4; i++)
-                    {
-                        for (int j = 0; j < 4; j++)
+                var PointsArray = PatchPoints;
+                Point[,] temp;
+                for (int i = 0; i < VerticalPatches; i++)
+                {//i pionowe płatki :
+                    for (int j = 0; j < HorizontalPatches; j++)
+                    {//j iteracja pozioma, poziome płatki ..
+                        temp = new Point[4, 4];
+
+
+
+
+                        for (int k = 0; k < 4; k++)
                         {
-
-                            if ((PatchesI != 0) && (i == 0))
+                            for (int l = 0; l < 4; l++)
                             {
 
-                                temp[i, j] = PatchPoints[i + 4 * PatchesI - k, j + 4 * PatchesJ - h];
+
+
+                                //Wstawianie tych samych punktów na łączeniach
+                                if ((i != 0) && (k == 0))
+                                {
+                                    temp[k, l] = Surface[j, i - 1].PatchPoints[3, l];
+                                }
+
+                                else if ((j != 0) && (l == 0))
+                                {
+                                    temp[k, l] = Surface[j - 1, i].PatchPoints[k, 3];
+                                }
+                                else
+                                {
+                                    temp[k, l] = PointsArray[3 * i + k, 3 * j + l];
+                                    // temp[k, l] = new Point(LocalStartPoint.X + l * dx, LocalStartPoint.Y + k * dy, LocalStartPoint.Z);
+                                }
+
+
+                                //Sklejanie końców
+                                if ((j == (HorizontalPatches - 1)) && (l == 3) && (HorizontalPatches > 1))
+                                {
+                                    temp[k, l] = Surface[0, i].PatchPoints[k, 0];
+                                }
+                                if ((j == (HorizontalPatches - 1)) && (l == 3) && (HorizontalPatches == 1))
+                                {
+                                    temp[k, l] = temp[k, 0];
+                                }
+
                             }
+                        }
 
-                            else if ((PatchesJ != 0) && (j == 0))
+                        Surface[j, i] = new Patch(temp, _patchVerticalDivision, _patchHorizontalDivision);
+
+                    }
+                }
+            }
+            else
+            {
+
+                var temp = new Point[4, 4];
+                int k = 0;
+                int h = 0;
+                for (int PatchesI = 0; PatchesI < VerticalPatches; PatchesI++)
+                {
+                    h = 0;
+                    for (int PatchesJ = 0; PatchesJ < HorizontalPatches; PatchesJ++)
+                    {
+                        temp = new Point[4, 4];
+                        for (int i = 0; i < 4; i++)
+                        {
+                            for (int j = 0; j < 4; j++)
                             {
 
-                                temp[i, j] = PatchPoints[i + 4 * PatchesI - k, j + 4 * PatchesJ - h];
-                            }
-                            else
-                            {
-                                temp[i, j] = PatchPoints[i + 4 * PatchesI - k, j + 4 * PatchesJ - h];
+                                if ((PatchesI != 0) && (i == 0))
+                                {
+
+                                    temp[i, j] = PatchPoints[i + 4 * PatchesI - k, j + 4 * PatchesJ - h];
+                                }
+
+                                else if ((PatchesJ != 0) && (j == 0))
+                                {
+
+                                    temp[i, j] = PatchPoints[i + 4 * PatchesI - k, j + 4 * PatchesJ - h];
+                                }
+                                else
+                                {
+                                    temp[i, j] = PatchPoints[i + 4 * PatchesI - k, j + 4 * PatchesJ - h];
+                                }
+
                             }
 
                         }
+                        h++;
 
+                        Surface[PatchesJ, PatchesI] = new Patch(temp, _patchVerticalDivision, _patchHorizontalDivision);
                     }
-                    h++;
-
-                    Surface[PatchesJ, PatchesI] = new Patch(temp, _patchVerticalDivision, _patchHorizontalDivision);
+                    k++;
                 }
-                k++;
+
             }
 
 
@@ -381,6 +537,15 @@ namespace ModelowanieGeometryczne.Model
                                 // temp[k, l] = new Point(LocalStartPoint.X + l * dx, LocalStartPoint.Y + k * dy, LocalStartPoint.Z);
                             }
 
+
+                            if( (j==(HorizontalPatches-1)) && (l==3) && (HorizontalPatches>1) )
+                            {
+                               temp[k, l] = Surface[0,i].PatchPoints[k,0];
+                            }
+                            if ((j == (HorizontalPatches - 1)) && (l == 3) && (HorizontalPatches == 1))
+                            {
+                                temp[k, l] = temp[k, 0];
+                            }
 
                         }
                     }

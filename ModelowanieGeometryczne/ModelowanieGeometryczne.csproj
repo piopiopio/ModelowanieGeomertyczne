@@ -68,6 +68,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Helpers\ImportExport.cs" />
+    <Compile Include="Helpers\JSON_PrettyPrinter.cs" />
     <Compile Include="Model\BezierPatchC2.cs" />
     <Compile Include="Helpers\ActionCommand.cs" />
     <Compile Include="Helpers\MatrixProvider.cs" />

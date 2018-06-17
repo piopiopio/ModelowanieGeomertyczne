@@ -102,7 +102,7 @@ namespace ModelowanieGeometryczne.Model
             return _knots.CalculateNVectors(N, liczbaPunktowUzytkownika);
         }
 
-        public BezierCurveC2(IEnumerable<Point> points, bool interpolation)
+        public BezierCurveC2(IEnumerable<Point> points, bool interpolation, string name=null)
         {
             if (interpolation)
             {
@@ -115,8 +115,16 @@ namespace ModelowanieGeometryczne.Model
                 CurveType = "C2";
             }
 
-            Name = "Bezier curve number " + CurveNumber + " type: " + CurveType;
-            _interpolation = interpolation;
+            if (name == null)
+            {
+                Name = "Bezier curve number " + CurveNumber + " type: " + CurveType;
+            }
+            else
+            {
+                Name = name;
+            }
+
+                _interpolation = interpolation;
 
 
             PointsCollection = new ObservableCollection<Point>(points);
@@ -154,6 +162,13 @@ namespace ModelowanieGeometryczne.Model
             }
 
             _additionalPointsCollection2.Add(_additionalPointsCollection[k]);
+
+
+            if (_pointsCollectionInterpolation.Count<4)
+            {
+
+                return;
+            }
             _additionalPointsCollection2.Add(new Point(_additionalPointsCollection[k].X + (_additionalPointsCollection[k + 1].X - _additionalPointsCollection[k].X) / 2, _additionalPointsCollection[k].Y + (_additionalPointsCollection[k + 1].Y - _additionalPointsCollection[k].Y) / 2, _additionalPointsCollection[k].Z + (_additionalPointsCollection[k + 1].Z - _additionalPointsCollection[k].Z) / 2));
 
 

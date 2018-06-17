@@ -20,304 +20,325 @@
         </Style>
     </Window.Resources>
     <DockPanel >
-    <Menu DockPanel.Dock="Top">
-        <MenuItem Header="File">
-            <MenuItem Header="Import" Click="Import_Click" />
-            <MenuItem Header="Export" Click="Export_Click"/>
-            </MenuItem>
-    </Menu>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="3*"/>
-            <RowDefinition Height="1*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="1*"/>
-        </Grid.ColumnDefinitions>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="Import" Click="Import_Click" />
+                <MenuItem Header="Export" Click="Export_Click"/>
 
-        <Grid Grid.Row="0" Grid.Column="1">
+
+            </MenuItem>
+        </Menu>
+        <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
+                <RowDefinition Height="3*"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="  r: "></TextBlock>
-            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Scene.Torus.r}"/>
 
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="  R: "></TextBlock>
-            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Scene.Torus.R}"/>
+            <Grid Grid.Row="0" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="  r: "></TextBlock>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Scene.Torus.r}"/>
 
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="  Division_fi: "></TextBlock>
-            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Scene.Torus.Division_fi}"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="  R: "></TextBlock>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Scene.Torus.R}"/>
 
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="  Division_teta: "></TextBlock>
-            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Scene.Torus.Division_teta}"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="  Division_fi: "></TextBlock>
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Scene.Torus.Division_fi}"/>
 
-
-            <TextBlock Grid.Row="4" Grid.Column="0" Text="  stereoscopy: "></TextBlock>
-            <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding  Scene.Stereoscopy}"/>
-
-            <TextBlock Grid.Row="5" Grid.Column="0" Text="  torus:  "></TextBlock>
-            <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding  Scene.TorusEnabled}"/>
-
-            <TextBlock Grid.Row="7" Grid.Column="0" Text="  Horizontal/circular patches:  "></TextBlock>
-            <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding Scene.HorizontalPatches}"/>
-            <TextBlock Grid.Row="8" Grid.Column="0" Text="  Vertical patches:  "></TextBlock>
-            <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding Scene.VerticalPatches}"/>
-            <TextBlock Grid.Row="9" Grid.Column="0" Text="  Patch width/radius:  "></TextBlock>
-            <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding Scene.PatchWidth}"/>
-            <TextBlock Grid.Row="10" Grid.Column="0" Text="  Patch height:  "></TextBlock>
-            <TextBox Grid.Row="10" Grid.Column="1" Text="{Binding Scene.PatchHeight}"/>
-            <TextBlock Grid.Row="11" Grid.Column="0" Text="  Patch horizontal division:  "></TextBlock>
-            <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding Scene.PatchHorizontalDivision}"/>
-            <TextBlock Grid.Row="12" Grid.Column="0" Text="  Patch vertical division:  "></TextBlock>
-            <TextBox Grid.Row="12" Grid.Column="1" Text="{Binding Scene.PatchVerticalDivision}"/>
-            <TextBlock Grid.Row="13" Grid.Column="0" Text="  Patches are cylinder  "></TextBlock>
-            <CheckBox Grid.Row="13" Grid.Column="1" IsChecked="{Binding  Scene.PatchesAreCylinder}"/>
-
-            <Button Grid.Row="14"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Patch C2" Command="{Binding Scene.AddBezierPatchC2}"></Button>
-            <Button Grid.Row="15"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Patch C0" Command="{Binding Scene.AddBezierPatch}"></Button>
-            <Button Grid.Row="16"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curves C0" Command="{Binding Scene.AddBezierCurve}"></Button>
-            <Button Grid.Row="17"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curves C2" Command="{Binding Scene.AddBezierCurveC2}"></Button>
-            <Button Grid.Row="18"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curves C2 interpolation" Command="{Binding Scene.AddBezierCurveC2Interpolation}"></Button>
-            <Button Grid.Row="19"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Selected Points to Selected Bezier Curve" Command="{Binding Scene.AddPointsCommand}"></Button>
-            <Button Grid.Row="20"  Grid.Column="0" Grid.ColumnSpan="2" Content="Undo all transformations" Command="{Binding Scene.UndoAllTransformation}"></Button>
-        </Grid>
-
-        <Grid Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="1*"/>
-            </Grid.RowDefinitions>
-
-            <TabControl>
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="  Division_teta: "></TextBlock>
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Scene.Torus.Division_teta}"/>
 
 
-                <TabItem Header="PointsCollection">
-                    <ListView Name="PointsListView" Grid.Row="0" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.PointsCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="ListViewItem">
-                                <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>
-                            </Style>
-                        </ListView.ItemContainerStyle>
-                        <ListView.View>
-                            <GridView >
-                                <GridViewColumn Header="Name" Width="240">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBox Text="{Binding Name}"></TextBox>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Header="X" Width="120" DisplayMemberBinding="{Binding X, StringFormat=N2}"/>
-                                <GridViewColumn Header="Y" Width="120" DisplayMemberBinding="{Binding Y, StringFormat=N2}"/>
-                                <GridViewColumn Header="Z" Width="120" DisplayMemberBinding="{Binding Z, StringFormat=N2}"/>
-                                <GridViewColumn Header="IsSelected" Width="120" DisplayMemberBinding="{Binding Selected}"/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                </TabItem>
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="  stereoscopy: "></TextBlock>
+                <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding  Scene.Stereoscopy}"/>
 
-                <TabItem Header="Bezier patches" Height="22" VerticalAlignment="Top">
-                    <ListView Name="BezierPatchView" Grid.Row="0" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.BezierPatchCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="ListViewItem">
-                                <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>
-                            </Style>
-                        </ListView.ItemContainerStyle>
-                        <ListView.View>
-                            <GridView >
-                                <GridViewColumn Header="Name" Width="240">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBox Text="{Binding Name}"></TextBox>
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="  torus:  "></TextBlock>
+                <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding  Scene.TorusEnabled}"/>
 
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
+                <TextBlock Grid.Row="7" Grid.Column="0" Text="  Horizontal/circular patches:  "></TextBlock>
+                <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding Scene.HorizontalPatches}"/>
+                <TextBlock Grid.Row="8" Grid.Column="0" Text="  Vertical patches:  "></TextBlock>
+                <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding Scene.VerticalPatches}"/>
+                <TextBlock Grid.Row="9" Grid.Column="0" Text="  Patch width/radius:  "></TextBlock>
+                <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding Scene.PatchWidth}"/>
+                <TextBlock Grid.Row="10" Grid.Column="0" Text="  Patch height:  "></TextBlock>
+                <TextBox Grid.Row="10" Grid.Column="1" Text="{Binding Scene.PatchHeight}"/>
+                <TextBlock Grid.Row="11" Grid.Column="0" Text="  Patch horizontal division:  "></TextBlock>
+                <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding Scene.PatchHorizontalDivision}"/>
+                <TextBlock Grid.Row="12" Grid.Column="0" Text="  Patch vertical division:  "></TextBlock>
+                <TextBox Grid.Row="12" Grid.Column="1" Text="{Binding Scene.PatchVerticalDivision}"/>
+                <TextBlock Grid.Row="13" Grid.Column="0" Text="  Patches are cylinder  "></TextBlock>
+                <CheckBox Grid.Row="13" Grid.Column="1" IsChecked="{Binding  Scene.PatchesAreCylinder}"/>
 
-                                <GridViewColumn Header="IsSelected" Width="120" DisplayMemberBinding="{Binding Selected}"/>
-                                <GridViewColumn Header="Polyline enabled" Width="120" >
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <CheckBox IsChecked="{Binding PolylineEnabled}" Click="RefreshScene"></CheckBox>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
+                <Button Grid.Row="14"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Patch C2" Command="{Binding Scene.AddBezierPatchC2}"></Button>
+                <Button Grid.Row="15"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Patch C0" Command="{Binding Scene.AddBezierPatch}"></Button>
+                <Button Grid.Row="16"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curves C0" Command="{Binding Scene.AddBezierCurve}"></Button>
+                <Button Grid.Row="17"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curves C2" Command="{Binding Scene.AddBezierCurveC2}"></Button>
+                <Button Grid.Row="18"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curves C2 interpolation" Command="{Binding Scene.AddBezierCurveC2Interpolation}"></Button>
+                <Button Grid.Row="19"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Selected Points to Selected Bezier Curve" Command="{Binding Scene.AddPointsCommand}"></Button>
+                <Button Grid.Row="20"  Grid.Column="0" Grid.ColumnSpan="2" Content="Undo all transformations" Command="{Binding Scene.UndoAllTransformation}"></Button>
+                <Button Grid.Row="21"  Grid.Column="0" Grid.ColumnSpan="2" Content="Clear scene" Command="{Binding Scene.ClearSceneICommand}"></Button>
+            </Grid>
 
-                                <GridViewColumn Header="Horizontal divisions" Width="120">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBox Text="{Binding PatchHorizontalDivision}" LostFocus="TextBox_LostFocus" ></TextBox>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
 
-                                <GridViewColumn Header="Vertical divisions" Width="120">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBox Text="{Binding PatchVerticalDivision}" LostFocus="TextBox_LostFocus" ></TextBox>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-
-                </TabItem>
-
-                <TabItem Header="Bezier patches C2" Height="22" VerticalAlignment="Top">
-                    <ListView Name="BezierPatchViewC2" Grid.Row="0" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.BezierPatchC2Collection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="ListViewItem">
-                                <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>
-                            </Style>
-                        </ListView.ItemContainerStyle>
-                        <ListView.View>
-                            <GridView >
-                                <GridViewColumn Header="Name" Width="240">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBox Text="{Binding Name}"></TextBox>
-
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-
-                                <GridViewColumn Header="IsSelected" Width="120" DisplayMemberBinding="{Binding Selected}"/>
-                                
-                                <GridViewColumn Header="Polyline enabled" Width="120" >
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <CheckBox IsChecked="{Binding PolylineEnabled}" Click="RefreshScene"></CheckBox>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
+                <TabControl>
 
 
-                                <GridViewColumn Header="Horizontal divisions" Width="120">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBox Text="{Binding v}" LostFocus="TextBox_LostFocus" ></TextBox>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
+                    <TabItem Header="PointsCollection">
+                        <ListView Name="PointsListView" Grid.Row="0" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.PointsCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.View>
+                                <GridView >
+                                    <GridViewColumn Header="Name" Width="240">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding Name}"></TextBox>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="X" Width="120" DisplayMemberBinding="{Binding X, StringFormat=N2}"/>
+                                    <GridViewColumn Header="Y" Width="120" DisplayMemberBinding="{Binding Y, StringFormat=N2}"/>
+                                    <GridViewColumn Header="Z" Width="120" DisplayMemberBinding="{Binding Z, StringFormat=N2}"/>
+                                    <GridViewColumn Header="IsSelected" Width="120" DisplayMemberBinding="{Binding Selected}"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </TabItem>
 
-                                <GridViewColumn Header="Vertical divisions" Width="120">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBox Text="{Binding u}" LostFocus="TextBox_LostFocus" ></TextBox>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Header="Show Bernstein points" Width="150" >
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <CheckBox IsChecked="{Binding ShowBernstein}" Click="RefreshScene"></CheckBox>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                
-                                <GridViewColumn Header="Show control points" Width="150" >
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <CheckBox IsChecked="{Binding ShowControlPoints}" Click="RefreshScene"></CheckBox>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
+                    <TabItem Header="Bezier patches" Height="22" VerticalAlignment="Top">
+                        <ListView Name="BezierPatchView" Grid.Row="0" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.BezierPatchCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.View>
+                                <GridView >
+                                    <GridViewColumn Header="Name" Width="240">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding Name}"></TextBox>
+
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Header="IsSelected" Width="120" DisplayMemberBinding="{Binding Selected}" />
+                                    <GridViewColumn Header="Polyline enabled" Width="120" >
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox IsChecked="{Binding PolylineEnabled}" Click="RefreshScene" HorizontalAlignment="Center"></CheckBox>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Header="Horizontal divisions" Width="120">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding PatchHorizontalDivision}" LostFocus="TextBox_LostFocus" HorizontalAlignment="Center"></TextBox>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Header="Vertical divisions" Width="120">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding PatchVerticalDivision}" LostFocus="TextBox_LostFocus" HorizontalAlignment="Center"></TextBox>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Header="Rotation Z" Width="120">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding RotationZ}" LostFocus="TextBox_LostFocus" HorizontalAlignment="Center"></TextBox>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
 
 
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
 
-                </TabItem>
-                
-                <TabItem Header="Bezier curves">
-                    <ListView Name="BezierCurveListView" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.BezierCurveCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="ListViewItem">
-                                <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>
-                            </Style>
-                        </ListView.ItemContainerStyle>
-                        <ListView.View>
-                            <GridView >
-                                <GridViewColumn Header="Name" Width="240">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBox Text="{Binding Name}"></TextBox>
+                    </TabItem>
 
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Header="PointsCollection" Width="360" >
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <ListView ItemsSource="{Binding PointsCollection}" Height="100" Width="340">
-                                                <ListView.Resources>
-                                                    <ContextMenu x:Key="ItemContextMenu">
-                                                        <MenuItem Header="Remove points" Command="{Binding Path=DataContext.RemovePointsCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
-                                                        <!--<MenuItem Header="Add points" Command="{Binding Path=DataContext.Scene.AddPointsCommand, RelativeSource={RelativeSource AncestorType=ListView, AncestorLevel=2}}"/>-->
+                    <TabItem Header="Bezier patches C2" Height="22" VerticalAlignment="Top">
+                        <ListView Name="BezierPatchViewC2" Grid.Row="0" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.BezierPatchC2Collection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.View>
+                                <GridView >
+                                    <GridViewColumn Header="Name" Width="240">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding Name}"></TextBox>
+
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Header="IsSelected" Width="120" DisplayMemberBinding="{Binding Selected}" />
+
+                                    <GridViewColumn Header="Polyline enabled" Width="120" >
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox IsChecked="{Binding PolylineEnabled}" Click="RefreshScene"  HorizontalAlignment="Center"></CheckBox>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
 
 
-                                                    </ContextMenu>
+                                    <GridViewColumn Header="Horizontal divisions" Width="120">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding v}" LostFocus="TextBox_LostFocus"  HorizontalAlignment="Center"></TextBox>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
 
-                                                </ListView.Resources>
-                                                <ListView.View>
-                                                    <GridView >
-                                                        <GridViewColumn Header="Name" Width="340" DisplayMemberBinding="{Binding Name}"/>
-                                                    </GridView>
-                                                </ListView.View>
-                                                <ListView.ItemContainerStyle>
-                                                    <Style TargetType="{x:Type ListViewItem}" >
-                                                        <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}"/>
-                                                        <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>
-                                                        <!--<Setter Property="IsBernstein" Value="{Binding IsBernstein}"></Setter>-->
-                                                    </Style>
-                                                </ListView.ItemContainerStyle>
-                                            </ListView>
+                                    <GridViewColumn Header="Vertical divisions" Width="120">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding u}" LostFocus="TextBox_LostFocus" HorizontalAlignment="Center" ></TextBox>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="Show Bernstein points" Width="150" >
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox IsChecked="{Binding ShowBernstein}" Click="RefreshScene" HorizontalAlignment="Center"></CheckBox>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
 
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Header="IsSelected" Width="120" DisplayMemberBinding="{Binding Selected}"/>
-                                <GridViewColumn Header="Polyline enabled" Width="120" >
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <CheckBox IsChecked="{Binding PolylineEnabled}" Click="RefreshScene"></CheckBox>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                
-                                
-                                <GridViewColumn Header="Bernstein Basis">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <!--<ContentControl Content="{Binding}">
+                                    <GridViewColumn Header="Show control points" Width="150" >
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox IsChecked="{Binding ShowControlPoints}" Click="RefreshScene" HorizontalAlignment="Center"></CheckBox>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Header="Rotation Z" Width="120">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding RotationZ}" LostFocus="TextBox_LostFocus" HorizontalAlignment="Center"></TextBox>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+
+                    </TabItem>
+
+                    <TabItem Header="Bezier curves">
+                        <ListView Name="BezierCurveListView" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.BezierCurveCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.View>
+                                <GridView >
+                                    <GridViewColumn Header="Name" Width="240">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding Name}"></TextBox>
+
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="PointsCollection" Width="360" >
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ListView ItemsSource="{Binding PointsCollection}" Height="100" Width="340">
+                                                    <ListView.Resources>
+                                                        <ContextMenu x:Key="ItemContextMenu">
+                                                            <MenuItem Header="Remove points" Command="{Binding Path=DataContext.RemovePointsCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                                            <!--<MenuItem Header="Add points" Command="{Binding Path=DataContext.Scene.AddPointsCommand, RelativeSource={RelativeSource AncestorType=ListView, AncestorLevel=2}}"/>-->
+
+
+                                                        </ContextMenu>
+
+                                                    </ListView.Resources>
+                                                    <ListView.View>
+                                                        <GridView >
+                                                            <GridViewColumn Header="Name" Width="340" DisplayMemberBinding="{Binding Name}"/>
+                                                        </GridView>
+                                                    </ListView.View>
+                                                    <ListView.ItemContainerStyle>
+                                                        <Style TargetType="{x:Type ListViewItem}" >
+                                                            <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}"/>
+                                                            <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>
+                                                            <!--<Setter Property="IsBernstein" Value="{Binding IsBernstein}"></Setter>-->
+                                                        </Style>
+                                                    </ListView.ItemContainerStyle>
+                                                </ListView>
+
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="IsSelected" Width="120" DisplayMemberBinding="{Binding Selected}"/>
+                                    <GridViewColumn Header="Polyline enabled" Width="120" >
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox IsChecked="{Binding PolylineEnabled}" Click="RefreshScene"></CheckBox>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+
+                                    <GridViewColumn Header="Bernstein Basis">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <!--<ContentControl Content="{Binding}">
                                                 <ContentControl.Resources>
                                                     <DataTemplate DataType="{x:Type model:BezierCurveC2}">
                                                         <CheckBox IsChecked="{Binding IsBernsteinBasis}"/>
@@ -326,49 +347,53 @@
                                                     </DataTemplate>
                                                 </ContentControl.Resources>
                                             </ContentControl>-->
-                                            <CheckBox IsChecked="{Binding IsBernsteinBasis}" Click="RefreshScene"></CheckBox>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                
-                                
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-
-                </TabItem>
+                                                <CheckBox IsChecked="{Binding IsBernsteinBasis}" Click="RefreshScene"></CheckBox>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
 
 
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+
+                    </TabItem>
 
 
-            </TabControl>
-
-        </Grid>
-
-        <Grid Grid.Row="2" Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Row="1" Text="{Binding Scene.Cursor.CursorCoordinates}"></TextBlock>
-            <TextBlock Grid.Row="2" Text="{Binding Scene.Cursor.CursorWindowCoordinates}"></TextBlock>
-            <TextBlock Grid.Row="3" Text="{Binding Scene.MoveSelectedPointsWithCoursor, StringFormat=Move selected point with cursor: {0}}"></TextBlock>
-            <!--<TextBlock Grid.Row="4" Text="{Binding Text}"></TextBlock>-->
-        </Grid>
 
 
-        <WindowsFormsHost Name="OpentkWindow" Grid.Column="0" Grid.Row="0" Initialized="OpenTkControl_Initialized" 
+                </TabControl>
+
+            </Grid>
+
+            <Grid Grid.Row="2" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="103*"/>
+                    <ColumnDefinition Width="254*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="1" Text="{Binding Scene.Cursor.CursorCoordinates}" Grid.ColumnSpan="2"></TextBlock>
+                <TextBlock Grid.Row="2" Text="{Binding Scene.Cursor.CursorWindowCoordinates}" Grid.ColumnSpan="2"></TextBlock>
+                <TextBlock Grid.Row="3" Text="{Binding Scene.MoveSelectedPointsWithCoursor, StringFormat=Move selected point with cursor: {0}}" Grid.ColumnSpan="2"></TextBlock>
+                <!--<TextBlock Grid.Row="4" Text="{Binding Text}"></TextBlock>-->
+            </Grid>
+
+
+            <WindowsFormsHost Name="OpentkWindow" Grid.Column="0" Grid.Row="0" Initialized="OpenTkControl_Initialized" 
                   helpers:SizeObserver.Observe="True"
                   helpers:SizeObserver.ObservedHeight="{Binding Scene.Height, Mode=OneWayToSource}"
                   helpers:SizeObserver.ObservedWidth="{Binding Scene.Width, Mode=OneWayToSource}" 
                           />
 
-    </Grid>
-</DockPanel >
+        </Grid>
+    </DockPanel >
 </Window>

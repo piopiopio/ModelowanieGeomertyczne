@@ -236,6 +236,13 @@ namespace ModelowanieGeometryczne.Helpers
               v.X * m.M41 + v.Y * m.M42 + v.Z * m.M43 + 1 * m.M44);
         }
 
+        public static Point MultiplyP(this Matrix4d m, ModelowanieGeometryczne.Model.Point v)
+        {
+            return new Point(v.X * m.M11 + v.Y * m.M12 + v.Z * m.M13 + 1 * m.M14,
+                v.X * m.M21 + v.Y * m.M22 + v.Z * m.M23 + 1 * m.M24,
+                v.X * m.M31 + v.Y * m.M32 + v.Z * m.M33 + 1 * m.M34);
+        }
+
 
         public static Point Multiply(double[] Bu, Point[,] G, double[] Bv)
         {   //return result of Bu*G*Bv'

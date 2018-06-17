@@ -81,6 +81,33 @@ namespace ModelowanieGeometryczne
                 CalculateCurvesPatchPoints();
             }
         }
+
+        double _rotationZ = 0;
+        double _rotationZOld = 0;
+        public double RotationZ
+        {
+            get { return _rotationZ; }
+            set
+            {
+                _rotationZ = value;
+                ModelowanieGeometryczne.Model.Point[,] PointsTemporaryCollection = PatchPoints;
+                for (int i = 0; i < PointsTemporaryCollection.GetLength(0); i++)
+                {
+                    for (int j = 0; j < PointsTemporaryCollection.GetLength(1); j++)
+                    {
+                        PointsTemporaryCollection[i, j] = MatrixProvider.MultiplyP(MatrixProvider.RotateZMatrix((Math.PI / 180) * (_rotationZ - _rotationZOld)), PointsTemporaryCollection[i, j]);
+                    }
+                }
+
+
+                PatchPoints = PointsTemporaryCollection;
+                _rotationZOld = RotationZ;
+                CalculateParametrizationVectors();
+                CalculateBezierPoints();
+            }
+        }
+
+
         private void CalculateAdditionalPoints(ObservableCollection<Point> PointsCollection)
         {
 

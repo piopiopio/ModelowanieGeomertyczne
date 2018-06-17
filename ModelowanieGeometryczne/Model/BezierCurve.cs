@@ -24,11 +24,18 @@ namespace ModelowanieGeometryczne.Model
 
         #region Public Methods
 
-        public BezierCurve(IEnumerable<Point> points)
+        public BezierCurve(IEnumerable<Point> points, string name=null)
         {
             CurveType = "C0";
             PointsCollection = new ObservableCollection<Point>(points);
-            Name = "Bezier curve number " + CurveNumber + " type: "+CurveType;
+            if (Name == null)
+            {
+                Name = "Bezier curve number " + CurveNumber + " type: " + CurveType;
+            }
+            else
+            {
+                Name = name;
+            }
         }
 
         public override void DrawCurve(Matrix4d transformacja)
