@@ -65,9 +65,12 @@ namespace ModelowanieGeometryczne
             get { return _u; }
             set
             {
-                _u = value;
-                CalculateParametrizationVectors();
-                CalculateCurvesPatchPoints();
+                if ((value >= 1) && (value <=  20))
+                {
+                    _u = value;
+                    CalculateParametrizationVectors();
+                    CalculateCurvesPatchPoints();
+                }
             }
         }
 
@@ -76,9 +79,12 @@ namespace ModelowanieGeometryczne
             get { return _v; }
             set
             {
-                _v = value;
-                CalculateParametrizationVectors();
-                CalculateCurvesPatchPoints();
+                if ((value >= 1) && (value <= 20))
+                {
+                    _v = value;
+                    CalculateParametrizationVectors();
+                    CalculateCurvesPatchPoints();
+                }
             }
         }
 

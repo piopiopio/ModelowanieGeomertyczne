@@ -28,6 +28,7 @@
 
             </MenuItem>
         </Menu>
+        
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="3*"/>
@@ -62,7 +63,8 @@
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="1*"/>
-                    
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/>
@@ -110,6 +112,7 @@
                 <Button Grid.Row="19"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Selected Points to Selected Bezier Curve" Command="{Binding Scene.AddPointsCommand}"></Button>
                 <Button Grid.Row="20"  Grid.Column="0" Grid.ColumnSpan="2" Content="Undo all transformations" Command="{Binding Scene.UndoAllTransformation}"></Button>
                 <Button Grid.Row="21"  Grid.Column="0" Grid.ColumnSpan="2" Content="Clear scene" Command="{Binding Scene.ClearSceneICommand}"></Button>
+                <Button Grid.Row="22"  Grid.Column="0" Grid.ColumnSpan="2" Content="Merge points" Command="{Binding Scene.GregoryMergePoints}"></Button>
             </Grid>
 
             <Grid Grid.Row="1">

@@ -33,11 +33,11 @@ namespace ModelowanieGeometryczne.Model
 
         public Point[,] GetAllPointsInOneArray()
         {
-            Point[,] PointsArray = new Point[VerticalPatches * 3 + 1, HorizontalPatches* 3 + 1];
+            Point[,] PointsArray = new Point[VerticalPatches * 3 + 1, HorizontalPatches * 3 + 1];
 
 
 
-            for (int i = 0; i < VerticalPatches ; i++)
+            for (int i = 0; i < VerticalPatches; i++)
             {
                 for (int j = 0; j < HorizontalPatches; j++)
                 {
@@ -47,7 +47,7 @@ namespace ModelowanieGeometryczne.Model
                     {
                         for (int jp = 0; jp < 4; jp++)
                         {
-                            PointsArray[ip + i * 3, jp + j * 3] = Surface[j,i].PatchPoints[ip, jp];
+                            PointsArray[ip + i * 3, jp + j * 3] = Surface[j, i].PatchPoints[ip, jp];
                         }
 
                     }
@@ -59,11 +59,11 @@ namespace ModelowanieGeometryczne.Model
             return PointsArray;
         }
 
-        public void PlacePoints(Point[,] PointsArray=null)
+        public void PlacePoints(Point[,] PointsArray = null)
         {
             if (PointsArray == null)
             {
-                PointsArray=GetAllPointsInOneArray();
+                PointsArray = GetAllPointsInOneArray();
             }
             Point[,] temp;
             if (PatchesAreCylinder)
@@ -124,7 +124,7 @@ namespace ModelowanieGeometryczne.Model
             }
             set
             {
-                if ((value >= 3) && (value < 20))
+                if ((value >=1) && (value <= 20))
                 {
                     _patchHorizontalDivision = value;
 
@@ -140,12 +140,13 @@ namespace ModelowanieGeometryczne.Model
             }
         }
 
-        double _rotationZ=0;
+        double _rotationZ = 0;
         double _rotationZOld = 0;
         public double RotationZ
         {
             get { return _rotationZ; }
-            set {
+            set
+            {
                 _rotationZ = value;
                 ModelowanieGeometryczne.Model.Point[,] PointsTemporaryCollection = GetAllPointsInOneArray();
                 for (int i = 0; i < PointsTemporaryCollection.GetLength(0); i++)
@@ -157,7 +158,7 @@ namespace ModelowanieGeometryczne.Model
                 }
 
 
-                PatchPoints= PointsTemporaryCollection;
+                PatchPoints = PointsTemporaryCollection;
                 PlaceVerticesToPatches4x4();
                 RecalculatePatches();
                 _rotationZOld = RotationZ;
@@ -172,7 +173,7 @@ namespace ModelowanieGeometryczne.Model
             }
             set
             {
-                if ((value >= 3) && (value < 20))
+                if ((value >= 1) && (value <= 20))
                 {
                     _patchVerticalDivision = value;
                     if (Surface != null)
@@ -216,11 +217,16 @@ namespace ModelowanieGeometryczne.Model
         public Point[,] _patchPoints;
         public Point[,] PatchPoints
         {
-            get { return _patchPoints; }
+            get
+            {
+                //_patchPoints = GetAllPointsInOneArray();
+                return _patchPoints;
+            }
             set
             {
                 _patchPoints = value;
-
+                PlaceVerticesToPatches4x4();
+                RecalculatePatches();
             }
         }
 
@@ -236,9 +242,8 @@ namespace ModelowanieGeometryczne.Model
         }
 
         public BezierPatch(
-                                    int horizontalPatches,
+            int horizontalPatches,
             int verticalPatches,
-
             int patchHorizontalDivision,
             int patchVerticalDivision,
             bool cylinder,
@@ -251,7 +256,7 @@ namespace ModelowanieGeometryczne.Model
             _patchHorizontalDivision = patchHorizontalDivision;
             _patchVerticalDivision = patchVerticalDivision;
             PatchesAreCylinder = cylinder;
-            PatchPoints = pointsToAdd;
+            _patchPoints = pointsToAdd;
             Name = name1;
             Surface = new Patch[HorizontalPatches, VerticalPatches];
             AllPointsArray = pointsToAdd;
@@ -264,8 +269,8 @@ namespace ModelowanieGeometryczne.Model
         public void PlaceVerticesToPatches4x4()
         {//TODO: ujednolic placeverticestoPatches i placepoints-> tu jest połączone wersja teraz
 
-      
-        
+
+
             if (PatchesAreCylinder)
             {
                 var PointsArray = PatchPoints;
@@ -538,9 +543,9 @@ namespace ModelowanieGeometryczne.Model
                             }
 
 
-                            if( (j==(HorizontalPatches-1)) && (l==3) && (HorizontalPatches>1) )
+                            if ((j == (HorizontalPatches - 1)) && (l == 3) && (HorizontalPatches > 1))
                             {
-                               temp[k, l] = Surface[0,i].PatchPoints[k,0];
+                                temp[k, l] = Surface[0, i].PatchPoints[k, 0];
                             }
                             if ((j == (HorizontalPatches - 1)) && (l == 3) && (HorizontalPatches == 1))
                             {

@@ -39,6 +39,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
         private bool _moveSelectedPointsWithCoursor = false;
         private bool _torusEnabled = false;
+        private ICommand _gregoryMergePoints;
         private ICommand _clearScene;
         private ICommand _addBezierPatch;
         private ICommand _addBezierPatchC2;
@@ -115,7 +116,9 @@ namespace ModelowanieGeometryczne.ViewModel
         public int PatchVerticalDivision
         {
             get { return _patchVerticalDivision; }
-            set { _patchVerticalDivision = value;
+            set
+            {
+                _patchVerticalDivision = value;
                 foreach (var item in _bezierPatchCollection)
                 {
                     item.PatchVerticalDivision = _patchVerticalDivision;
@@ -168,7 +171,7 @@ namespace ModelowanieGeometryczne.ViewModel
             set
             {
                 _bezierCurveCollection = value;
-            
+
                 OnPropertyChanged("BezierCurveCollectiont");
                 Refresh();
             }
@@ -347,11 +350,63 @@ namespace ModelowanieGeometryczne.ViewModel
         }
 
 
+        public ICommand GregoryMergePoints { get { return _gregoryMergePoints ?? (_gregoryMergePoints = new ActionCommand(GregoryMergePointsExecuted)); } }
         public ICommand ClearSceneICommand { get { return _clearScene ?? (_clearScene = new ActionCommand(ClearSceneExecuted)); } }
         public ICommand AddBezierCurve { get { return _addBezierCurve ?? (_addBezierCurve = new ActionCommand(AddBezierCurveExecuted)); } }
         public ICommand AddBezierCurveC2 { get { return _addBezierCurveC2 ?? (_addBezierCurveC2 = new ActionCommand(AddBezierCurveC2Executed)); } }
         public ICommand AddBezierCurveC2Interpolation { get { return _addBezierCurveC2Interpolation ?? (_addBezierCurveC2Interpolation = new ActionCommand(AddBezierCurveC2InterpolationExecuted)); } }
 
+        private void GregoryMergePointsExecuted()
+        {
+
+            List<Tuple<int, int, int>> BezierPatchIterator = new List<Tuple<int, int, int>>();
+
+            int i = 0;
+
+            foreach (var patch in BezierPatchCollection)
+            {
+                patch.PatchPoints = patch.GetAllPointsInOneArray();
+                for (int j = 0; j < patch.PatchPoints.GetLength(0); j++)
+                {
+                    for (int k = 0; k < patch.PatchPoints.GetLength(1); k++)
+                    {
+                        if (patch.PatchPoints[j, k].Selected)
+                        {
+                            BezierPatchIterator.Add(new Tuple<int, int, int>(i, j, k));
+                        }
+                    }
+                }
+                i++;
+            }
+
+
+
+            if (BezierPatchIterator.Count == 2)
+            {
+
+
+                BezierPatchCollection[BezierPatchIterator[0].Item1].PatchPoints[BezierPatchIterator[0].Item2, BezierPatchIterator[0].Item3] = GregoryPatch.MergePoints(BezierPatchCollection[BezierPatchIterator[0].Item1].PatchPoints[BezierPatchIterator[0].Item2, BezierPatchIterator[0].Item3],
+                    BezierPatchCollection[BezierPatchIterator[1].Item1].PatchPoints[BezierPatchIterator[1].Item2, BezierPatchIterator[1].Item3]);
+
+                BezierPatchCollection[BezierPatchIterator[1].Item1].PatchPoints[BezierPatchIterator[1].Item2, BezierPatchIterator[1].Item3] = BezierPatchCollection[BezierPatchIterator[0].Item1].PatchPoints[BezierPatchIterator[0].Item2, BezierPatchIterator[0].Item3];
+
+                BezierPatchCollection[BezierPatchIterator[0].Item1].PlaceVerticesToPatches4x4();
+                BezierPatchCollection[BezierPatchIterator[1].Item1].PlaceVerticesToPatches4x4();
+
+                foreach (var item in BezierPatchCollection)
+                {
+                    item.RecalculatePatches();
+                }
+                Refresh();
+
+            }
+            else
+            {
+                MessageBox.Show("Not correct selected points number");
+            }
+
+
+        }
 
         private void ClearSceneExecuted()
         {
@@ -436,22 +491,22 @@ namespace ModelowanieGeometryczne.ViewModel
         }
         public void LoadScene()
         {
-           
+
             OpenFileDialog op = new OpenFileDialog();
             op.Title = "Open";
             op.Filter = "Load users|*.json; *.json";
             if (op.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                try
-                {
+                //try
+                //{
                     // DeserializeDataSet(op.FileName);
                     ClearScene();
                     ExchangeObject.LoadJson(op.FileName);
-                }
-                catch
-                {
-                    System.Windows.MessageBox.Show("File read error");
-                }
+                //}
+                //catch
+                //{
+                //    System.Windows.MessageBox.Show("File read error");
+                //}
             }
 
             Render();
@@ -569,7 +624,7 @@ namespace ModelowanieGeometryczne.ViewModel
             }
 
             GL.Flush();
-           
+
         }
 
         private void SetViewPort()
@@ -624,28 +679,45 @@ namespace ModelowanieGeometryczne.ViewModel
 
             foreach (var patch in BezierPatchCollection)
             {
-                foreach (var p in patch.Vertices.Where(point => point.Selected))
+
+
+                //foreach (var p in patch.Vertices.Where(point => point.Selected))
+                //{
+                //    p.X += dx;
+                //    p.Y += dy;
+                //    p.Z += dz;
+
+                //}
+                patch._patchPoints = patch.GetAllPointsInOneArray();
+                for (int i = 0; i < patch.PatchPoints.GetLength(0); i++)
                 {
-                    p.X += dx;
-                    p.Y += dy;
-                    p.Z += dz;
-
-                }
-
-                
-
-                patch.RecalculatePatches();
+                    for (int j = 0; j < patch.PatchPoints.GetLength(1); j++)
+                    {
+                        if (patch.PatchPoints[i,j].Selected)
+                        {
+                            patch.PatchPoints[i, j].X += dx;
+                            patch.PatchPoints[i, j].Y += dy;
+                            patch.PatchPoints[i, j].Z += dz;
+                        }
+                    }
+                }    
 
             }
+            foreach (var patch in BezierPatchCollection)
+            {   //Odświeżanie płatów C0, zwiazane z tym że punkt na łączeniu obrabiany dwa razy
+                patch.PlaceVerticesToPatches4x4();
+                patch.RecalculatePatches();
+            }
+
 
             foreach (var patch in BezierPatchC2Collection)
             {
 
-                for (int i=0; i< patch.PatchPoints.GetLength(0); i++)
+                for (int i = 0; i < patch.PatchPoints.GetLength(0); i++)
                 {
                     for (int j = 0; j < patch.PatchPoints.GetLength(1); j++)
                     {
-                        if (patch.PatchPoints[i,j].Selected==true)
+                        if (patch.PatchPoints[i, j].Selected == true)
                         {
                             patch.PatchPoints[i, j].X += dx;
                             patch.PatchPoints[i, j].Y += dy;
@@ -659,7 +731,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
         }
 
-        
+
 
         public void SelectPointByCursor()
         {

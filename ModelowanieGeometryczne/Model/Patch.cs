@@ -67,7 +67,9 @@ namespace ModelowanieGeometryczne.Model
 
         public Point[,] PatchPoints
         {
-            get { return _patchPoints; }
+            get {
+                return _patchPoints;
+            }       
             set {
                 _patchPoints = value;
 

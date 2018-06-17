@@ -127,8 +127,7 @@ namespace ModelowanieGeometryczne.Helpers
 
         public void LoadJson(string path)
         {
-            try
-            {
+
 
                 using (StreamReader r = new StreamReader(path))
                 {
@@ -138,11 +137,7 @@ namespace ModelowanieGeometryczne.Helpers
 
                 }
                 ParseLoadedObject();
-            }
-            catch
-            {
-                MessageBox.Show("Wrong file");
-            }
+
         }
 
         public AllCollections PrepareToSave()

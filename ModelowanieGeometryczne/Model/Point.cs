@@ -106,13 +106,16 @@ namespace ModelowanieGeometryczne.Model
         }
         #endregion Public Properties
 
-        public Point(double x, double y, double z)
+        public Point(double x, double y, double z, string name = null)
         {
             _coordinates.X = x;
             _coordinates.Y = y;
             _coordinates.Z = z;
             _coordinates.W = 1;
-            _name = DateTime.Now.ToLongDateString() + "  " + DateTime.Now.ToLongTimeString();
+            if (name == null)
+            {
+                _name = DateTime.Now.ToLongDateString() + "  " + DateTime.Now.ToLongTimeString();
+            }
         }
 
 
