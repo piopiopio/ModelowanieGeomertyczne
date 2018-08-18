@@ -13,15 +13,15 @@ namespace ModelowanieGeometryczne.Model
 {
     public class Patch : ViewModelBase
     {
-        Point[,] _curvesPatchPoints;
-        Point[,] _curvesPatchPoints1;
+        public Point[,] _curvesPatchPoints;
+        public Point[,] _curvesPatchPoints1;
         Point[,] _patchPoints;
         private int _u, _v; //u-pionowe v-poziome
         public double[] U, V, UCurve, VCurve;
         public Point[,] CalculatedPoints;
         Matrix4d projection = MatrixProvider.ProjectionMatrix();
-        int multiplierU = 4;
-        int multiplierV = 4;
+        int multiplierU = 5;
+        int multiplierV = 5;
         public int u
         {
             get { return _u; }
@@ -120,12 +120,18 @@ namespace ModelowanieGeometryczne.Model
             GL.End();
         }
 
+        public Point GetPoint(double u, double v)
+        {
+            Point[,] _pointsToDrawSinglePatch = PatchPoints;
+            return MatrixProvider.Multiply(CalculateB(u), _pointsToDrawSinglePatch, CalculateB(v));
+        }
         public void CalculateCurvesPatchPoints()
         {
             int multiplier = multiplierU;
             const int VerticalPatches = 1;
             const int HorizontalPatches = 1;
             Point[,] _pointsToDrawSinglePatch = PatchPoints;
+
             _curvesPatchPoints = new Point[1 + (_u - 1) * VerticalPatches, (1 + (_v * multiplier - 1) * HorizontalPatches)];
             _curvesPatchPoints1 = new Point[(1 + (_u * multiplier - 1) * VerticalPatches), (1 + (_v - 1) * HorizontalPatches)];
 
@@ -159,41 +165,7 @@ namespace ModelowanieGeometryczne.Model
         }
 
         public void DrawPatch(Matrix4d transformacja)
-        {//TODO: Pamiętać przeliczone punkty, liczyć od nowa tylko po zmianie kolekcji.
-
-            //GL.Begin(BeginMode.Lines);
-            //GL.Color3(1.0, 1.0, 1.0);
-            //for (int i = 0; i < U.Length; i++)
-            //{
-            //    for (int j = 0; j < VCurve.Length - 1; j++)
-            //    {
-            //        var a = MatrixProvider.Multiply(CalculateB(U[i]), _patchPoints, CalculateB(VCurve[j]));
-
-            //        var _windowCoordinates = projection.Multiply(transformacja.Multiply(a.Coordinates));
-            //        GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
-
-            //        var b = MatrixProvider.Multiply(CalculateB(U[i]), _patchPoints, CalculateB(VCurve[j + 1]));
-
-            //        _windowCoordinates = projection.Multiply(transformacja.Multiply(b.Coordinates));
-            //        GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
-            //    }
-            //}
-
-
-            //for (int i = 0; i < UCurve.Length - 1; i++)
-            //{
-            //    for (int j = 0; j < V.Length; j++)
-            //    {
-            //        var a = MatrixProvider.Multiply(CalculateB(UCurve[i]), _patchPoints, CalculateB(V[j]));
-            //        var _windowCoordinates = projection.Multiply(transformacja.Multiply(a.Coordinates));
-            //        GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
-            //        var b = MatrixProvider.Multiply(CalculateB(UCurve[i + 1]), _patchPoints, CalculateB(V[j]));
-            //        _windowCoordinates = projection.Multiply(transformacja.Multiply(b.Coordinates));
-            //        GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
-            //    }
-            //}
-
-            //GL.End();
+        {
 
             GL.Begin(BeginMode.Lines);
             GL.Color3(1.0, 1.0, 1.0);
@@ -210,7 +182,7 @@ namespace ModelowanieGeometryczne.Model
                     GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
 
 
-                    _windowCoordinates = projection.Multiply(transformacja.Multiply(_curvesPatchPoints1[i + 1, j].Coordinates));
+                   _windowCoordinates = projection.Multiply(transformacja.Multiply(_curvesPatchPoints1[i + 1, j].Coordinates));
 
                     GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
                 }

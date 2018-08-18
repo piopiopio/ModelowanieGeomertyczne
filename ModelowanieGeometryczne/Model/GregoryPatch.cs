@@ -6,14 +6,20 @@ using System.Threading.Tasks;
 
 namespace ModelowanieGeometryczne.Model
 {
-    class GregoryPatch
+    public class GregoryPatch
     {
-        GregoryPatch(BezierPatch P0, BezierPatch P1, BezierPatch P2)
+        public List<Point> P3 = new List<Point>();
+
+        public GregoryPatch()
+        {
+        }
+
+        public GregoryPatch(BezierPatch P0, BezierPatch P1, BezierPatch P2)
         {
 
         }
 
-        public static Point MergePoints( Point p0, Point p1)
+        public static Point MergePoints(Point p0, Point p1)
         {
             return new Point((p0.X + p1.X) / 2, (p0.Y + p1.Y) / 2, (p0.Z + p1.Z) / 2);
         }

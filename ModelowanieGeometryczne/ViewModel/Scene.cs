@@ -21,7 +21,7 @@ namespace ModelowanieGeometryczne.ViewModel
         public event PropertyChangedEventHandler RefreshScene;
 
         #region Private Fields
-
+        public GregoryPatch GregoryPatch1 = new GregoryPatch();
         private Cursor _cursor;
         private Torus _torus;
         private double _height;
@@ -42,6 +42,7 @@ namespace ModelowanieGeometryczne.ViewModel
         private ICommand _gregoryMergePoints;
         private ICommand _clearScene;
         private ICommand _addBezierPatch;
+        private ICommand _addGregoryPatch;
         private ICommand _addBezierPatchC2;
         private ICommand _addBezierCurve;
         private ICommand _addBezierCurveC2;
@@ -68,6 +69,8 @@ namespace ModelowanieGeometryczne.ViewModel
         public ICommand UndoAllTransformation { get { return _undoAllTransformation ?? (_undoAllTransformation = new ActionCommand(UndoAllTransformationExecuted)); } }
 
         public ICommand AddBezierPatch { get { return _addBezierPatch ?? (_addBezierPatch = new ActionCommand(AddBezierPatchExecuted)); } }
+
+        public ICommand AddGregoryPatch { get { return _addGregoryPatch ?? (_addBezierPatch = new ActionCommand(AddGregoryPatchExecuted)); } }
         public ICommand AddBezierPatchC2 { get { return _addBezierPatchC2 ?? (_addBezierPatchC2 = new ActionCommand(AddBezierPatchC2Executed)); } }
 
 
@@ -86,6 +89,172 @@ namespace ModelowanieGeometryczne.ViewModel
             BezierPatchCollection.Add(patch);
             Refresh();
         }
+        public List<Point[]> P3 = new List<Point[]>();
+        public List<Point> P1 = new List<Point>();
+        public List<Point> Q;
+        public Point P0=null;
+        public Point[,] GregoryPointsCollection = new Point[2,5];
+
+        public List<Point[,]> PointsOnBoundaryAndC1ConditionPoints = new List<Point[,]>();
+
+        public List<Point> RestOfPoints = new List<Point>();
+        public List<Point> UsedToCalculateRestOfPoints = new List<Point>();
+        public List<Point[,]> BezierArraysBasedOnGregory = new List<Point[,]>();
+
+
+        public List<Point[,]> GeneratedBezierPatchFromGregory= new List<Point[,]>();
+
+        public void AddGregoryPatchExecuted()
+        {
+            BezierArraysBasedOnGregory.Add(new Point[4, 4]);
+            BezierArraysBasedOnGregory.Add(new Point[4, 4]);
+            BezierArraysBasedOnGregory.Add(new Point[4, 4]);
+            Q = new List<Point>();
+            List<Point> SelectedPoints = new List<Point>();
+            new List<Point>();
+            foreach (var item in BezierPatchCollection)
+            {
+                var temp = item.GetAllPointsInOneArray();
+
+                for (int i = 0; i < temp.GetLength(0); i++)
+
+                    for (int j = 0; j < temp.GetLength(1); j++)
+                    {
+                        if (temp[i, j].Selected == true) SelectedPoints.Add(temp[i, j]);
+                    }
+            }
+
+
+            foreach (var item in BezierPatchCollection)
+            {
+                var temp = item.GetMiddlePointBeetweenTwoPoints(SelectedPoints);
+                if (temp != null)
+                {
+                    P3.Add(temp);
+                }
+
+                PointsOnBoundaryAndC1ConditionPoints.Add(item.GetFivePointsBeetweenTwoPoints(SelectedPoints));
+            }
+
+            if (P3.Count != 3) { MessageBox.Show("To less P3 points, 3 point are required"); return; }
+
+            for (int i = 0; i < 3; i++)
+            {
+                Q.Add( P3[i][0].Add ( (P3[i][1].Subtract(P3[i][0])).Multiply(3.0/2.0) ) );
+            }
+            P0 = P3[0][0].Add(P3[1][0].Add(P3[2][0])).Multiply(1.0 / 3.0);
+
+            for (int i = 0; i < 3; i++)
+            {
+                P1.Add(((Q[i].Multiply(2)).Add(P0)).Multiply(1.0 / 3.0));
+            }
+
+
+
+            //BezierArraysBasedOnGregory[1][0, 0] = SelectedPoints[1];
+
+            //BezierArraysBasedOnGregory[1][3, 3] = P0;
+
+            //BezierArraysBasedOnGregory[2][0, 0] = SelectedPoints[2];
+            //BezierArraysBasedOnGregory[2][3, 3] = P0;
+
+            //TODO: Sprawdzać czy nie puste!!!
+            var temp1 = PointsOnBoundaryAndC1ConditionPoints[0];
+            UsedToCalculateRestOfPoints.Add(temp1[1, 0]);//0  p5
+            UsedToCalculateRestOfPoints.Add(temp1[1, 1]);//1  p11
+            UsedToCalculateRestOfPoints.Add(temp1[1, 2]);//2  p17
+            UsedToCalculateRestOfPoints.Add(temp1[1, 3]);//3  p7
+            UsedToCalculateRestOfPoints.Add(temp1[1, 4]);//4  pxx
+            UsedToCalculateRestOfPoints.Add(Q[0]);//5  p16
+            UsedToCalculateRestOfPoints.Add(P1[0]);//6  p18
+
+            RestOfPoints.Add(UsedToCalculateRestOfPoints[2] + (UsedToCalculateRestOfPoints[0] - (UsedToCalculateRestOfPoints[2])).Multiply(0.5)); //p12
+            RestOfPoints.Add(UsedToCalculateRestOfPoints[2] - (UsedToCalculateRestOfPoints[0] - (UsedToCalculateRestOfPoints[2])).Multiply(0.5)); //p8
+            RestOfPoints.Add(UsedToCalculateRestOfPoints[6] + (UsedToCalculateRestOfPoints[3] - (UsedToCalculateRestOfPoints[6])).Multiply(1.0/3.0)); //p13
+            RestOfPoints.Add(UsedToCalculateRestOfPoints[6] - (UsedToCalculateRestOfPoints[3] - (UsedToCalculateRestOfPoints[6])).Multiply(1.0 / 3.0)); //p14
+
+
+            UsedToCalculateRestOfPoints = new List<Point>();
+            temp1 = PointsOnBoundaryAndC1ConditionPoints[1];
+            UsedToCalculateRestOfPoints.Add(temp1[1, 0]);//0  p5
+            UsedToCalculateRestOfPoints.Add(temp1[1, 1]);//1  p11
+            UsedToCalculateRestOfPoints.Add(temp1[1, 2]);//2  p17
+            UsedToCalculateRestOfPoints.Add(temp1[1, 3]);//3  p7
+            UsedToCalculateRestOfPoints.Add(temp1[1, 4]);//4  pxx
+            UsedToCalculateRestOfPoints.Add(Q[1]);//5  p16
+            UsedToCalculateRestOfPoints.Add(P1[1]);//6  p18
+
+            RestOfPoints.Add(UsedToCalculateRestOfPoints[2] + (UsedToCalculateRestOfPoints[0] - (UsedToCalculateRestOfPoints[2])).Multiply(0.5)); //p12
+            RestOfPoints.Add(UsedToCalculateRestOfPoints[2] - (UsedToCalculateRestOfPoints[0] - (UsedToCalculateRestOfPoints[2])).Multiply(0.5)); //p8
+            RestOfPoints.Add(UsedToCalculateRestOfPoints[6] + (UsedToCalculateRestOfPoints[3] - (UsedToCalculateRestOfPoints[6])).Multiply(1.0 / 3.0)); //p13
+            RestOfPoints.Add(UsedToCalculateRestOfPoints[6] - (UsedToCalculateRestOfPoints[3] - (UsedToCalculateRestOfPoints[6])).Multiply(1.0 / 3.0)); //p14
+
+            UsedToCalculateRestOfPoints = new List<Point>();
+            temp1 = PointsOnBoundaryAndC1ConditionPoints[2];
+            UsedToCalculateRestOfPoints.Add(temp1[1, 0]);//0  p5
+            UsedToCalculateRestOfPoints.Add(temp1[1, 1]);//1  p11
+            UsedToCalculateRestOfPoints.Add(temp1[1, 2]);//2  p17
+            UsedToCalculateRestOfPoints.Add(temp1[1, 3]);//3  p7
+            UsedToCalculateRestOfPoints.Add(temp1[1, 4]);//4  pxx
+            UsedToCalculateRestOfPoints.Add(Q[2]);//5  p16
+            UsedToCalculateRestOfPoints.Add(P1[2]);//6  p18
+
+            RestOfPoints.Add(UsedToCalculateRestOfPoints[2] + (UsedToCalculateRestOfPoints[0] - (UsedToCalculateRestOfPoints[2])).Multiply(0.5)); //p12
+            RestOfPoints.Add(UsedToCalculateRestOfPoints[2] - (UsedToCalculateRestOfPoints[0] - (UsedToCalculateRestOfPoints[2])).Multiply(0.5)); //p8
+            RestOfPoints.Add(UsedToCalculateRestOfPoints[6] + (UsedToCalculateRestOfPoints[3] - (UsedToCalculateRestOfPoints[6])).Multiply(1.0 / 3.0)); //p13
+            RestOfPoints.Add(UsedToCalculateRestOfPoints[6] - (UsedToCalculateRestOfPoints[3] - (UsedToCalculateRestOfPoints[6])).Multiply(1.0 / 3.0)); //p14
+
+
+
+
+
+            BezierArraysBasedOnGregory[0][0, 0] = SelectedPoints[0];
+            BezierArraysBasedOnGregory[0][0, 1] = PointsOnBoundaryAndC1ConditionPoints[0][0, 0];
+            BezierArraysBasedOnGregory[0][0, 2] = PointsOnBoundaryAndC1ConditionPoints[0][0, 1];
+            BezierArraysBasedOnGregory[0][0, 3] = PointsOnBoundaryAndC1ConditionPoints[0][0, 2];
+
+            BezierArraysBasedOnGregory[0][1, 0] = PointsOnBoundaryAndC1ConditionPoints[2][0, 0];
+            BezierArraysBasedOnGregory[0][1, 1] = PointsOnBoundaryAndC1ConditionPoints[2][0, 1];    //Tylko na test-> trzeba wstawić tu wyliczoną wartość
+            BezierArraysBasedOnGregory[0][1, 2] = PointsOnBoundaryAndC1ConditionPoints[2][0, 1];    //Tylko na test-> trzeba wstawić tu wyliczoną wartość
+            BezierArraysBasedOnGregory[0][1, 3] = PointsOnBoundaryAndC1ConditionPoints[0][1, 2];
+
+            BezierArraysBasedOnGregory[0][2, 0] = PointsOnBoundaryAndC1ConditionPoints[2][0, 1];
+            BezierArraysBasedOnGregory[0][2, 1] = PointsOnBoundaryAndC1ConditionPoints[2][0, 1];    //Tylko na test-> trzeba wstawić tu wyliczoną wartość
+            BezierArraysBasedOnGregory[0][2, 2] = PointsOnBoundaryAndC1ConditionPoints[2][0, 1];    //Tylko na test-> trzeba wstawić tu wyliczoną wartość
+            BezierArraysBasedOnGregory[0][2, 3] = P1[0];
+
+            BezierArraysBasedOnGregory[0][3, 0] = PointsOnBoundaryAndC1ConditionPoints[2][0, 2];
+            BezierArraysBasedOnGregory[0][3, 1] = PointsOnBoundaryAndC1ConditionPoints[2][1, 2];
+            BezierArraysBasedOnGregory[0][3, 2] = P1[2];
+            BezierArraysBasedOnGregory[0][3, 3] = P0;
+
+
+
+
+            BezierArraysBasedOnGregory[1][0, 0] = SelectedPoints[1];
+            BezierArraysBasedOnGregory[1][0, 1] = PointsOnBoundaryAndC1ConditionPoints[1][0, 0];
+            BezierArraysBasedOnGregory[1][0, 2] = PointsOnBoundaryAndC1ConditionPoints[1][0, 1];
+            BezierArraysBasedOnGregory[1][0, 3] = PointsOnBoundaryAndC1ConditionPoints[1][0, 2];
+                                       
+            BezierArraysBasedOnGregory[1][1, 0] = PointsOnBoundaryAndC1ConditionPoints[0][0, 0];
+            BezierArraysBasedOnGregory[1][1, 1] = PointsOnBoundaryAndC1ConditionPoints[0][0, 1];    //Tylko na test-> trzeba wstawić tu wyliczoną wartość
+            BezierArraysBasedOnGregory[1][1, 2] = PointsOnBoundaryAndC1ConditionPoints[0][0, 1];    //Tylko na test-> trzeba wstawić tu wyliczoną wartość
+            BezierArraysBasedOnGregory[1][1, 3] = PointsOnBoundaryAndC1ConditionPoints[1][1, 2];
+                                       
+            BezierArraysBasedOnGregory[1][2, 0] = PointsOnBoundaryAndC1ConditionPoints[0][0, 1];
+            BezierArraysBasedOnGregory[1][2, 1] = PointsOnBoundaryAndC1ConditionPoints[0][0, 1];    //Tylko na test-> trzeba wstawić tu wyliczoną wartość
+            BezierArraysBasedOnGregory[1][2, 2] = PointsOnBoundaryAndC1ConditionPoints[0][0, 1];    //Tylko na test-> trzeba wstawić tu wyliczoną wartość
+            BezierArraysBasedOnGregory[1][2, 3] = P1[1];
+                                       
+            BezierArraysBasedOnGregory[1][3, 0] = PointsOnBoundaryAndC1ConditionPoints[0][0, 2];
+            BezierArraysBasedOnGregory[1][3, 1] = PointsOnBoundaryAndC1ConditionPoints[0][1, 2];
+            BezierArraysBasedOnGregory[1][3, 2] = P1[0];
+            BezierArraysBasedOnGregory[1][3, 3] = P0;
+
+
+            Refresh();
+        }
+
         private void UndoAllTransformationExecuted()
         {
             M = Matrix4d.Identity;
@@ -315,6 +484,8 @@ namespace ModelowanieGeometryczne.ViewModel
             }
         }
 
+
+        
         public double AlphaZ
         {
             get { return _alphaZ; }
@@ -325,6 +496,8 @@ namespace ModelowanieGeometryczne.ViewModel
 
             }
         }
+
+
 
         public double Scale
         {
@@ -372,7 +545,14 @@ namespace ModelowanieGeometryczne.ViewModel
                     {
                         if (patch.PatchPoints[j, k].Selected)
                         {
-                            BezierPatchIterator.Add(new Tuple<int, int, int>(i, j, k));
+                            //Sprawdzanie czy punkt leży na rogu płatka
+                            if (j == 0 || j == (patch.PatchPoints.GetLength(0) - 1))
+                            {
+                                if (k == 0 || k == (patch.PatchPoints.GetLength(1) - 1))
+                                {
+                                    BezierPatchIterator.Add(new Tuple<int, int, int>(i, j, k));
+                                }
+                            }
                         }
                     }
                 }
@@ -383,12 +563,13 @@ namespace ModelowanieGeometryczne.ViewModel
 
             if (BezierPatchIterator.Count == 2)
             {
-
-
-                BezierPatchCollection[BezierPatchIterator[0].Item1].PatchPoints[BezierPatchIterator[0].Item2, BezierPatchIterator[0].Item3] = GregoryPatch.MergePoints(BezierPatchCollection[BezierPatchIterator[0].Item1].PatchPoints[BezierPatchIterator[0].Item2, BezierPatchIterator[0].Item3],
+                var GregoryPatchMergedPoint = GregoryPatch.MergePoints(BezierPatchCollection[BezierPatchIterator[0].Item1].PatchPoints[BezierPatchIterator[0].Item2, BezierPatchIterator[0].Item3],
                     BezierPatchCollection[BezierPatchIterator[1].Item1].PatchPoints[BezierPatchIterator[1].Item2, BezierPatchIterator[1].Item3]);
 
-                BezierPatchCollection[BezierPatchIterator[1].Item1].PatchPoints[BezierPatchIterator[1].Item2, BezierPatchIterator[1].Item3] = BezierPatchCollection[BezierPatchIterator[0].Item1].PatchPoints[BezierPatchIterator[0].Item2, BezierPatchIterator[0].Item3];
+                //GregoryPatch1.P3.Add(GregoryPatchMergedPoint);
+
+                BezierPatchCollection[BezierPatchIterator[0].Item1].PatchPoints[BezierPatchIterator[0].Item2, BezierPatchIterator[0].Item3] = GregoryPatchMergedPoint;
+                BezierPatchCollection[BezierPatchIterator[1].Item1].PatchPoints[BezierPatchIterator[1].Item2, BezierPatchIterator[1].Item3] = GregoryPatchMergedPoint;
 
                 BezierPatchCollection[BezierPatchIterator[0].Item1].PlaceVerticesToPatches4x4();
                 BezierPatchCollection[BezierPatchIterator[1].Item1].PlaceVerticesToPatches4x4();
@@ -402,7 +583,7 @@ namespace ModelowanieGeometryczne.ViewModel
             }
             else
             {
-                MessageBox.Show("Not correct selected points number");
+                MessageBox.Show("Not correct points");
             }
 
 
@@ -499,9 +680,9 @@ namespace ModelowanieGeometryczne.ViewModel
             {
                 //try
                 //{
-                    // DeserializeDataSet(op.FileName);
-                    ClearScene();
-                    ExchangeObject.LoadJson(op.FileName);
+                // DeserializeDataSet(op.FileName);
+                ClearScene();
+                ExchangeObject.LoadJson(op.FileName);
                 //}
                 //catch
                 //{
@@ -623,6 +804,63 @@ namespace ModelowanieGeometryczne.ViewModel
 
             }
 
+
+            //// Draw GregoryPatch
+            // foreach (var item in P3)
+            // {
+            //     item[0].Draw(M, 4, 0.6, 0, 0.3);
+            //     item[1].Draw(M, 4, 0, 0.6, 0.3);
+            // }
+
+            // //foreach (var item in Q)
+            // //{
+            // //    item.Draw(M, 4, 0.3, 0, 0.6);
+
+            // //}
+
+            // if (P0 != null)
+            // {
+            //     P0.Draw(M, 4, 0, 1, 0);
+            // }
+
+            // foreach (var item in P1)
+            // {
+            //     item.Draw(M, 4, 0, 0, 1);
+
+            // }
+            // foreach (var item in PointsOnBoundaryAndC1ConditionPoints)
+            // {
+            //     for (int i = 0; i < item.GetLength(0); i++)
+            //     {
+            //         for (int j = 0; j < item.GetLength(1); j++)
+            //         {
+            //             item[i, j].Draw(M, 4, 1, 0, 0);
+            //         }
+
+            //     }
+
+            // }
+            // foreach (var item in UsedToCalculateRestOfPoints)
+            // {
+            //     item.Draw(M, 0, 1, 0);
+            // }
+
+            // foreach (var item in RestOfPoints)
+            // {
+            //     item.Draw(M, 0, 0, 1);
+            // }
+            if (Q!=null)
+            { 
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                        //BezierArraysBasedOnGregory[0][i, j].Draw(M, 4 , 0, 1, 0);
+                        //BezierArraysBasedOnGregory[1][i, j].Draw(M, 2, 1, 0, 0);
+                        BezierArraysBasedOnGregory[1][i, j].Draw(M, 2, 0, 0, 1);
+                    }
+                }
+            }
             GL.Flush();
 
         }
@@ -689,19 +927,40 @@ namespace ModelowanieGeometryczne.ViewModel
 
                 //}
                 patch._patchPoints = patch.GetAllPointsInOneArray();
-                for (int i = 0; i < patch.PatchPoints.GetLength(0); i++)
+                if (patch.PatchesAreCylinder)
                 {
-                    for (int j = 0; j < patch.PatchPoints.GetLength(1); j++)
+                    for (int i = 0; i < patch.PatchPoints.GetLength(0); i++)
                     {
-                        if (patch.PatchPoints[i,j].Selected)
+                        for (int j = 0; j < patch.PatchPoints.GetLength(1) - 1; j++)
                         {
-                            patch.PatchPoints[i, j].X += dx;
-                            patch.PatchPoints[i, j].Y += dy;
-                            patch.PatchPoints[i, j].Z += dz;
+                            if (patch.PatchPoints[i, j].Selected)
+                            {
+                                patch.PatchPoints[i, j].X += dx;
+                                patch.PatchPoints[i, j].Y += dy;
+                                patch.PatchPoints[i, j].Z += dz;
+                            }
+
+
                         }
                     }
-                }    
+                }
+                else
+                {
+                    for (int i = 0; i < patch.PatchPoints.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < patch.PatchPoints.GetLength(1); j++)
+                        {
+                            if (patch.PatchPoints[i, j].Selected)
+                            {
+                                patch.PatchPoints[i, j].X += dx;
+                                patch.PatchPoints[i, j].Y += dy;
+                                patch.PatchPoints[i, j].Z += dz;
+                            }
 
+
+                        }
+                    }
+                }
             }
             foreach (var patch in BezierPatchCollection)
             {   //Odświeżanie płatów C0, zwiazane z tym że punkt na łączeniu obrabiany dwa razy

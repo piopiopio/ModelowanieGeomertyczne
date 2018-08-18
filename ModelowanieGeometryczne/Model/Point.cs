@@ -9,9 +9,11 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
 using Color = System.Windows.Media.Color;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
+using System.Diagnostics;
 
 namespace ModelowanieGeometryczne.Model
 {
+    [DebuggerDisplay("X = {X} Y= {Y}")]
     public class Point : ViewModelBase
     {
         private Vector4d _coordinates;
@@ -123,7 +125,7 @@ namespace ModelowanieGeometryczne.Model
         #endregion Private Methods
         #region Public Methods
 
-        public void Draw(Matrix4d transformacja, int size = 4)
+        public void Draw(Matrix4d transformacja, int size = 4, double red = 1, double green = 1, double blue=1)
         {
             //Matrix4d projekcja = MatrixProvider.ProjectionMatrix(100);
             GL.Enable(EnableCap.VertexProgramPointSize);
@@ -137,8 +139,9 @@ namespace ModelowanieGeometryczne.Model
             }
             else
             {
-                GL.Color3(1.0, 1.0, 1.0);
+                GL.Color3(red, green, blue);
             }
+            
             Matrix4d projection = MatrixProvider.ProjectionMatrix();
             _windowCoordinates = projection.Multiply(transformacja.Multiply(_coordinates));
             GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
@@ -204,6 +207,7 @@ namespace ModelowanieGeometryczne.Model
         {
             return new Point(Coordinates.X * a, Coordinates.Y * a, Coordinates.Z * a);
         }
+
         #endregion Public Methods
         public static Point operator *(double a, Point v1)
         {
@@ -213,6 +217,11 @@ namespace ModelowanieGeometryczne.Model
         public static Point operator +(Point v1, Point v2)
         {
             return new Point(v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z);
+        }
+
+        public static Point operator -(Point v1, Point v2)
+        {
+            return new Point(v1.X - v2.X, v1.Y - v2.Y, v1.Z - v2.Z);
         }
     }
 }
