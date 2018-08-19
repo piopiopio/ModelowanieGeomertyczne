@@ -214,6 +214,7 @@ namespace ModelowanieGeometryczne.Model
             return new Point(v1.X*a, v1.Y * a, v1.Z * a) ;
         }
 
+
         public static Point operator +(Point v1, Point v2)
         {
             return new Point(v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z);
@@ -223,6 +224,8 @@ namespace ModelowanieGeometryczne.Model
         {
             return new Point(v1.X - v2.X, v1.Y - v2.Y, v1.Z - v2.Z);
         }
+
+
     }
 }
 

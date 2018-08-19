@@ -28,18 +28,20 @@
 
             </MenuItem>
         </Menu>
-        
+
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="3*"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*"/>
-                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="18*"/>
+                <ColumnDefinition Width="8*"/>
+                <ColumnDefinition Width="1046*"/>
+                <ColumnDefinition Width="357*"/>
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Row="0" Grid.Column="1">
+            <Grid Grid.Row="0" Grid.Column="3">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="1*"/>
@@ -116,7 +118,7 @@
                 <Button Grid.Row="23"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Gregory Patch" Command="{Binding Scene.AddGregoryPatch}"></Button>
             </Grid>
 
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="1" Grid.ColumnSpan="3">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
@@ -370,7 +372,7 @@
 
             </Grid>
 
-            <Grid Grid.Row="2" Grid.Column="1">
+            <Grid Grid.Row="1" Grid.Column="3">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="103*"/>
                     <ColumnDefinition Width="254*"/>
@@ -395,7 +397,7 @@
             <WindowsFormsHost Name="OpentkWindow" Grid.Column="0" Grid.Row="0" Initialized="OpenTkControl_Initialized" 
                   helpers:SizeObserver.Observe="True"
                   helpers:SizeObserver.ObservedHeight="{Binding Scene.Height, Mode=OneWayToSource}"
-                  helpers:SizeObserver.ObservedWidth="{Binding Scene.Width, Mode=OneWayToSource}" 
+                  helpers:SizeObserver.ObservedWidth="{Binding Scene.Width, Mode=OneWayToSource}" Grid.ColumnSpan="3" 
                           />
 
         </Grid>

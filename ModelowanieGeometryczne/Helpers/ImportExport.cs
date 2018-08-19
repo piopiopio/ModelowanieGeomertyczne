@@ -153,6 +153,7 @@ namespace ModelowanieGeometryczne.Helpers
                     pointIndices[i] = new int[item.HorizontalPatches + 3];
                     for (int j = 0; j < item.PatchPoints.GetLength(1); j++)
                     {
+                       
                         result.points.Add(new PointExchange(item.PatchPoints[i, j].Name, item.PatchPoints[i, j].X, item.PatchPoints[i, j].Y, item.PatchPoints[i, j].Z));
                         pointIndices[i][j] = PointsCounter;
                         PointsCounter++;
@@ -163,6 +164,7 @@ namespace ModelowanieGeometryczne.Helpers
                 result.surfacesC2.Add(temp);
             }
 
+            List<Point> AllPoints = new List<Point>();
 
             foreach (var item in BezierPatchCollection1)
             {
@@ -178,9 +180,21 @@ namespace ModelowanieGeometryczne.Helpers
 
                     for (int j = 0; j < PatchPoints.GetLength(1); j++)
                     {
-                        result.points.Add(new PointExchange(PatchPoints[i, j].Name, PatchPoints[i, j].X, PatchPoints[i, j].Y, PatchPoints[i, j].Z));
-                        pointIndices[i][j] = PointsCounter;
-                        PointsCounter++;
+                        int a=AllPoints.IndexOf(PatchPoints[i, j]);
+                       
+                        if (a ==-1)
+                        {
+                            AllPoints.Add(PatchPoints[i, j]);
+                            result.points.Add(new PointExchange(PatchPoints[i, j].Name, PatchPoints[i, j].X,
+                            PatchPoints[i, j].Y, PatchPoints[i, j].Z));
+                            pointIndices[i][j] = PointsCounter;
+                            PointsCounter++;
+                        }
+                        else
+                        {
+                            pointIndices[i][j] = a;
+                            //MessageBox.Show(a.ToString());
+                        }
                     }
                 }
 
@@ -232,6 +246,12 @@ namespace ModelowanieGeometryczne.Helpers
 
         public void ParseLoadedObject()
         {
+            List <Point> PointsCollection = new List<Point>();
+
+            foreach (var item in result.points)
+            {
+                PointsCollection.Add(new Point(item.x, item.y, item.z, item.name));
+            }
             foreach (var item in result.surfacesC2)
             {
                 Point[,] convertedPoints = new Point[item.points.GetLength(0), item.points[0].GetLength(0)];
@@ -257,7 +277,8 @@ namespace ModelowanieGeometryczne.Helpers
                 {
                     for (int j = 0; j < item.points[0].GetLength(0); j++)
                     {
-                        convertedPoints[i, j] = new Point(result.points[(int)item.points[i][j]].x, result.points[(int)item.points[i][j]].y, result.points[(int)item.points[i][j]].z);
+                        //convertedPoints[i, j] = new Point(result.points[(int)item.points[i][j]].x, result.points[(int)item.points[i][j]].y, result.points[(int)item.points[i][j]].z);
+                        convertedPoints[i, j] = PointsCollection[item.points[i][j]];
                     }
                 }
 

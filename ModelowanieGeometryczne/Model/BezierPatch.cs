@@ -44,7 +44,7 @@ namespace ModelowanieGeometryczne.Model
 
             AllPointsArray = GetAllPointsInOneArray();
 
-            Point[] MiddlePoint=new Point[2];
+            Point[] MiddlePoint = new Point[2];
             int CaseNumber = 0;
             List<Tuple<int, int>> pIndices = new List<Tuple<int, int>>();
 
@@ -72,7 +72,7 @@ namespace ModelowanieGeometryczne.Model
             }
             if (pIndices.Count < 2)
             {
-                MessageBox.Show("Too less points selected");
+                // MessageBox.Show("Too less points selected");
                 return null;
             }
 
@@ -119,7 +119,8 @@ namespace ModelowanieGeometryczne.Model
 
 
         public Point[,] GetFivePointsBeetweenTwoPoints(List<Point> p)
-        {   //MiddlePoint[0] punkt na środku krawędzi
+        {
+            //MiddlePoint[0] punkt na środku krawędzi
             //MiddlePoint[1] punkt wyznaczony z warunku C1
             if (HorizontalPatches > 1 || VerticalPatches > 1)
             {
@@ -130,7 +131,7 @@ namespace ModelowanieGeometryczne.Model
 
             AllPointsArray = GetAllPointsInOneArray();
 
-            Point[,] MiddlePoints = new Point[2,5];
+            Point[,] MiddlePoints = new Point[2, 5];
             int CaseNumber = 0;
             List<Tuple<int, int>> pIndices = new List<Tuple<int, int>>();
 
@@ -140,68 +141,124 @@ namespace ModelowanieGeometryczne.Model
             {
                 for (int j = 0; j < AllPointsArray.GetLength(1); j++)
                 {
-                    foreach (var item in p)
+                    if (AllPointsArray[i, j] == p[0])
                     {
-                        if (AllPointsArray[i, j] == item)
-                        {
-                            pIndices.Add(new Tuple<int, int>(i, j));
-                            break;
-                        }
+                        pIndices.Add(new Tuple<int, int>(i, j));
+                        break;
                     }
+
                 }
             }
+            for (int i = 0; i < AllPointsArray.GetLength(0); i++)
+            {
+                for (int j = 0; j < AllPointsArray.GetLength(1); j++)
+                {
+                    if (AllPointsArray[i, j] == p[1])
+                    {
+                        pIndices.Add(new Tuple<int, int>(i, j));
+                        break;
+                    }
 
+                }
+            }
             if (pIndices.Count > 2)
             {
                 MessageBox.Show("Too many points selected");
                 return null;
             }
+
             if (pIndices.Count < 2)
             {
-                MessageBox.Show("Too less points selected");
+                // MessageBox.Show("Too less points selected");
                 return null;
             }
 
-            if ((pIndices[0].Item1 == 0 && pIndices[0].Item2 == 0) && (pIndices[1].Item1 == 0 && pIndices[1].Item2 == 3)) CaseNumber = 1;
-            if ((pIndices[1].Item1 == 0 && pIndices[1].Item2 == 0) && (pIndices[0].Item1 == 0 && pIndices[0].Item2 == 3)) CaseNumber = 1;
+            //if ((pIndices[0].Item1 == 0 && pIndices[0].Item2 == 0) && (pIndices[1].Item1 == 0 && pIndices[1].Item2 == 3)) CaseNumber = 1;
+            //if ((pIndices[1].Item1 == 0 && pIndices[1].Item2 == 0) && (pIndices[0].Item1 == 0 && pIndices[0].Item2 == 3)) CaseNumber = 1;
 
-            if ((pIndices[0].Item1 == 0 && pIndices[0].Item2 == 3) && (pIndices[1].Item1 == 3 && pIndices[1].Item2 == 3)) CaseNumber = 2;
-            if ((pIndices[1].Item1 == 0 && pIndices[1].Item2 == 3) && (pIndices[0].Item1 == 3 && pIndices[0].Item2 == 3)) CaseNumber = 2;
+            //if ((pIndices[0].Item1 == 0 && pIndices[0].Item2 == 3) && (pIndices[1].Item1 == 3 && pIndices[1].Item2 == 3)) CaseNumber = 2;
+            //if ((pIndices[1].Item1 == 0 && pIndices[1].Item2 == 3) && (pIndices[0].Item1 == 3 && pIndices[0].Item2 == 3)) CaseNumber = 2;
 
-            if ((pIndices[0].Item1 == 3 && pIndices[0].Item2 == 0) && (pIndices[1].Item1 == 3 && pIndices[1].Item2 == 3)) CaseNumber = 3;
-            if ((pIndices[1].Item1 == 3 && pIndices[1].Item2 == 0) && (pIndices[0].Item1 == 3 && pIndices[0].Item2 == 3)) CaseNumber = 3;
+            //if ((pIndices[0].Item1 == 3 && pIndices[0].Item2 == 0) && (pIndices[1].Item1 == 3 && pIndices[1].Item2 == 3)) CaseNumber = 3;
+            //if ((pIndices[1].Item1 == 3 && pIndices[1].Item2 == 0) && (pIndices[0].Item1 == 3 && pIndices[0].Item2 == 3)) CaseNumber = 3;
 
-            if ((pIndices[0].Item1 == 0 && pIndices[0].Item2 == 0) && (pIndices[1].Item1 == 3 && pIndices[1].Item2 == 0)) CaseNumber = 4;
-            if ((pIndices[1].Item1 == 0 && pIndices[1].Item2 == 0) && (pIndices[0].Item1 == 3 && pIndices[0].Item2 == 0)) CaseNumber = 4;
+            //if ((pIndices[0].Item1 == 0 && pIndices[0].Item2 == 0) && (pIndices[1].Item1 == 3 && pIndices[1].Item2 == 0)) CaseNumber = 4;
+            //if ((pIndices[1].Item1 == 0 && pIndices[1].Item2 == 0) && (pIndices[0].Item1 == 3 && pIndices[0].Item2 == 0)) CaseNumber = 4;
 
-            double delta = 1.0 / 6.0;
+            //double delta = 1.0 / 6.0;
+            //for (int i = 1; i < 6; i++)
+            //{
+            //    switch (CaseNumber)
+            //    {
+            //        case 1:
+            //            MiddlePoints[0, i-1] = Surface[0, 0].GetPoint(0, delta*i);
+            //            MiddlePoints[1, i-1] = Surface[0, 0].GetPoint(0, delta * i).Add(Surface[0, 0].GetPoint(0, delta * i).Subtract(Surface[0, 0].GetPoint(0.1, delta * i)));
+            //            break;
+            //        case 2:
+            //            MiddlePoints[0, i-1] = Surface[0, 0].GetPoint(delta * i, 1);
+            //            MiddlePoints[1, i-1] = Surface[0, 0].GetPoint(delta * i, 1).Add(Surface[0, 0].GetPoint(delta * i, 1).Subtract(Surface[0, 0].GetPoint(delta * i, 0.9)));
+            //            break;
+            //        case 3:
+            //            MiddlePoints[0, i-1] = Surface[0, 0].GetPoint(1, delta * i);
+            //            MiddlePoints[1, i-1] = Surface[0, 0].GetPoint(1, delta * i).Add(Surface[0, 0].GetPoint(1, delta * i).Subtract(Surface[0, 0].GetPoint(0.9, delta * i)));
+            //            break;
+            //        case 4:
+            //            MiddlePoints[0, i-1] = Surface[0, 0].GetPoint(delta * i, 0);
+            //            MiddlePoints[1, i-1] = Surface[0, 0].GetPoint(delta * i, 0).Add(Surface[0, 0].GetPoint(delta * i, 0).Subtract(Surface[0, 0].GetPoint(delta * i, 0.1)));
+            //            break;
+            //        default:
+            //            MiddlePoints[0, i-1] = null;
+            //            MiddlePoints[1, i-1] = null;
+            //            break;
+            //    }
+            //}
+            //if(MiddlePoint!= null) MessageBox.Show("X: " + MiddlePoint.X.ToString()+ " Y: " + MiddlePoint.Y.ToString()+ " Z: "+ MiddlePoint.Z.ToString());
+
+            double a = pIndices[0].Item1 / 18.0;
+            double b = pIndices[1].Item1 / 18.0;
+            double c = pIndices[0].Item2 / 18.0;
+            double d = pIndices[1].Item2 / 18.0;
+            double e, f;
+            double g, h;
+            if (((b - a) < 0) || (pIndices[0].Item1 == 3 && pIndices[1].Item1 == 3)) e = 1;
+            else e = 0;
+
+            if (((d - c) < 0) || (pIndices[0].Item2 == 3 && pIndices[1].Item2 == 3)) f = 1;
+            else f = 0;
+
+            if (pIndices[0].Item1 == 0 && pIndices[1].Item1 == 0)
+            {
+                g = 0.1;
+                h = 0;
+            }
+            else if (pIndices[0].Item1 == 3 && pIndices[1].Item1 == 3)
+            {
+                g = -0.1;
+                h = 0;
+            }
+
+            else if (pIndices[0].Item2 == 0 && pIndices[1].Item2 == 0)
+            {
+                g = 0;
+                h = 0.1;
+            }
+            else if (pIndices[0].Item2 == 3 && pIndices[1].Item2 == 3)
+            {
+                g = 0;
+                h = -0.1;
+            }
+            else
+            {
+                //Bład 
+                h = 99;
+                g = 99;
+            }
             for (int i = 1; i < 6; i++)
             {
-                switch (CaseNumber)
-                {
-                    case 1:
-                        MiddlePoints[0, i-1] = Surface[0, 0].GetPoint(0, delta*i);
-                        MiddlePoints[1, i-1] = Surface[0, 0].GetPoint(0, delta * i).Add(Surface[0, 0].GetPoint(0, delta * i).Subtract(Surface[0, 0].GetPoint(0.1, delta * i)));
-                        break;
-                    case 2:
-                        MiddlePoints[0, i-1] = Surface[0, 0].GetPoint(delta * i, 1);
-                        MiddlePoints[1, i-1] = Surface[0, 0].GetPoint(delta * i, 1).Add(Surface[0, 0].GetPoint(delta * i, 1).Subtract(Surface[0, 0].GetPoint(delta * i, 0.9)));
-                        break;
-                    case 3:
-                        MiddlePoints[0, i-1] = Surface[0, 0].GetPoint(1, delta * i);
-                        MiddlePoints[1, i-1] = Surface[0, 0].GetPoint(1, delta * i).Add(Surface[0, 0].GetPoint(1, delta * i).Subtract(Surface[0, 0].GetPoint(0.9, delta * i)));
-                        break;
-                    case 4:
-                        MiddlePoints[0, i-1] = Surface[0, 0].GetPoint(delta * i, 0);
-                        MiddlePoints[1, i-1] = Surface[0, 0].GetPoint(delta * i, 0).Add(Surface[0, 0].GetPoint(delta * i, 0).Subtract(Surface[0, 0].GetPoint(delta * i, 0.1)));
-                        break;
-                    default:
-                        MiddlePoints[0, i-1] = null;
-                        MiddlePoints[1, i-1] = null;
-                        break;
-                }
+                MiddlePoints[0, i - 1] = Surface[0, 0].GetPoint(e + (b - a) * i, f + (d - c) * i);
+                //            MiddlePoints[1, i-1] = Surface[0, 0].GetPoint(0, delta * i).Add(Surface[0, 0].GetPoint(0, delta * i).Subtract(Surface[0, 0].GetPoint(0.1, delta * i)));
+                MiddlePoints[1, i - 1] = 2 * Surface[0, 0].GetPoint(e + (b - a) * i, f + (d - c) * i) - Surface[0, 0].GetPoint(g + e + (b - a) * i, h + f + (d - c) * i); ;
             }
-            //if(MiddlePoint!= null) MessageBox.Show("X: " + MiddlePoint.X.ToString()+ " Y: " + MiddlePoint.Y.ToString()+ " Z: "+ MiddlePoint.Z.ToString());
 
             return MiddlePoints;
         }
