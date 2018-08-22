@@ -1,21 +1,9 @@
 ﻿using ModelowanieGeometryczne.ViewModel;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using OpenTK;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using System.Windows.Forms;
@@ -156,6 +144,7 @@ namespace ModelowanieGeometryczne
                     _mainViewModel.Scene.DeleteSelectedCurves();
                     _mainViewModel.Scene.DeleteSelectedPatches();
                     _mainViewModel.Scene.DeleteSelectedPatchesC2();
+                    _mainViewModel.Scene.DeleteGregoryPatches();
                     Paint();
                     break;
                 case Key.Enter:
@@ -235,5 +224,12 @@ namespace ModelowanieGeometryczne
         }
 
 
+        private void OpentkWindow_OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var opentkWindowRenderSize = OpentkWindow.RenderSize;
+
+            _mainViewModel.Scene.Height = opentkWindowRenderSize.Height;
+            _mainViewModel.Scene.Width = opentkWindowRenderSize.Width;
+        }
     }
 }

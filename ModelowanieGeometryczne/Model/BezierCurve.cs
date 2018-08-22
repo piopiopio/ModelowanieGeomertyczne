@@ -38,6 +38,7 @@ namespace ModelowanieGeometryczne.Model
             }
         }
 
+
         public override void DrawCurve(Matrix4d transformacja)
         {
             DrawBezierCurve(transformacja, PointsCollection);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Security.Policy;
 using System.Windows.Forms;
@@ -13,6 +14,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Cursor = ModelowanieGeometryczne.Model.Cursor;
 using BezierCurve = ModelowanieGeometryczne.Model.BezierCurve;
+using Point = ModelowanieGeometryczne.Model.Point;
 
 namespace ModelowanieGeometryczne.ViewModel
 {
@@ -21,11 +23,11 @@ namespace ModelowanieGeometryczne.ViewModel
         public event PropertyChangedEventHandler RefreshScene;
 
         #region Private Fields
-       
+
         private Cursor _cursor;
         private Torus _torus;
-        private double _height;
-        private double _width;
+        private double _height = 750;
+        private double _width = 1440;
         private double _x, _y, _x0, _y0, _alphaX, _alphaY, _alphaZ, _fi, _teta, _fi0, _teta0;
         private double _scale;
         private Matrix4d M;
@@ -121,6 +123,17 @@ namespace ModelowanieGeometryczne.ViewModel
             get { return _patchesAreCylinder; }
             set { _patchesAreCylinder = value; }
         }
+
+        internal void DeleteGregoryPatches()
+        {
+            var temp = _gregoryPatchCollection.Where(c => c.Selected).ToList();
+
+            foreach (var patch in temp)
+            {
+                _gregoryPatchCollection.Remove(patch);
+            }
+        }
+
         public int PatchHorizontalDivision
         {
             get { return _patchHorizontalDivision; }
@@ -481,6 +494,7 @@ namespace ModelowanieGeometryczne.ViewModel
             BezierPatchC2Collection.Clear();
             BezierPatchCollection.Clear();
             BezierCurveCollection.Clear();
+            GregoryPatchCollection.Clear();
         }
         public void LoadScene()
         {
@@ -615,9 +629,23 @@ namespace ModelowanieGeometryczne.ViewModel
                 patch.DrawPatch(M);
 
             }
+
             foreach (var patch in GregoryPatchCollection)
             {
                 patch.Draw(M);
+
+                foreach (var item in patch.ControlArrayC1)
+                {
+                    for (int i = 1; i < 6; i++)
+                    {
+
+                        item[0][i].Draw(M, 5, 1, 0, 0);
+                        item[1][i].Draw(M, 5, 1, 0, 0);
+                    }
+                }
+
+
+
             }
 
             //// Draw GregoryPatch
@@ -665,13 +693,31 @@ namespace ModelowanieGeometryczne.ViewModel
             //     item.Draw(M, 0, 0, 1);
             // }
 
+            //Rysowanie czwrokątów
+            //GL.Begin(BeginMode.Quads);
+            //GL.Color3(Color.Aqua);
+            //GL.Vertex2(-0.5f, -0.5f);
+            //GL.Vertex2(0.5f, -0.5f);
+            //GL.Vertex2(0.5f, 0.5f);
+            //GL.Vertex2(-0.5f, 0.5f);
+            //GL.Color3(Color.Bisque);
+            //GL.Vertex2(-1f, -1f);
+            //GL.Vertex2(0.5f, -0.1f);
+            //GL.Vertex2(0.5f, 0.5f);
+            //GL.Vertex2(-0.5f, 0.5f);
+            //GL.End();
+
+
+
+
+
             GL.Flush();
 
         }
 
         private void SetViewPort()
         {
-            GL.Viewport(0, 0, 1440, 750);
+            GL.Viewport(0, 0, (int)Width, (int)Height);
         }
 
         private void AddBezierCurveExecuted()
@@ -791,6 +837,10 @@ namespace ModelowanieGeometryczne.ViewModel
                 }
             }
 
+            foreach (var patch in GregoryPatchCollection)
+            {
+                patch.CalculateGregoryPatch();
+            }
 
         }
 
@@ -812,10 +862,33 @@ namespace ModelowanieGeometryczne.ViewModel
             }
         }
 
+        private double _clickX = 0, _clickY = 0;
+        public double ClickX
+        {
+            get { return _clickX; }
+            set
+            {
+                _clickX = value;
+                OnPropertyChanged("ClickX");
+            }
+        }
+        public double ClickY
+        {
+            get { return _clickY; }
+            set
+            {
+                _clickY = value;
+                OnPropertyChanged("ClickY");
+            }
+        }
         public void SelectPointByMouse()
         {
             const double epsilon = 15;
-            Vector4d c = new Vector4d(_x0 - 1440.0 / 2.0, _y0 - 750.0 / 2.0, 0, 0);
+            Vector4d c = new Vector4d((_x0 - Width / 2.0) / (Width / 1440), (_y0 - Height / 2.0) / (Height / 750), 0, 0);
+            //Vector4d c = new Vector4d((_x0 - Width / 2.0), (_y0 - Height / 2.0) , 0, 0);
+
+            ClickX = c.X;
+            ClickY = c.Y;
             var temp = c;
             foreach (var p in _pointsCollection)
             {
@@ -823,7 +896,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
                 if (temp.Length < epsilon)
                 {
-                    p.Selected = !p.Selected;
+                   p.Selected = !p.Selected;
                 }
             }
 

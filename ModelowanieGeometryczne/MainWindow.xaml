@@ -151,6 +151,65 @@
                         </ListView>
                     </TabItem>
 
+                    <TabItem Header="Gregory patches" Height="22" VerticalAlignment="Top">
+                        <ListView Name="GregoryPatchView" Grid.Row="0" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.GregoryPatchCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.View>
+                                <GridView >
+                                    <GridViewColumn Header="Name" Width="240">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding Name}"></TextBox>
+
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <!--<GridViewColumn Header="IsSelected" Width="120" DisplayMemberBinding="{Binding Selected}" />-->
+                                    <GridViewColumn Header="Vectors visibility" Width="120" >
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox IsChecked="{Binding VectorsVisibility}" Click="RefreshScene" HorizontalAlignment="Center"></CheckBox>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Header="Horizontal divisions" Width="120">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding PatchHorizontalDivision}" LostFocus="TextBox_LostFocus" HorizontalAlignment="Center"></TextBox>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Header="Vertical divisions" Width="120">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding PatchVerticalDivision}" LostFocus="TextBox_LostFocus" HorizontalAlignment="Center"></TextBox>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <!--<GridViewColumn Header="Rotation Z" Width="120">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding RotationZ}" LostFocus="TextBox_LostFocus" HorizontalAlignment="Center"></TextBox>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>-->
+
+
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+
+                    </TabItem>
+
                     <TabItem Header="Bezier patches" Height="22" VerticalAlignment="Top">
                         <ListView Name="BezierPatchView" Grid.Row="0" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.BezierPatchCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
                             <ListView.ItemContainerStyle>
@@ -390,11 +449,12 @@
                 <TextBlock Grid.Row="1" Text="{Binding Scene.Cursor.CursorCoordinates}" Grid.ColumnSpan="2"></TextBlock>
                 <TextBlock Grid.Row="2" Text="{Binding Scene.Cursor.CursorWindowCoordinates}" Grid.ColumnSpan="2"></TextBlock>
                 <TextBlock Grid.Row="3" Text="{Binding Scene.MoveSelectedPointsWithCoursor, StringFormat=Move selected point with cursor: {0}}" Grid.ColumnSpan="2"></TextBlock>
+
                 <!--<TextBlock Grid.Row="4" Text="{Binding Text}"></TextBlock>-->
             </Grid>
 
 
-            <WindowsFormsHost Name="OpentkWindow" Grid.Column="0" Grid.Row="0" Initialized="OpenTkControl_Initialized" 
+            <WindowsFormsHost Name="OpentkWindow" Grid.Column="0" Grid.Row="0" Initialized="OpenTkControl_Initialized" SizeChanged="OpentkWindow_OnSizeChanged"
                   helpers:SizeObserver.Observe="True"
                   helpers:SizeObserver.ObservedHeight="{Binding Scene.Height, Mode=OneWayToSource}"
                   helpers:SizeObserver.ObservedWidth="{Binding Scene.Width, Mode=OneWayToSource}" Grid.ColumnSpan="3" 

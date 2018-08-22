@@ -147,6 +147,7 @@ namespace ModelowanieGeometryczne.Model
             GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
             _windowCoordinates.X = _windowCoordinates.X * 1440 / 2;
             _windowCoordinates.Y = _windowCoordinates.Y * 750 / 2;
+
             GL.End();
 
         }
@@ -214,6 +215,10 @@ namespace ModelowanieGeometryczne.Model
             return new Point(v1.X*a, v1.Y * a, v1.Z * a) ;
         }
 
+        public static Point operator /( Point v1, double a)
+        {
+            return new Point(v1.X / a, v1.Y / a, v1.Z / a);
+        }
 
         public static Point operator +(Point v1, Point v2)
         {

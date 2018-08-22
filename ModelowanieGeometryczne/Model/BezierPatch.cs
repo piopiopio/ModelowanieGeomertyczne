@@ -2,11 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
 using ModelowanieGeometryczne.Helpers;
 using System.Windows.Forms;
 
@@ -117,6 +112,94 @@ namespace ModelowanieGeometryczne.Model
             return MiddlePoint;
         }
 
+        public Point[][] GetFourEdgeControlPoints(List<Point> p)
+        {
+            if (HorizontalPatches > 1 || VerticalPatches > 1)
+            {
+                MessageBox.Show("Too big surface");
+                return null;
+            }
+
+
+            AllPointsArray = GetAllPointsInOneArray();
+
+            Point[][] egdePoints = new Point[2][];
+            egdePoints[0] = new Point[4];
+            egdePoints[1] = new Point[4];
+
+            int CaseNumber = 0;
+            List<Tuple<int, int>> pIndices = new List<Tuple<int, int>>();
+
+
+
+            for (int i = 0; i < AllPointsArray.GetLength(0); i++)
+            {
+                for (int j = 0; j < AllPointsArray.GetLength(1); j++)
+                {
+                    if (AllPointsArray[i, j] == p[0])
+                    {
+                        pIndices.Add(new Tuple<int, int>(i, j));
+                        break;
+                    }
+
+                }
+            }
+            for (int i = 0; i < AllPointsArray.GetLength(0); i++)
+            {
+                for (int j = 0; j < AllPointsArray.GetLength(1); j++)
+                {
+                    if (AllPointsArray[i, j] == p[1])
+                    {
+                        pIndices.Add(new Tuple<int, int>(i, j));
+                        break;
+                    }
+
+                }
+            }
+            if (pIndices.Count > 2)
+            {
+                MessageBox.Show("Too many points selected");
+                return null;
+            }
+
+            if (pIndices.Count < 2)
+            {
+                // MessageBox.Show("Too less points selected");
+                return null;
+            }
+
+            egdePoints[0][0] = p[0];
+            egdePoints[0][1] = AllPointsArray[pIndices[0].Item1 + (pIndices[1].Item1 - pIndices[0].Item1) / 3, pIndices[0].Item2 + (pIndices[1].Item2 - pIndices[0].Item2) / 3];
+            egdePoints[0][2] = AllPointsArray[pIndices[0].Item1 + 2 * (pIndices[1].Item1 - pIndices[0].Item1) / 3, pIndices[0].Item2 + 2 * (pIndices[1].Item2 - pIndices[0].Item2) / 3];
+            egdePoints[0][3] = p[1];
+
+            int a=99, b=99;
+            if (pIndices[0].Item1 == pIndices[1].Item1 && pIndices[0].Item1 == 0)
+            {
+                a = 1;
+                b = 0;
+            }
+            if (pIndices[0].Item1 == pIndices[1].Item1 && pIndices[0].Item1 == 3)
+            {
+                a = -1;
+                b = 0;
+            }
+            if (pIndices[0].Item2 == pIndices[1].Item2 && pIndices[0].Item2 == 0)
+            {
+                a = 0;
+                b = 1;
+            }
+            if (pIndices[0].Item2 == pIndices[1].Item2 && pIndices[0].Item2 == 3)
+            {
+                a = 0;
+                b = -1;
+            }
+            egdePoints[1][0] = AllPointsArray[a + pIndices[0].Item1, b + pIndices[0].Item2];
+            egdePoints[1][1] = AllPointsArray[a + pIndices[0].Item1 + (pIndices[1].Item1 - pIndices[0].Item1) / 3, b + pIndices[0].Item2 + (pIndices[1].Item2 - pIndices[0].Item2) / 3];
+            egdePoints[1][2] = AllPointsArray[a + pIndices[0].Item1 + 2 * (pIndices[1].Item1 - pIndices[0].Item1) / 3, b + pIndices[0].Item2 + 2 * (pIndices[1].Item2 - pIndices[0].Item2) / 3];
+            egdePoints[1][3] = AllPointsArray[a + pIndices[0].Item1 + (pIndices[1].Item1 - pIndices[0].Item1), b + pIndices[0].Item2 + (pIndices[1].Item2 - pIndices[0].Item2)];
+            return egdePoints;
+        }
 
         public Point[,] GetFivePointsBeetweenTwoPoints(List<Point> p)
         {
