@@ -67,7 +67,7 @@ namespace ModelowanieGeometryczne.Model
             }
             if (pIndices.Count < 2)
             {
-                // MessageBox.Show("Too less points selected");
+                //MessageBox.Show("Too less points selected");
                 return null;
             }
 

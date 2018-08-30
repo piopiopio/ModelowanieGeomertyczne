@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
 using ModelowanieGeometryczne.Helpers;
@@ -27,7 +28,7 @@ namespace ModelowanieGeometryczne.Model
         ObservableCollection<BezierPatch> BezierPatchCollection = new ObservableCollection<BezierPatch>();
         public List<Point[][]> EgdePoints = new List<Point[][]>();
         public List<Point[][]> ControlArrayC1 = new List<Point[][]>();
-
+        private const int MaxDivisionValue = 20;
         private int _patchHorizontalDivision;
         public int PatchHorizontalDivision
         {
@@ -38,7 +39,7 @@ namespace ModelowanieGeometryczne.Model
                 var a = value;
 
                 if (a < 1) _patchHorizontalDivision = 1;
-                else if (a > 20) _patchHorizontalDivision = 20;
+                else if (a > MaxDivisionValue) _patchHorizontalDivision = MaxDivisionValue;
                 else _patchHorizontalDivision = a;
                 foreach (var patch in PatchCollection)
                 {
@@ -58,7 +59,7 @@ namespace ModelowanieGeometryczne.Model
 
 
                 if (a < 1) _patchVerticalDivision = 1;
-                else if (a > 20) _patchVerticalDivision = 20;
+                else if (a > MaxDivisionValue) _patchVerticalDivision = MaxDivisionValue;
                 else
                 {
                     _patchVerticalDivision = a;
@@ -186,7 +187,13 @@ namespace ModelowanieGeometryczne.Model
             PointsOnBoundaryAndC1ConditionPoints.Add(GetfiveInnerPoints(new List<Point> { selectedPoints[1], selectedPoints[2] }, BezierPatchCollection));
             PointsOnBoundaryAndC1ConditionPoints.Add(GetfiveInnerPoints(new List<Point> { selectedPoints[2], selectedPoints[0] }, BezierPatchCollection));
 
-            if (P3.Count != 3) { MessageBox.Show("To less P3 points, 3 point are required"); return; }
+            if (P3.Count != 3)
+            {
+                MessageBox.Show("3 corner points are required");
+                throw new System.ArgumentException("To less corner points, 3 corner points are required", "original");
+
+                return;
+            }
 
             for (var i = 0; i < 3; i++)
             {
@@ -236,9 +243,9 @@ namespace ModelowanieGeometryczne.Model
             BezierArraysBasedOnGregory.Add(CalculateBezierBasedOnGregory(selectedPoints, 0, 2, ControlArrayC1));
             BezierArraysBasedOnGregory.Add(CalculateBezierBasedOnGregory(selectedPoints, 1, 0, ControlArrayC1));
             BezierArraysBasedOnGregory.Add(CalculateBezierBasedOnGregory(selectedPoints, 2, 1, ControlArrayC1));
-            PatchCollection.Add(new Patch(BezierArraysBasedOnGregory[0]));
-            PatchCollection.Add(new Patch(BezierArraysBasedOnGregory[1]));
-            PatchCollection.Add(new Patch(BezierArraysBasedOnGregory[2]));
+            PatchCollection.Add(new Patch(BezierArraysBasedOnGregory[0], _patchHorizontalDivision, _patchVerticalDivision));
+            PatchCollection.Add(new Patch(BezierArraysBasedOnGregory[1], _patchHorizontalDivision, _patchVerticalDivision));
+            PatchCollection.Add(new Patch(BezierArraysBasedOnGregory[2], _patchHorizontalDivision, _patchVerticalDivision));
         }
 
         public void DrawVectors(Matrix4d transformacja)
@@ -269,6 +276,8 @@ namespace ModelowanieGeometryczne.Model
 
             }
         }
+
+
         public GregoryPatch(ObservableCollection<BezierPatch> bezierPatchCollection)
         {
             PatchHorizontalDivision = 4;
@@ -286,12 +295,16 @@ namespace ModelowanieGeometryczne.Model
 
                     for (var j = 0; j < temp.GetLength(1); j++)
                     {
-                        if (temp[i, j].Selected == true) selectedPoints.Add(temp[i, j]);
+                        if (temp[i, j].Selected == true)
+                            selectedPoints.Add(temp[i, j]);
                     }
             }
 
+            selectedPoints = selectedPoints.Distinct().ToList();
+                CalculateGregoryPatch();
 
-            CalculateGregoryPatch();
+
+
             PatchHorizontalDivision = 4;
             PatchVerticalDivision = 4;
             VectorsVisibility = true;
@@ -472,6 +485,11 @@ namespace ModelowanieGeometryczne.Model
                 MessageBox.Show("Not correct points");
             }
 
+        }
+
+        public bool CheckStatus()
+        {
+            throw new NotImplementedException();
         }
     }
 }

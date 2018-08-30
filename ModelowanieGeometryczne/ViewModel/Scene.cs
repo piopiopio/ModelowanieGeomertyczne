@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Security.Policy;
+using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Navigation;
@@ -24,13 +25,29 @@ namespace ModelowanieGeometryczne.ViewModel
 
         #region Private Fields
 
+        private int EllipseCounter = 1;
+
+
         private Cursor _cursor;
         private Torus _torus;
         private double _height = 750;
         private double _width = 1440;
         private double _x, _y, _x0, _y0, _alphaX, _alphaY, _alphaZ, _fi, _teta, _fi0, _teta0;
         private double _scale;
-        private Matrix4d M;
+        private Matrix4d _m;
+        private Matrix4d M
+        {
+            get
+            { return _m; }
+            set
+            {
+                _m = value;
+               
+            }
+
+        }
+
+
         private Matrix4 _projection;
         private bool _stereoscopy;
         Tuple<int, int> _mouseCoordinates;
@@ -39,6 +56,7 @@ namespace ModelowanieGeometryczne.ViewModel
         private ObservableCollection<BezierPatch> _bezierPatchCollection;
         private ObservableCollection<BezierPatchC2> _bezierPatchC2Collection;
         private ObservableCollection<GregoryPatch> _gregoryPatchCollection;
+        public Ellipse YellowEllipse = new Ellipse();
 
         private bool _moveSelectedPointsWithCoursor = false;
         private bool _torusEnabled = false;
@@ -53,6 +71,7 @@ namespace ModelowanieGeometryczne.ViewModel
         private ICommand _addPoints;
         private ICommand _undoAllTransformation;
 
+        private ICommand _drawEllipse;
         //Bezier patches
         int _horizontalPatches;
         int _verticalPatches;
@@ -64,7 +83,57 @@ namespace ModelowanieGeometryczne.ViewModel
         #endregion Private Fields
 
         #region Public Properties
+        private Thread _workerThread;
+        private double _ellipseA;
+        private double _ellipseB;
+        private double _ellipseC;
+        private double _ellipseM;
 
+        public double EllipseA
+        {
+            get { return _ellipseA; }
+            set
+            {
+                _ellipseA = value;
+                Refresh();
+                OnPropertyChanged("EllipseA");
+                EllipseCounter = 1;
+
+            }
+        }
+        public double EllipseB
+        {
+            get { return _ellipseB; }
+            set
+            {
+                _ellipseB = value;
+                Refresh();
+                OnPropertyChanged("EllipseB");
+                EllipseCounter = 1;
+            }
+        }
+        public double EllipseC
+        {
+            get { return _ellipseC; }
+            set
+            {
+                _ellipseC = value;
+                Refresh();
+                OnPropertyChanged("EllipseC");
+                EllipseCounter = 1;
+            }
+        }
+        public double EllipseM
+        {
+            get { return _ellipseM; }
+            set
+            {
+                _ellipseM = value;
+                Refresh();
+                OnPropertyChanged("EllipseM");
+                EllipseCounter = 1;
+            }
+        }
 
 
         public ICommand AddPointsCommand { get { return _addPoints ?? (_addPoints = new ActionCommand(AddSelectedPointsExecuted)); } }
@@ -76,6 +145,12 @@ namespace ModelowanieGeometryczne.ViewModel
         public ICommand AddGregoryPatch { get { return _addGregoryPatch ?? (_addBezierPatch = new ActionCommand(AddGregoryPatchExecuted)); } }
         public ICommand AddBezierPatchC2 { get { return _addBezierPatchC2 ?? (_addBezierPatchC2 = new ActionCommand(AddBezierPatchC2Executed)); } }
 
+        public ICommand DrawEllipse { get { return _drawEllipse ?? (_drawEllipse = new ActionCommand(DrawEllipseExecuted)); } }
+
+        private void DrawEllipseExecuted()
+        {
+            //YellowEllipse.Draw();
+        }
 
         public ImportExport ExchangeObject;
 
@@ -107,7 +182,19 @@ namespace ModelowanieGeometryczne.ViewModel
 
         public void AddGregoryPatchExecuted()
         {
-            GregoryPatchCollection.Add(new GregoryPatch(BezierPatchCollection));
+
+            try
+            {
+                var a = new GregoryPatch(BezierPatchCollection);
+                GregoryPatchCollection.Add(a);
+            }
+            catch
+            {
+                MessageBox.Show("Creation error");
+            }
+
+
+
             Refresh();
         }
 
@@ -116,6 +203,7 @@ namespace ModelowanieGeometryczne.ViewModel
             M = Matrix4d.Identity;
             _scale = 0.1;
             Refresh();
+            EllipseCounter = 1;
         }
 
         public bool PatchesAreCylinder
@@ -381,7 +469,7 @@ namespace ModelowanieGeometryczne.ViewModel
             set
             {
                 _scale = Math.Max(value, 0.01);
-
+                EllipseCounter = 1;
             }
         }
 
@@ -481,11 +569,29 @@ namespace ModelowanieGeometryczne.ViewModel
             //PointsCollection.Add(new Point(2, 1, 0));
             //PointsCollection.Add(new Point(3, 0, 0));
             Cursor = new Cursor();
+            DrawEllipseFlag = false;
+            EllipseA = 0.4;
+            EllipseB = 0.1;
+            EllipseC = 0.1;
+            EllipseM = 0.8;
+            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 0,0,500);
+            dispatcherTimer.Start();
 
         }
         #endregion Public Properties
 
+        private bool _drawEllipseFlag;
 
+        public bool DrawEllipseFlag
+        {
+            get { return _drawEllipseFlag; }
+            set
+            {
+                _drawEllipseFlag = value;
+                Refresh();
+            }
+        }
 
         #region Private Methods
         public void ClearScene()
@@ -543,9 +649,40 @@ namespace ModelowanieGeometryczne.ViewModel
             if (RefreshScene != null)
                 RefreshScene(this, new PropertyChangedEventArgs("RefreshScene"));
         }
+        System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+        int MaxDivisionsNumber =720;
+        private void dispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            if (EllipseCounter < MaxDivisionsNumber)
+            {
+
+                Refresh();
+                EllipseCounter = EllipseCounter * 2;
+    
+
+            }
+        }
+
+        //private Thread elipseDrawer = new Thread(dispatcherTimer_Tick);
+
+        //public void ResetWorker()
+        //{
+        //  //  elipseDrawer.
+        //}
+
+        //private void dispatcherTimer_Tick()
+        //{
+        //    if (EllipseCounter < 700)
+        //    {
+        //        Refresh();
+        //        EllipseCounter = EllipseCounter * 2;
+
+        //    }
+        //}
 
         internal void Render()
         {
+
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.LoadIdentity();
             var scaleMatrix = MatrixProvider.ScaleMatrix(_scale);
@@ -565,6 +702,11 @@ namespace ModelowanieGeometryczne.ViewModel
             _teta = 0;
 
 
+
+            if (DrawEllipseFlag)
+            {
+                YellowEllipse.Draw(M, EllipseA, EllipseB, EllipseC, EllipseM, EllipseCounter);
+            }
 
             //wywoływanie rysowania torusa    
             if (TorusEnabled)
@@ -633,16 +775,16 @@ namespace ModelowanieGeometryczne.ViewModel
             foreach (var patch in GregoryPatchCollection)
             {
                 patch.Draw(M);
+                //punkty kontrolne
+                //foreach (var item in patch.ControlArrayC1)
+                //{
+                //    for (int i = 1; i < 6; i++)
+                //    {
 
-                foreach (var item in patch.ControlArrayC1)
-                {
-                    for (int i = 1; i < 6; i++)
-                    {
-
-                        item[0][i].Draw(M, 5, 1, 0, 0);
-                        item[1][i].Draw(M, 5, 1, 0, 0);
-                    }
-                }
+                //        item[0][i].Draw(M, 5, 1, 0, 0);
+                //        item[1][i].Draw(M, 5, 1, 0, 0);
+                //    }
+                //}
 
 
 
@@ -692,21 +834,18 @@ namespace ModelowanieGeometryczne.ViewModel
             // {
             //     item.Draw(M, 0, 0, 1);
             // }
-
-            //Rysowanie czwrokątów
             //GL.Begin(BeginMode.Quads);
             //GL.Color3(Color.Aqua);
             //GL.Vertex2(-0.5f, -0.5f);
             //GL.Vertex2(0.5f, -0.5f);
             //GL.Vertex2(0.5f, 0.5f);
             //GL.Vertex2(-0.5f, 0.5f);
-            //GL.Color3(Color.Bisque);
-            //GL.Vertex2(-1f, -1f);
-            //GL.Vertex2(0.5f, -0.1f);
-            //GL.Vertex2(0.5f, 0.5f);
-            //GL.Vertex2(-0.5f, 0.5f);
+            ////GL.Color3(Color.Bisque);
+            ////GL.Vertex2(-1f, -1f);
+            ////GL.Vertex2(0.5f, -0.1f);
+            ////GL.Vertex2(0.5f, 0.5f);
+            ////GL.Vertex2(-0.5f, 0.5f);
             //GL.End();
-
 
 
 
@@ -735,12 +874,14 @@ namespace ModelowanieGeometryczne.ViewModel
         {
             _x0 = x;
             _y0 = y;
+            EllipseCounter = 1;
         }
 
         internal void SetCurrentRotation(int fi, int teta)
         {
             _fi0 = fi;
             _teta0 = teta;
+            EllipseCounter = 1;
         }
 
         #endregion Private Methods
@@ -837,11 +978,21 @@ namespace ModelowanieGeometryczne.ViewModel
                 }
             }
 
-            foreach (var patch in GregoryPatchCollection)
-            {
-                patch.CalculateGregoryPatch();
-            }
 
+
+            for (int i = 0; i < GregoryPatchCollection.Count; i++)
+            {
+                try
+                {
+                    GregoryPatchCollection[i].CalculateGregoryPatch();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    GregoryPatchCollection.RemoveAt(i);
+                    i--;
+                }
+            }
         }
 
 
@@ -896,7 +1047,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
                 if (temp.Length < epsilon)
                 {
-                   p.Selected = !p.Selected;
+                    p.Selected = !p.Selected;
                 }
             }
 
@@ -998,7 +1149,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
         internal void MouseMoveRotate(int fi, int teta)
         { //fi rotate around screen x axis
-            //teta rotate around screen y axis
+          //teta rotate around screen y axis
             _fi = fi - _fi0;
             _teta = teta - _teta0;
             _fi0 = fi;

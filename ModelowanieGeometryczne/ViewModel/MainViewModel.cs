@@ -27,6 +27,7 @@ namespace ModelowanieGeometryczne.ViewModel
             }
         }
 
+
      
         public string Text
         {

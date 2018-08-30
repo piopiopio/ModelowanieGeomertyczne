@@ -131,6 +131,7 @@ namespace ModelowanieGeometryczne
         public void Paint()
         {
             _mainViewModel.Render();
+            //_mainViewModel.Scene.YellowEllipse.Draw(0,0);
             _glControl.SwapBuffers();
         }
         #endregion Private Methods

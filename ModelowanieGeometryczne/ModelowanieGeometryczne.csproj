@@ -78,6 +78,7 @@
     <Compile Include="Model\BezierPatch.cs" />
     <Compile Include="Model\Cursor.cs" />
     <Compile Include="Model\Curve.cs" />
+    <Compile Include="Model\Ellipse.cs" />
     <Compile Include="Model\GregoryPatch.cs" />
     <Compile Include="Model\Patch.cs" />
     <Compile Include="Model\Point.cs" />
