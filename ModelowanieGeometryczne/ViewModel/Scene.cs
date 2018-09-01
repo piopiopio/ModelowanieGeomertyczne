@@ -760,11 +760,20 @@ namespace ModelowanieGeometryczne.ViewModel
                     item[0].Draw(M, 10, 1, 0, 0);
                     item[1].Draw(M, 10, 0, 0, 1);
 
-                    TrimCurvesCollection[0].NewtonOuputPoint.Draw(M, 20, 0, 1, 1);
-                    TrimCurvesCollection[0].NewtonOuputPoint2.Draw(M, 20, 0, 1, 0);
+
 
                     TrimCurvesCollection[0].NewtonPointToGo.Draw(M, 20, 1, 1, 1);
                     //TrimCurvesCollection[0].NewtonStartPoint.Draw(M, 20, 1, 0.5, 0);
+                }
+
+                foreach (var item in TrimCurvesCollection)
+                {
+                    foreach (var item2 in item.NewtonOuputPoint)
+                    {
+                        item2[0].Draw(M, 20, 0, 1, 1);
+                        item2[1].Draw(M, 20, 1, 0, 1);
+                    }
+
                 }
 
             }

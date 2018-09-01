@@ -59,12 +59,12 @@ namespace ModelowanieGeometryczne.Model
         //    Vector4d Xk1 = StartPointVector - invertedJcobian.Multiply(Fun);
         //    NewtonOuputPoint = Xk1;
         //}
-        public Point NewtonOuputPoint;
-        public Point NewtonOuputPoint2;
+        public List<Point[]> NewtonOuputPoint = new List<Point[]>();
+
         public Point NewtonStartPoint;
 
         public Point NewtonPointToGo;
-        public void NewtonMethod(double[] t, Point[,] BezierPatch1, Point[,] BezierPatch2, Vector3d Direction)
+        public double[] NewtonMethod(double[] t, Point[,] BezierPatch1, Point[,] BezierPatch2, Vector3d Direction)
         {
 
 
@@ -74,6 +74,8 @@ namespace ModelowanieGeometryczne.Model
             double StopValue;
             int stepNumberCondition = 10000;
             int stepNumber = 0;
+
+
 
             var BP1 = GetPoint(t[0], BezierPatch1, t[1]);
             var StartPointXYZ = BP1;
@@ -97,8 +99,6 @@ namespace ModelowanieGeometryczne.Model
             StopValue = Fun.Length;
 
 
-            //Visualization
-            NewtonPointToGo = BP1 + epsilonStep * Direction;
 
             while (StopValue > StopCondition)
             {
@@ -111,7 +111,8 @@ namespace ModelowanieGeometryczne.Model
                 Matrix4d jacobian = new Matrix4d(BP1du.X, BP1dv.X, -BP2du.X, -BP2dv.X,
                     BP1du.Y, BP1dv.Y, -BP2du.Y, -BP2dv.Y,
                     BP1du.Z, BP1dv.Z, -BP2du.Z, -BP2dv.Z,
-                    Vector3d.Dot(BP1du.GetPointAsVector3D(), Direction), Vector3d.Dot(BP1dv.GetPointAsVector3D(), Direction), 0, 1);
+                    Vector3d.Dot(BP1du.GetPointAsVector3D(), Direction),
+                    Vector3d.Dot(BP1dv.GetPointAsVector3D(), Direction), 0, 1);
 
 
 
@@ -122,22 +123,60 @@ namespace ModelowanieGeometryczne.Model
 
                 // Vector4d StartPointVector = new Vector4d(StartPointXYZ.X, StartPointXYZ.Y, StartPointXYZ.Z, 0);
 
+                var debugVar = invertedJcobian.Multiply(Fun);
+                tk_1 = tk - 0.01 * invertedJcobian.Multiply(Fun);
 
-                tk_1 = tk - invertedJcobian.Multiply(Fun);
+                if (tk_1.X > 1)
+                {
+                    tk_1.X = 1;
+                    return null;
+                }
 
-                if (tk_1.X > 1) tk_1.X = 1;
-                if (tk_1.X < 0) tk_1.X = 0;
+                if (tk_1.X < 0)
+                {
+                    tk_1.X = 0;
+                    return null;
+                }
 
-                if (tk_1.Y > 1) tk_1.Y = 1;
-                if (tk_1.Y < 0) tk_1.Y = 0;
+                if (tk_1.Y > 1)
+
+                {
+                    tk_1.Y = 1;
+                    return null;
+                }
+
+                if (tk_1.Y < 0)
+                {
+                    tk_1.Y = 0;
+                    return null;
+                }
 
 
-                if (tk_1.Z > 1) tk_1.Z = 1;
-                if (tk_1.Z < 0) tk_1.Z = 0;
+                if (tk_1.Z > 1)
+                {
+                    tk_1.Z = 1;
+                    return null;
+                }
+
+                if (tk_1.Z < 0)
+                {
+                    tk_1.Z = 0;
+                    return null;
+                }
 
 
-                if (tk_1.W > 1) tk_1.W = 1;
-                if (tk_1.W < 0) tk_1.W = 0;
+                if (tk_1.W > 1)
+                {
+                    tk_1.W = 1;
+                    return null;
+                }
+
+                if (tk_1.W < 0)
+                {
+                    tk_1.W = 0;
+                    return null;
+                }
+
 
                 tk = tk_1;
 
@@ -148,27 +187,17 @@ namespace ModelowanieGeometryczne.Model
                 BP1 = GetPoint(tk.X, BezierPatch1, tk.Y);
                 BP1du = GetPointDerivativeU(tk.X, BezierPatch1, tk.Y);
                 BP1dv = GetPointDerivativeV(tk.X, BezierPatch1, tk.Y);
-                BP2 = GetPoint(tk.Z, BezierPatch2, tk.Z);
+                BP2 = GetPoint(tk.Z, BezierPatch2, tk.W);
                 BP2du = GetPointDerivativeU(tk.Z, BezierPatch2, tk.W);
                 BP2dv = GetPointDerivativeV(tk.Z, BezierPatch2, tk.W);
 
-
-
-                // StartPointXYZ = BP1;
-
-                //Epsort do podgladu
-                //NewtonStartPoint = StartPointXYZ;
-                //NewtonStartPoint = BP1;
-
-                //temp = BP1 - StartPointXYZ;
-
-
+                //Visualization
+                NewtonPointToGo = BP1 + epsilonStep * Direction;
 
                 temp = BP1 - BP2;
                 temp2 = BP1 - StartPointXYZ;
-                additionalEquation = temp2.X * Direction.X + temp2.Y * Direction.Y + temp2.Z * Direction.Z - epsilonStep;
-
-
+                additionalEquation = temp2.X * Direction.X + temp2.Y * Direction.Y + temp2.Z * Direction.Z -
+                                     epsilonStep;
 
                 Fun = new Vector4d(temp.X, temp.Y, temp.Z, additionalEquation);
                 StopValue = Fun.Length;
@@ -183,8 +212,13 @@ namespace ModelowanieGeometryczne.Model
             }
 
 
-            NewtonOuputPoint = GetPoint(tk_1.X, BezierPatch1, tk_1.Y);
-            NewtonOuputPoint2 = GetPoint(tk_1.Z, BezierPatch2, tk_1.W);
+            Point[] tempOutputPoints = new Point[2];
+            tempOutputPoints[0] = GetPoint(tk_1.X, BezierPatch1, tk_1.Y);
+            tempOutputPoints[1] = GetPoint(tk_1.Z, BezierPatch2, tk_1.W);
+            NewtonOuputPoint.Add(tempOutputPoints);
+
+            double[] result= new double[]{tk.X, tk.Y, tk.Z, tk.W};
+            return result;
         }
 
         public Vector3d CalculateNewDirectionForNewtonMethod(double[] t, Point[,] BezierPatch1, Point[,] BezierPatch2, double delta = 0.001)
@@ -229,8 +263,22 @@ namespace ModelowanieGeometryczne.Model
         public void CalclulateTrimmedCurve(double[] t, BezierPatch B1, BezierPatch B2)
         {
             StartPoint = GradientDescentMethod(t, B1.GetAllPointsInOneArray(), B2.GetAllPointsInOneArray());
-            DirectionForNewton = CalculateNewDirectionForNewtonMethod(StartPoint, B1.GetAllPointsInOneArray(), B2.GetAllPointsInOneArray());
-            NewtonMethod(StartPoint, B1.GetAllPointsInOneArray(), B2.GetAllPointsInOneArray(), DirectionForNewton);
+            //DirectionForNewton = CalculateNewDirectionForNewtonMethod(StartPoint, B1.GetAllPointsInOneArray(), B2.GetAllPointsInOneArray());
+            //StartPoint = NewtonMethod(StartPoint, B1.GetAllPointsInOneArray(), B2.GetAllPointsInOneArray(), DirectionForNewton);
+
+            while (true)
+            {
+
+
+                DirectionForNewton = CalculateNewDirectionForNewtonMethod(StartPoint, B1.GetAllPointsInOneArray(),B2.GetAllPointsInOneArray());
+                StartPoint=NewtonMethod(StartPoint, B1.GetAllPointsInOneArray(), B2.GetAllPointsInOneArray(), DirectionForNewton);
+                if (StartPoint == null)
+                {
+                    break;
+                }
+
+            }
+
         }
 
         public Point[] GetPoints(double[] t, Point[,] BezierPatch1, Point[,] BezierPatch2)
@@ -242,7 +290,7 @@ namespace ModelowanieGeometryczne.Model
             return PointsArray;
         }
 
-        public Point GetPointDerivativeU(double u, Point[,] BezierPatch1, double v, double delta = 0.1)
+        public Point GetPointDerivativeU(double u, Point[,] BezierPatch1, double v, double delta = 0.00001)
         {
             var tu_plusDelta = u + delta;
             var tu_minusDelta = u - delta;
@@ -250,7 +298,7 @@ namespace ModelowanieGeometryczne.Model
             return (GetPoint(tu_plusDelta, BezierPatch1, v) - GetPoint(tu_minusDelta, BezierPatch1, v)) / (2 * delta);
         }
 
-        public Point GetPointDerivativeV(double u, Point[,] BezierPatch1, double v, double delta = 0.1)
+        public Point GetPointDerivativeV(double u, Point[,] BezierPatch1, double v, double delta = 0.00001)
         {
             var tv_plusDelta = v + delta;
             var tv_minusDelta = v - delta;
@@ -319,10 +367,10 @@ namespace ModelowanieGeometryczne.Model
             //t = [u0; v0; u1; v1];
             double delta = 0.0001;
 
-            double alpha = 0.001;
-            double StopCondition = 0.05;
+            double alpha = 0.01;
+            double StopCondition = 0.02;
 
-            int stopStepsNumber = 10000;
+            int stopStepsNumber = 1000;
             int stepNumber = 0;
             double[] t_temp = (double[])t.Clone();
             double[] gradient = new double[4];
