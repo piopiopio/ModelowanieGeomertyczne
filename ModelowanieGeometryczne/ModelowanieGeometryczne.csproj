@@ -83,6 +83,7 @@
     <Compile Include="Model\Patch.cs" />
     <Compile Include="Model\Point.cs" />
     <Compile Include="Model\Torus.cs" />
+    <Compile Include="Model\TrimCurve.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\Scene.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />

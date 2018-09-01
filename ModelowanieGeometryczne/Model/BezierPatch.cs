@@ -173,7 +173,7 @@ namespace ModelowanieGeometryczne.Model
             egdePoints[0][2] = AllPointsArray[pIndices[0].Item1 + 2 * (pIndices[1].Item1 - pIndices[0].Item1) / 3, pIndices[0].Item2 + 2 * (pIndices[1].Item2 - pIndices[0].Item2) / 3];
             egdePoints[0][3] = p[1];
 
-            int a=99, b=99;
+            int a = 99, b = 99;
             if (pIndices[0].Item1 == pIndices[1].Item1 && pIndices[0].Item1 == 0)
             {
                 a = 1;

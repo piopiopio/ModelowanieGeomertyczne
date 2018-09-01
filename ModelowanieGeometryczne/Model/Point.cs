@@ -1,19 +1,19 @@
 ﻿using System;
-using System.Collections.Specialized;
-using System.Drawing;
-using System.Windows.Media.Media3D;
+//using System.Collections.Specialized;
+//using System.Drawing;
+//using System.Windows.Media.Media3D;
 using ModelowanieGeometryczne.Helpers;
 using ModelowanieGeometryczne.ViewModel;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Platform;
-using Color = System.Windows.Media.Color;
-using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
+//using OpenTK.Platform;
+//using Color = System.Windows.Media.Color;
+//using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 using System.Diagnostics;
 
 namespace ModelowanieGeometryczne.Model
 {
-    [DebuggerDisplay("X = {X} Y= {Y}")]
+    [DebuggerDisplay("X = {X} Y= {Y} Z={Z}")]
     public class Point : ViewModelBase
     {
         private Vector4d _coordinates;
@@ -214,7 +214,10 @@ namespace ModelowanieGeometryczne.Model
         {
             return new Point(v1.X*a, v1.Y * a, v1.Z * a) ;
         }
-
+        public static Point operator *(Point v1, double a)
+        {
+            return new Point(v1.X * a, v1.Y * a, v1.Z * a);
+        }
         public static Point operator /( Point v1, double a)
         {
             return new Point(v1.X / a, v1.Y / a, v1.Z / a);
@@ -225,12 +228,44 @@ namespace ModelowanieGeometryczne.Model
             return new Point(v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z);
         }
 
+        public static Point operator + (Point v1, Vector3d v2)
+        {
+            return new Point(v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z);
+        }
+
         public static Point operator -(Point v1, Point v2)
         {
             return new Point(v1.X - v2.X, v1.Y - v2.Y, v1.Z - v2.Z);
         }
 
+        public Point Abs()
+        {
+            return new Point(Math.Abs(X), Math.Abs(Y), Math.Abs(Z));
+        }
 
+        public Vector3d GetPointAsVector3D()
+        {
+            return new Vector3d(X, Y, Z);
+        }
+
+        public static Point GetPointFromVector3d(Vector3d v)
+        {
+            return new Point(v.X, v.Y, v.Z);
+        }
+
+        public static Point GetPointFromVector4d(Vector4d v)
+        {
+            return new Point(v.X, v.Y, v.Z);
+        }
+
+        public static Vector3d CrossProduct(Point vector1, Point vector2)
+        {//Point as vector3d
+            Vector3d result=new Vector3d();
+            result.X = vector1.Y * vector2.Z - vector1.Z * vector2.Y;
+            result.Y = vector1.Z * vector2.X - vector1.X * vector2.Z;
+            result.Z = vector1.X * vector2.Y - vector1.Y * vector2.X;
+            return result;
+        }
     }
 }
 

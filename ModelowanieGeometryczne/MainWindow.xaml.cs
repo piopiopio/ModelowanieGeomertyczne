@@ -232,5 +232,10 @@ namespace ModelowanieGeometryczne
             _mainViewModel.Scene.Height = opentkWindowRenderSize.Height;
             _mainViewModel.Scene.Width = opentkWindowRenderSize.Width;
         }
+
+        private void TrimCurve_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }

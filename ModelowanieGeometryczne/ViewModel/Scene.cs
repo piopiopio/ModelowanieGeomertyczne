@@ -42,7 +42,7 @@ namespace ModelowanieGeometryczne.ViewModel
             set
             {
                 _m = value;
-               
+
             }
 
         }
@@ -56,6 +56,7 @@ namespace ModelowanieGeometryczne.ViewModel
         private ObservableCollection<BezierPatch> _bezierPatchCollection;
         private ObservableCollection<BezierPatchC2> _bezierPatchC2Collection;
         private ObservableCollection<GregoryPatch> _gregoryPatchCollection;
+        private ObservableCollection<TrimCurve> _trimCurvesCollection;
         public Ellipse YellowEllipse = new Ellipse();
 
         private bool _moveSelectedPointsWithCoursor = false;
@@ -65,11 +66,23 @@ namespace ModelowanieGeometryczne.ViewModel
         private ICommand _addBezierPatch;
         private ICommand _addGregoryPatch;
         private ICommand _addBezierPatchC2;
+        private ICommand _trimPatches;
         private ICommand _addBezierCurve;
         private ICommand _addBezierCurveC2;
         private ICommand _addBezierCurveC2Interpolation;
         private ICommand _addPoints;
         private ICommand _undoAllTransformation;
+
+        private bool _showDescentGradientsSteps = true;
+        public bool ShowDescentGradientsSteps
+        {
+            get { return _showDescentGradientsSteps; }
+            set
+            {
+                _showDescentGradientsSteps = value;
+                Refresh();
+            }
+        }
 
         private ICommand _drawEllipse;
         //Bezier patches
@@ -145,14 +158,42 @@ namespace ModelowanieGeometryczne.ViewModel
         public ICommand AddGregoryPatch { get { return _addGregoryPatch ?? (_addBezierPatch = new ActionCommand(AddGregoryPatchExecuted)); } }
         public ICommand AddBezierPatchC2 { get { return _addBezierPatchC2 ?? (_addBezierPatchC2 = new ActionCommand(AddBezierPatchC2Executed)); } }
 
-        public ICommand DrawEllipse { get { return _drawEllipse ?? (_drawEllipse = new ActionCommand(DrawEllipseExecuted)); } }
+        public ICommand TrimPatches { get { return _trimPatches ?? (_trimPatches = new ActionCommand(TrimPatchesExecuted)); } }
 
-        private void DrawEllipseExecuted()
-        {
-            //YellowEllipse.Draw();
-        }
 
         public ImportExport ExchangeObject;
+
+        public double[] StartingParametrization;
+        public List<Point[]> pointsStartingTrimming = new List<Point[]>();
+        public void TrimPatchesExecuted()
+        {
+            TrimCurvesCollection.Add(new TrimCurve());
+            double[] t = new double[4] { 0.1, 0.1, 0.1, 0.1 };
+            BezierPatch BezierPatch1, BezierPatch2;
+            List<BezierPatch> BPList = new List<BezierPatch>();
+
+            foreach (var item in BezierPatchCollection)
+            {
+                //if (item.Selected) BPList.Add(item);
+                BPList.Add(item);
+            }
+
+            if (BPList.Count == 2)
+            {
+                Point cursorCenterPoint = new Point(Cursor.Coordinates.X, Cursor.Coordinates.Y, Cursor.Coordinates.Z);
+                StartingParametrization = TrimCurvesCollection[0].SearchStartingPointsForGradientDescentMethod(cursorCenterPoint, BPList[0].GetAllPointsInOneArray(), BPList[1].GetAllPointsInOneArray());
+                TrimCurvesCollection[0].CalclulateTrimmedCurve(StartingParametrization, BPList[0], BPList[1]);
+                pointsStartingTrimming = TrimCurvesCollection[0].PointsHistoryGradientDescent;
+
+                Refresh();
+            }
+            else
+            {
+                MessageBox.Show("Za mało wybranych powierzcni C0");
+            }
+
+
+        }
 
         public void AddBezierPatchC2Executed()
         {
@@ -378,6 +419,16 @@ namespace ModelowanieGeometryczne.ViewModel
             }
         }
 
+        public ObservableCollection<TrimCurve> TrimCurvesCollection
+        {
+            get { return _trimCurvesCollection; }
+            set
+            {
+                _trimCurvesCollection = value;
+                OnPropertyChanged("TrimCurvesCollection");
+                Refresh();
+            }
+        }
         public ObservableCollection<GregoryPatch> GregoryPatchCollection
         {
             get { return _gregoryPatchCollection; }
@@ -556,6 +607,7 @@ namespace ModelowanieGeometryczne.ViewModel
             BezierPatchCollection = new ObservableCollection<BezierPatch>();
             BezierPatchC2Collection = new ObservableCollection<BezierPatchC2>();
             GregoryPatchCollection = new ObservableCollection<GregoryPatch>();
+            TrimCurvesCollection = new ObservableCollection<TrimCurve>();
 
             ExchangeObject = new ImportExport(BezierPatchC2Collection, BezierPatchCollection, PointsCollection, _bezierCurveCollection);
             //_bezierCurveC2Collection = new ObservableCollection<BezierCurveC2>();
@@ -575,7 +627,7 @@ namespace ModelowanieGeometryczne.ViewModel
             EllipseC = 0.1;
             EllipseM = 0.8;
             dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 0,0,500);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
             dispatcherTimer.Start();
 
         }
@@ -650,7 +702,7 @@ namespace ModelowanieGeometryczne.ViewModel
                 RefreshScene(this, new PropertyChangedEventArgs("RefreshScene"));
         }
         System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
-        int MaxDivisionsNumber =720;
+        int MaxDivisionsNumber = 720;
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
             if (EllipseCounter < MaxDivisionsNumber)
@@ -658,7 +710,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
                 Refresh();
                 EllipseCounter = EllipseCounter * 2;
-    
+
 
             }
         }
@@ -701,7 +753,21 @@ namespace ModelowanieGeometryczne.ViewModel
             _fi = 0;
             _teta = 0;
 
+            if (ShowDescentGradientsSteps)
+            {
+                foreach (var item in pointsStartingTrimming)
+                {
+                    item[0].Draw(M, 10, 1, 0, 0);
+                    item[1].Draw(M, 10, 0, 0, 1);
 
+                    TrimCurvesCollection[0].NewtonOuputPoint.Draw(M, 20, 0, 1, 1);
+                    TrimCurvesCollection[0].NewtonOuputPoint2.Draw(M, 20, 0, 1, 0);
+
+                    TrimCurvesCollection[0].NewtonPointToGo.Draw(M, 20, 1, 1, 1);
+                    //TrimCurvesCollection[0].NewtonStartPoint.Draw(M, 20, 1, 0.5, 0);
+                }
+
+            }
 
             if (DrawEllipseFlag)
             {

@@ -120,6 +120,30 @@
                         <Button Grid.Row="23"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Gregory Patch" Command="{Binding Scene.AddGregoryPatch}"></Button>
                     </Grid>
                 </TabItem>
+                <TabItem Header="Trim">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Row="0"  Grid.Column="0" Grid.ColumnSpan="3" Content="Trim patches" Command="{Binding Scene.TrimPatches}"></Button>
+                        <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" IsChecked="{Binding Scene.ShowDescentGradientsSteps}" Content="Show descent gradient steps"></CheckBox>
+                    </Grid>
+
+
+
+                </TabItem>
+
+
                 <TabItem Header="Ellipse">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -247,6 +271,41 @@
                         </ListView>
 
                     </TabItem>
+
+                    <TabItem Header="Trimming curve" Height="22" VerticalAlignment="Top">
+                        <ListView Name="TrimCurve" Grid.Row="0" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.TrimCurvesCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" SelectionChanged="TrimCurve_SelectionChanged" >
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.View>
+                                <GridView >
+                                    <GridViewColumn Header="Name" Width="240">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding Name}"></TextBox>
+
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <GridViewColumn Header="Curve accuracy" Width="240">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding CurvePointsNumber}"></TextBox>
+
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+
+                    </TabItem>
+
 
                     <TabItem Header="Bezier patches" Height="22" VerticalAlignment="Top">
                         <ListView Name="BezierPatchView" Grid.Row="0" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.BezierPatchCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
