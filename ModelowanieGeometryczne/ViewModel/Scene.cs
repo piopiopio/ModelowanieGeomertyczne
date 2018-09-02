@@ -164,7 +164,7 @@ namespace ModelowanieGeometryczne.ViewModel
         public ImportExport ExchangeObject;
 
         public double[] StartingParametrization;
-        public List<Point[]> pointsStartingTrimming = new List<Point[]>();
+
         public void TrimPatchesExecuted()
         {
             TrimCurvesCollection.Add(new TrimCurve());
@@ -183,7 +183,7 @@ namespace ModelowanieGeometryczne.ViewModel
                 Point cursorCenterPoint = new Point(Cursor.Coordinates.X, Cursor.Coordinates.Y, Cursor.Coordinates.Z);
                 StartingParametrization = TrimCurvesCollection[0].SearchStartingPointsForGradientDescentMethod(cursorCenterPoint, BPList[0].GetAllPointsInOneArray(), BPList[1].GetAllPointsInOneArray());
                 TrimCurvesCollection[0].CalclulateTrimmedCurve(StartingParametrization, BPList[0], BPList[1]);
-                pointsStartingTrimming = TrimCurvesCollection[0].PointsHistoryGradientDescent;
+               
 
                 Refresh();
             }
@@ -653,6 +653,7 @@ namespace ModelowanieGeometryczne.ViewModel
             BezierPatchCollection.Clear();
             BezierCurveCollection.Clear();
             GregoryPatchCollection.Clear();
+            TrimCurvesCollection.Clear();
         }
         public void LoadScene()
         {
@@ -734,7 +735,8 @@ namespace ModelowanieGeometryczne.ViewModel
 
         internal void Render()
         {
-
+            
+          //  BusyColour = System.Windows.Media.Colors.Yellow;
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.LoadIdentity();
             var scaleMatrix = MatrixProvider.ScaleMatrix(_scale);
@@ -755,15 +757,18 @@ namespace ModelowanieGeometryczne.ViewModel
 
             if (ShowDescentGradientsSteps)
             {
-                foreach (var item in pointsStartingTrimming)
+                foreach (var item2 in TrimCurvesCollection)
                 {
-                    item[0].Draw(M, 10, 1, 0, 0);
-                    item[1].Draw(M, 10, 0, 0, 1);
+                    foreach (var item in item2.PointsHistoryGradientDescent)
+                    {
+                        item[0].Draw(M, 10, 1, 0, 0);
+                        item[1].Draw(M, 10, 0, 0, 1);
 
 
 
-                    TrimCurvesCollection[0].NewtonPointToGo.Draw(M, 20, 1, 1, 1);
-                    //TrimCurvesCollection[0].NewtonStartPoint.Draw(M, 20, 1, 0.5, 0);
+                        //TrimCurvesCollection[0].NewtonPointToGo.Draw(M, 20, 1, 1, 1);
+                        //TrimCurvesCollection[0].NewtonStartPoint.Draw(M, 20, 1, 0.5, 0);
+                    }
                 }
 
                 foreach (var item in TrimCurvesCollection)
@@ -926,6 +931,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
 
             GL.Flush();
+            //BusyColour = System.Windows.Media.Colors.Chartreuse;
 
         }
 
@@ -1107,6 +1113,23 @@ namespace ModelowanieGeometryczne.ViewModel
                 OnPropertyChanged("ClickY");
             }
         }
+
+       // private System.Windows.Media.Colors _busyColor = System.Windows.Media.Colors.Chartreuse;
+        //public System.Windows.Media.Color BusyColour
+        //{
+        //    get
+        //    {return System.Windows.Media.Colors.Chartreuse;
+        //        //return _busyColor;
+
+        //    }
+        //    set
+        //    {
+        //        //_busyColor = value;
+        //        OnPropertyChanged("BusyColour");
+
+        //    }
+        //}
+
         public void SelectPointByMouse()
         {
             const double epsilon = 15;
@@ -1233,6 +1256,16 @@ namespace ModelowanieGeometryczne.ViewModel
             _alphaX = 4 * _teta / 750;
             _alphaY = 4 * _fi / 1440;
             _alphaZ = 0;
+        }
+
+        public void DeleteTrimCurve()
+        {
+            var temp = _trimCurvesCollection.Where(c => c.Selected).ToList();
+
+            foreach (var curve in temp)
+            {
+                _trimCurvesCollection.Remove(curve);
+            }
         }
     }
 }

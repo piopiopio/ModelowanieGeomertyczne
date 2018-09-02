@@ -9,7 +9,7 @@
         KeyDown="MainWindow_OnKeyDown"
         mc:Ignorable="d"
         WindowState="Maximized"
-        Title="Modelowanie Geometryczne" Height="567.45" Width="1437">
+        Title="Modelowanie Geometryczne" Height="567" Width="1437">
 
 
     <d:Window.DataContext>
@@ -547,6 +547,7 @@
                 <TextBlock Grid.Row="2" Text="{Binding Scene.Cursor.CursorWindowCoordinates}" Grid.ColumnSpan="2"></TextBlock>
                 <TextBlock Grid.Row="3" Text="{Binding Scene.MoveSelectedPointsWithCoursor, StringFormat=Move selected point with cursor: {0}}" Grid.ColumnSpan="2"></TextBlock>
 
+                <Ellipse Grid.Row="7" Name="BusyLed" Grid.Column="1" Width="6" Height="6" Fill="Chartreuse"  HorizontalAlignment="Right" VerticalAlignment="Bottom"></Ellipse>
                 <!--<TextBlock Grid.Row="4" Text="{Binding Text}"></TextBlock>-->
             </Grid>
 

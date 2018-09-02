@@ -146,6 +146,7 @@ namespace ModelowanieGeometryczne
                     _mainViewModel.Scene.DeleteSelectedPatches();
                     _mainViewModel.Scene.DeleteSelectedPatchesC2();
                     _mainViewModel.Scene.DeleteGregoryPatches();
+                    _mainViewModel.Scene.DeleteTrimCurve();
                     Paint();
                     break;
                 case Key.Enter:

@@ -22,6 +22,7 @@ namespace ModelowanieGeometryczne.Model
         public List<Point[]> PointsHistoryGradientDescent = new List<Point[]>();
         public List<double> FunctionValueHistory = new List<double>();
         public List<double[]> GradientHistory = new List<double[]>();
+        public bool Selected { get; set; }
 
         public TrimCurve()
         {
@@ -64,7 +65,7 @@ namespace ModelowanieGeometryczne.Model
         public Point NewtonStartPoint;
 
         public Point NewtonPointToGo;
-        public double[] NewtonMethod(double[] t, Point[,] BezierPatch1, Point[,] BezierPatch2, Vector3d Direction)
+        public double[] NewtonMethod(double[] t, Point[,] BezierPatch1, Point[,] BezierPatch2, Vector3d Direction, bool addToEnd)
         {
 
 
@@ -205,6 +206,7 @@ namespace ModelowanieGeometryczne.Model
                 stepNumber++;
                 if (stepNumber > stepNumberCondition)
                 {
+                    MessageBox.Show("Metoda gradientu prostego nie znalazła rozwiązania spełniającego kryteria. ");
                     break;
                 }
 
@@ -213,11 +215,21 @@ namespace ModelowanieGeometryczne.Model
 
 
             Point[] tempOutputPoints = new Point[2];
+
+
             tempOutputPoints[0] = GetPoint(tk_1.X, BezierPatch1, tk_1.Y);
             tempOutputPoints[1] = GetPoint(tk_1.Z, BezierPatch2, tk_1.W);
-            NewtonOuputPoint.Add(tempOutputPoints);
 
-            double[] result= new double[]{tk.X, tk.Y, tk.Z, tk.W};
+            if (addToEnd)
+            {
+                NewtonOuputPoint.Add(tempOutputPoints);
+            }
+            else
+            {
+                NewtonOuputPoint.Insert(0, tempOutputPoints);
+            }
+
+            double[] result = new double[] { tk.X, tk.Y, tk.Z, tk.W };
             return result;
         }
 
@@ -225,29 +237,31 @@ namespace ModelowanieGeometryczne.Model
         {//epsilon długość skoku;
             //delta potrzebne do pochodnej mrs
 
-            var tu_plusDelta = t[0] + delta;
-            var tu_minusDelta = t[0] - delta;
+            //var tu_plusDelta = t[0] + delta;
+            //var tu_minusDelta = t[0] - delta;
 
-            var tv_plusDelta = t[1] + delta;
-            var tv_minusDelta = t[1] - delta;
+            //var tv_plusDelta = t[1] + delta;
+            //var tv_minusDelta = t[1] - delta;
 
-            var P_u = ((GetPoint(tu_plusDelta, BezierPatch1, t[1]) - GetPoint(tu_minusDelta, BezierPatch1, t[1]))) / (2 * delta);
-            var P_v = ((GetPoint(t[0], BezierPatch1, tv_plusDelta) - GetPoint(t[0], BezierPatch1, tv_minusDelta))) / (2 * delta);
+            //var P_u = ((GetPoint(tu_plusDelta, BezierPatch1, t[1]) - GetPoint(tu_minusDelta, BezierPatch1, t[1]))) / (2 * delta);
+            //var P_v = ((GetPoint(t[0], BezierPatch1, tv_plusDelta) - GetPoint(t[0], BezierPatch1, tv_minusDelta))) / (2 * delta);
 
-
-            var n1 = Point.CrossProduct(P_u, P_v);
+            var P1_u = GetPointDerivativeU(t[0], BezierPatch1, t[1]);
+            var P1_v = GetPointDerivativeV(t[0], BezierPatch1, t[1]);
+            var n1 = Point.CrossProduct(P1_u, P1_v);
             n1.Normalize();
 
 
-            tu_plusDelta = t[2] + delta;
-            tu_minusDelta = t[2] - delta;
+            //tu_plusDelta = t[2] + delta;
+            //tu_minusDelta = t[2] - delta;
 
-            tv_plusDelta = t[3] + delta;
-            tv_minusDelta = t[3] - delta;
+            //tv_plusDelta = t[3] + delta;
+            //tv_minusDelta = t[3] - delta;
 
-            var P2_u = ((GetPoint(tu_plusDelta, BezierPatch1, t[3]) - GetPoint(tu_minusDelta, BezierPatch1, t[3]))) / (2 * delta);
-            var P2_v = ((GetPoint(t[2], BezierPatch1, tv_plusDelta) - GetPoint(t[2], BezierPatch1, tv_minusDelta))) / (2 * delta);
-
+            //var P2_u = ((GetPoint(tu_plusDelta, BezierPatch1, t[3]) - GetPoint(tu_minusDelta, BezierPatch1, t[3]))) / (2 * delta);
+            //var P2_v = ((GetPoint(t[2], BezierPatch1, tv_plusDelta) - GetPoint(t[2], BezierPatch1, tv_minusDelta))) / (2 * delta);
+            var P2_u = GetPointDerivativeU(t[2], BezierPatch2, t[3]);
+            var P2_v = GetPointDerivativeV(t[2], BezierPatch2, t[3]);
 
             var n2 = Point.CrossProduct(P2_u, P2_v);
             n2.Normalize();
@@ -255,13 +269,15 @@ namespace ModelowanieGeometryczne.Model
 
             return Vector3d.Normalize(Vector3d.Cross(n1, n2));
 
-            //TODO: Przetestować
+
 
         }
 
         public Vector3d DirectionForNewton;
         public void CalclulateTrimmedCurve(double[] t, BezierPatch B1, BezierPatch B2)
         {
+            NewtonOuputPoint.Clear();
+            PointsHistoryGradientDescent.Clear();
             StartPoint = GradientDescentMethod(t, B1.GetAllPointsInOneArray(), B2.GetAllPointsInOneArray());
             //DirectionForNewton = CalculateNewDirectionForNewtonMethod(StartPoint, B1.GetAllPointsInOneArray(), B2.GetAllPointsInOneArray());
             //StartPoint = NewtonMethod(StartPoint, B1.GetAllPointsInOneArray(), B2.GetAllPointsInOneArray(), DirectionForNewton);
@@ -270,8 +286,29 @@ namespace ModelowanieGeometryczne.Model
             {
 
 
-                DirectionForNewton = CalculateNewDirectionForNewtonMethod(StartPoint, B1.GetAllPointsInOneArray(),B2.GetAllPointsInOneArray());
-                StartPoint=NewtonMethod(StartPoint, B1.GetAllPointsInOneArray(), B2.GetAllPointsInOneArray(), DirectionForNewton);
+                DirectionForNewton = CalculateNewDirectionForNewtonMethod(StartPoint, B1.GetAllPointsInOneArray(), B2.GetAllPointsInOneArray());
+                StartPoint = NewtonMethod(StartPoint, B1.GetAllPointsInOneArray(), B2.GetAllPointsInOneArray(), DirectionForNewton, true);
+                if (StartPoint == null)
+                {
+                    break;
+                }
+
+            }
+
+
+
+
+            PointsHistoryGradientDescent.Clear();
+            StartPoint = GradientDescentMethod(t, B1.GetAllPointsInOneArray(), B2.GetAllPointsInOneArray());
+            //DirectionForNewton = CalculateNewDirectionForNewtonMethod(StartPoint, B1.GetAllPointsInOneArray(), B2.GetAllPointsInOneArray());
+            //StartPoint = NewtonMethod(StartPoint, B1.GetAllPointsInOneArray(), B2.GetAllPointsInOneArray(), DirectionForNewton);
+
+            while (true)
+            {
+
+
+                DirectionForNewton = (-1) * CalculateNewDirectionForNewtonMethod(StartPoint, B1.GetAllPointsInOneArray(), B2.GetAllPointsInOneArray());
+                StartPoint = NewtonMethod(StartPoint, B1.GetAllPointsInOneArray(), B2.GetAllPointsInOneArray(), DirectionForNewton, false);
                 if (StartPoint == null)
                 {
                     break;
@@ -290,20 +327,14 @@ namespace ModelowanieGeometryczne.Model
             return PointsArray;
         }
 
-        public Point GetPointDerivativeU(double u, Point[,] BezierPatch1, double v, double delta = 0.00001)
+        public double[] CalculateB(double u)
         {
-            var tu_plusDelta = u + delta;
-            var tu_minusDelta = u - delta;
-
-            return (GetPoint(tu_plusDelta, BezierPatch1, v) - GetPoint(tu_minusDelta, BezierPatch1, v)) / (2 * delta);
+            return new double[4] { (1 - u) * (1 - u) * (1 - u), 3 * u * (1 - u) * (1 - u), 3 * u * u * (1 - u), u * u * u };
         }
 
-        public Point GetPointDerivativeV(double u, Point[,] BezierPatch1, double v, double delta = 0.00001)
+        public double[] CalculateDerrivativeB(double u)
         {
-            var tv_plusDelta = v + delta;
-            var tv_minusDelta = v - delta;
-
-            return ((GetPoint(u, BezierPatch1, tv_plusDelta) - GetPoint(u, BezierPatch1, tv_minusDelta))) / (2 * delta);
+            return new double[4] { -3 * (u - 1) * (u - 1), 3 * u * (2 * u - 2) + 3 * (u - 1) * (u - 1), -6 * u * (u - 1) - 3 * u * u, 3 * u * u };
         }
 
         public Point GetPoint(double u, Point[,] BezierPatch, double v)
@@ -312,17 +343,45 @@ namespace ModelowanieGeometryczne.Model
 
         }
 
-        public double[] CalculateB(double u)
+        public Point GetPointDerivativeU(double u, Point[,] BezierPatch1, double v)
         {
-            return new double[4] { (1 - u) * (1 - u) * (1 - u), 3 * u * (1 - u) * (1 - u), 3 * u * u * (1 - u), u * u * u };
+            //var tu_plusDelta = u + delta;
+            //var tu_minusDelta = u - delta;
+
+            //return (GetPoint(tu_plusDelta, BezierPatch1, v) - GetPoint(tu_minusDelta, BezierPatch1, v)) / (2 * delta);
+            return MatrixProvider.Multiply(CalculateDerrivativeB(u), BezierPatch1, CalculateB(v));
         }
 
-        public double Bu1PointBv1_Bu2PointBv2(double u1, Point[,] BezierPatch1, double v1, double u2, Point[,] BezierPatch2, double v2)
+        public Point GetPointDerivativeV(double u, Point[,] BezierPatch1, double v)
+        {
+            // var tv_plusDelta = v + delta;
+            // var tv_minusDelta = v - delta;
+
+            // return ((GetPoint(u, BezierPatch1, tv_plusDelta) - GetPoint(u, BezierPatch1, tv_minusDelta))) / (2 * delta);
+
+            return MatrixProvider.Multiply(CalculateB(u), BezierPatch1, CalculateDerrivativeB(v));
+        }
+
+        public double FunctionToMinimalize(double u1, Point[,] BezierPatch1, double v1, double u2, Point[,] BezierPatch2, double v2)
         {//Obliczanie wartości minimalizowanej funkcji funkcji celu
-            return (MatrixProvider.Multiply(CalculateB(u1), BezierPatch1, CalculateB(v1)) - MatrixProvider.Multiply(CalculateB(u2), BezierPatch2, CalculateB(v2))).Length();
+            //return (MatrixProvider.Multiply(CalculateB(u1), BezierPatch1, CalculateB(v1)) - MatrixProvider.Multiply(CalculateB(u2), BezierPatch2, CalculateB(v2))).Length();
+            return (GetPoint(u1, BezierPatch1, v1) - GetPoint(u2, BezierPatch2, v2)).Length();
         }
 
 
+        public double[] GetGradient(double[] t, Point[,] BezierPatch1, Point[,] BezierPatch2)
+        {
+            double[] gradient = new double[4];
+            double[] gradienttemp = new double[4];
+            double delta = 0.0001;
+            gradienttemp[0] = GetPointDerivativeU(t[0], BezierPatch1, t[1]).Length();
+            gradienttemp[1] = GetPointDerivativeV(t[0], BezierPatch1, t[1]).Length();
+            gradient[0] = ((FunctionToMinimalize(t[0] + delta, BezierPatch1, t[1], t[2], BezierPatch2, t[3]) - FunctionToMinimalize(t[0] - delta, BezierPatch1, t[1], t[2], BezierPatch2, t[3])) / (2 * delta));
+            gradient[1] = ((FunctionToMinimalize(t[0], BezierPatch1, t[1] + delta, t[2], BezierPatch2, t[3]) - FunctionToMinimalize(t[0], BezierPatch1, t[1] - delta, t[2], BezierPatch2, t[3])) / (2 * delta));
+            gradient[2] = ((FunctionToMinimalize(t[0], BezierPatch1, t[1], t[2] + delta, BezierPatch2, t[3]) - FunctionToMinimalize(t[0], BezierPatch1, t[1], t[2] - delta, BezierPatch2, t[3])) / (2 * delta));
+            gradient[3] = ((FunctionToMinimalize(t[0], BezierPatch1, t[1], t[2], BezierPatch2, t[3] + delta) - FunctionToMinimalize(t[0], BezierPatch1, t[1], t[2], BezierPatch2, t[3] - delta)) / (2 * delta));
+            return gradient;
+        }
 
         public double[] SearchStartingPointsForGradientDescentMethod(Point cursor, Point[,] BezierPatch1, Point[,] BezierPatch2)
         {
@@ -362,48 +421,53 @@ namespace ModelowanieGeometryczne.Model
             return result;
 
         }
+
+
+
         public double[] GradientDescentMethod(double[] t, Point[,] BezierPatch1, Point[,] BezierPatch2)
         {
             //t = [u0; v0; u1; v1];
-            double delta = 0.0001;
+            //double delta = 0.0001;
 
-            double alpha = 0.01;
+            double gradientDescentethodStepLength = 0.01;
             double StopCondition = 0.02;
 
-            int stopStepsNumber = 1000;
+            int gradientDescentethodStopStepsNumber = 1000;
             int stepNumber = 0;
             double[] t_temp = (double[])t.Clone();
             double[] gradient = new double[4];
             double FunctionValue;
 
-            FunctionValue = Bu1PointBv1_Bu2PointBv2(t[0], BezierPatch1, t[1], t[2], BezierPatch2, t[3]);
+            //FunctionValue = FunctionToMinimalize(t[0], BezierPatch1, t[1], t[2], BezierPatch2, t[3]);
+            FunctionValue = (GetPoint(t[0], BezierPatch1, t[1]) - GetPoint(t[2], BezierPatch2, t[3])).Length();
 
             while (FunctionValue > StopCondition)
             {
-                gradient[0] = ((Bu1PointBv1_Bu2PointBv2(t[0] + delta, BezierPatch1, t[1], t[2], BezierPatch2, t[3]) - Bu1PointBv1_Bu2PointBv2(t[0] - delta, BezierPatch1, t[1], t[2], BezierPatch2, t[3])) / (2 * delta));
-                gradient[1] = ((Bu1PointBv1_Bu2PointBv2(t[0], BezierPatch1, t[1] + delta, t[2], BezierPatch2, t[3]) - Bu1PointBv1_Bu2PointBv2(t[0], BezierPatch1, t[1] - delta, t[2], BezierPatch2, t[3])) / (2 * delta));
-                gradient[2] = ((Bu1PointBv1_Bu2PointBv2(t[0], BezierPatch1, t[1], t[2] + delta, BezierPatch2, t[3]) - Bu1PointBv1_Bu2PointBv2(t[0], BezierPatch1, t[1], t[2] - delta, BezierPatch2, t[3])) / (2 * delta));
-                gradient[3] = ((Bu1PointBv1_Bu2PointBv2(t[0], BezierPatch1, t[1], t[2], BezierPatch2, t[3] + delta) - Bu1PointBv1_Bu2PointBv2(t[0], BezierPatch1, t[1], t[2], BezierPatch2, t[3] - delta)) / (2 * delta));
+
+                gradient = GetGradient(t, BezierPatch1, BezierPatch2);
+
 
                 for (int i = 0; i < 4; i++)
                 {
-                    t_temp[i] = t[i] - alpha * gradient[i];
+                    t_temp[i] = t[i] - gradientDescentethodStepLength * gradient[i];
                     if (t_temp[i] > 1) t_temp[i] = 1;
                     if (t_temp[i] < 0) t_temp[i] = 0;
 
                 }
 
                 t = (double[])t_temp.Clone();
-                FunctionValue = Bu1PointBv1_Bu2PointBv2(t[0], BezierPatch1, t[1], t[2], BezierPatch2, t[3]);
-                var Function = Bu1PointBv1_Bu2PointBv2(t[0], BezierPatch1, t[1], t[2], BezierPatch2, t[3]);
+                FunctionValue = FunctionToMinimalize(t[0], BezierPatch1, t[1], t[2], BezierPatch2, t[3]);
+
 
                 PointsHistoryGradientDescent.Add(GetPoints(t, BezierPatch1, BezierPatch2));
                 FunctionValueHistory.Add(FunctionValue);
                 GradientHistory.Add(gradient);
-                if (stepNumber > stopStepsNumber)
+
+                if (stepNumber > gradientDescentethodStopStepsNumber)
                 {
-                    return null;
-                    //TODO: Zrobiś w finalnej wersji return t i messegebox.
+                    MessageBox.Show("Metoda gradientu prostego nie znalazła rozwiązania spełniającego kryteria. ");
+                    return t;
+
                 }
                 stepNumber++;
             }
