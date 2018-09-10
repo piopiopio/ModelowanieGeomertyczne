@@ -15,21 +15,70 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Cursor = ModelowanieGeometryczne.Model.Cursor;
 using BezierCurve = ModelowanieGeometryczne.Model.BezierCurve;
+using Boolean = System.Boolean;
 using Point = ModelowanieGeometryczne.Model.Point;
 
 namespace ModelowanieGeometryczne.ViewModel
 {
     public class Scene : ViewModelBase
     {
+
+        double torus_r = 1;
+        double torus_R = 2;
+        int torus_division_fi = 20;
+        int torus_division_teta = 20;
+
+        public double Torus_r
+        {
+            get { return torus_r; }
+            set
+            {
+                torus_r = value;
+                OnPropertyChanged("Torus_r");
+            }
+        }
+
+
+        public double Torus_R
+        {
+            get { return torus_R; }
+            set
+            {
+                torus_R = value;
+                OnPropertyChanged("Torus_R");
+            }
+        }
+
+        public int Torus_division_fi
+        {
+            get { return torus_division_fi; }
+            set
+            {
+                torus_division_fi = value;
+                OnPropertyChanged("Torus_division_fi ");
+            }
+        }
+
+
+        public int Torus_division_teta
+        {
+            get { return torus_division_teta; }
+            set
+            {
+                torus_division_teta = value;
+                OnPropertyChanged("Torus_division_teta ");
+            }
+        }
+
         public event PropertyChangedEventHandler RefreshScene;
 
         #region Private Fields
 
-        private int EllipseCounter = 1;
+        public int EllipseCounter = 1;
 
 
         private Cursor _cursor;
-        private Torus _torus;
+        // private Torus _torus;
         private double _height = 750;
         private double _width = 1440;
         private double _x, _y, _x0, _y0, _alphaX, _alphaY, _alphaZ, _fi, _teta, _fi0, _teta0;
@@ -57,6 +106,7 @@ namespace ModelowanieGeometryczne.ViewModel
         private ObservableCollection<BezierPatchC2> _bezierPatchC2Collection;
         private ObservableCollection<GregoryPatch> _gregoryPatchCollection;
         private ObservableCollection<TrimCurve> _trimCurvesCollection;
+        private ObservableCollection<Torus> _torusCollection;
         public Ellipse YellowEllipse = new Ellipse();
 
         private bool _moveSelectedPointsWithCoursor = false;
@@ -67,13 +117,17 @@ namespace ModelowanieGeometryczne.ViewModel
         private ICommand _addGregoryPatch;
         private ICommand _addBezierPatchC2;
         private ICommand _trimPatches;
+        private ICommand _addTorus;
+        private ICommand _convertToInterpolation;
         private ICommand _addBezierCurve;
         private ICommand _addBezierCurveC2;
         private ICommand _addBezierCurveC2Interpolation;
         private ICommand _addPoints;
         private ICommand _undoAllTransformation;
+        private ICommand _showCurvesUV;
 
-        private bool _showDescentGradientsSteps = true;
+
+        private bool _showDescentGradientsSteps = false;
         public bool ShowDescentGradientsSteps
         {
             get { return _showDescentGradientsSteps; }
@@ -159,6 +213,65 @@ namespace ModelowanieGeometryczne.ViewModel
         public ICommand AddBezierPatchC2 { get { return _addBezierPatchC2 ?? (_addBezierPatchC2 = new ActionCommand(AddBezierPatchC2Executed)); } }
 
         public ICommand TrimPatches { get { return _trimPatches ?? (_trimPatches = new ActionCommand(TrimPatchesExecuted)); } }
+        public ICommand AddTorus { get { return _addTorus ?? (_addTorus = new ActionCommand(AddTorusExecuted)); } }
+        public ICommand ConvertToInterpolation { get { return _convertToInterpolation ?? (_convertToInterpolation = new ActionCommand(ConvertToInterpolationExecuted)); } }
+        public ICommand ShowCurvesUV { get { return _showCurvesUV ?? (_showCurvesUV = new ActionCommand(ShowCurvesUvExecuted)); } }
+
+        private void ShowCurvesUvExecuted()
+        {
+            //  foreach (var item in TrimCurvesCollection.Where(c=>c.Selected))
+            //  {
+            var item = TrimCurvesCollection[0];
+            BitmapsWindow win2 = new BitmapsWindow(item.StartPointHistory);
+            win2.Show();
+            // }
+
+
+
+
+        }
+
+        private void ConvertToInterpolationExecuted()
+        {
+            foreach (var item in TrimCurvesCollection)
+            {
+                if (item.Selected)
+                {
+
+                    ObservableCollection<Point> Points0 = new ObservableCollection<Point>();
+                    ObservableCollection<Point> Points1 = new ObservableCollection<Point>();
+
+                    foreach (var p in item.NewtonOuputPoint)
+                    {
+                        Points0.Add(p[0]);
+                        Points1.Add(p[1]);
+                    }
+                    if (Points0.Count > 0)
+                    {
+                        var curve = new BezierCurveC2(Points0, true);
+                        curve.RefreshScene += Refresh;
+                        BezierCurveCollection.Add(curve);
+                        Refresh();
+                    }
+
+                    if (Points1.Count > 0)
+                    {
+                        var curve = new BezierCurveC2(Points1, true);
+                        curve.RefreshScene += Refresh;
+                        BezierCurveCollection.Add(curve);
+                        Refresh();
+                    }
+                }
+
+            }
+
+        }
+
+        private void AddTorusExecuted()
+        {
+            TorusCollection.Add(new Torus(Cursor.Coordinates, Torus_r, Torus_R, Torus_division_fi, Torus_division_teta));
+            Refresh();
+        }
 
 
         public ImportExport ExchangeObject;
@@ -167,10 +280,10 @@ namespace ModelowanieGeometryczne.ViewModel
 
         public void TrimPatchesExecuted()
         {
-            TrimCurvesCollection.Add(new TrimCurve());
+            TrimCurvesCollection.Add(new TrimCurve(GradientDescentethodStepLength, GradientDescentStopCondition, GradientDescentethodStopStepsNumber, NewtonForwardStep, NewtonStopCondition, NewtonStepNumberCondition));
             double[] t = new double[4] { 0.1, 0.1, 0.1, 0.1 };
-            BezierPatch BezierPatch1, BezierPatch2;
-            List<BezierPatch> BPList = new List<BezierPatch>();
+            IPatch patch1, patch2;
+            List<IPatch> BPList = new List<IPatch>();
 
             foreach (var item in BezierPatchCollection)
             {
@@ -178,18 +291,30 @@ namespace ModelowanieGeometryczne.ViewModel
                 BPList.Add(item);
             }
 
+            foreach (var item in BezierPatchC2Collection)
+            {
+                //if (item.Selected) BPList.Add(item);
+                BPList.Add(item);
+            }
+
+            foreach (var item in TorusCollection)
+            {
+                //if (item.Selected) BPList.Add(item);
+                BPList.Add(item);
+            }
+            //BPList.Add(_torus);
             if (BPList.Count == 2)
             {
                 Point cursorCenterPoint = new Point(Cursor.Coordinates.X, Cursor.Coordinates.Y, Cursor.Coordinates.Z);
-                StartingParametrization = TrimCurvesCollection[0].SearchStartingPointsForGradientDescentMethod(cursorCenterPoint, BPList[0].GetAllPointsInOneArray(), BPList[1].GetAllPointsInOneArray());
-                TrimCurvesCollection[0].CalclulateTrimmedCurve(StartingParametrization, BPList[0], BPList[1]);
-               
+                // StartingParametrization = TrimCurvesCollection[0].SearchStartingPointsForGradientDescentMethod(cursorCenterPoint, BPList[0], BPList[1]);
+                TrimCurvesCollection.Last().CalclulateTrimmedCurve(cursorCenterPoint, BPList[0], BPList[1]);
+
 
                 Refresh();
             }
             else
             {
-                MessageBox.Show("Za mało wybranych powierzcni C0");
+                MessageBox.Show("Za mało wybranych powierzcni");
             }
 
 
@@ -253,7 +378,7 @@ namespace ModelowanieGeometryczne.ViewModel
             set { _patchesAreCylinder = value; }
         }
 
-        internal void DeleteGregoryPatches()
+        internal void DeleteSelectedGregoryPatches()
         {
             var temp = _gregoryPatchCollection.Where(c => c.Selected).ToList();
 
@@ -429,6 +554,21 @@ namespace ModelowanieGeometryczne.ViewModel
                 Refresh();
             }
         }
+
+        public ObservableCollection<Torus> TorusCollection
+        {
+            get
+            {
+                return _torusCollection;
+
+            }
+            set
+            {
+                _torusCollection = value;
+                OnPropertyChanged("TorusCollection");
+                Refresh();
+            }
+        }
         public ObservableCollection<GregoryPatch> GregoryPatchCollection
         {
             get { return _gregoryPatchCollection; }
@@ -524,18 +664,18 @@ namespace ModelowanieGeometryczne.ViewModel
             }
         }
 
-        public Torus Torus
-        {
-            get
-            {
-                return _torus;
-            }
-            set
-            {
-                _torus = value;
-                OnPropertyChanged("Torus");
-            }
-        }
+        //public Torus Torus
+        //{
+        //    get
+        //    {
+        //        return _torus;
+        //    }
+        //    set
+        //    {
+        //        _torus = value;
+        //        OnPropertyChanged("Torus");
+        //    }
+        //}
 
 
         public ICommand GregoryMergePoints { get { return _gregoryMergePoints ?? (_gregoryMergePoints = new ActionCommand(GregoryMergePointsExecuted)); } }
@@ -578,6 +718,14 @@ namespace ModelowanieGeometryczne.ViewModel
                 Refresh();
             }
         }
+
+        public double NewtonForwardStep { get; set; }
+        public double NewtonStopCondition { get; set; }
+        public int NewtonStepNumberCondition { get; set; }
+        public double GradientDescentethodStepLength { get; set; }
+        public double GradientDescentStopCondition { get; set; }
+        public int GradientDescentethodStopStepsNumber { get; set; }
+
         public Scene()
         {
 
@@ -601,15 +749,16 @@ namespace ModelowanieGeometryczne.ViewModel
             _patchVerticalDivision = 4;
             _patchesAreCylinder = false;
             M = Matrix4d.Identity;
-            Torus = new Torus();
+            //Torus = new Torus();
             PointsCollection = new ObservableCollection<Point>();
             _bezierCurveCollection = new ObservableCollection<Curve>();
             BezierPatchCollection = new ObservableCollection<BezierPatch>();
             BezierPatchC2Collection = new ObservableCollection<BezierPatchC2>();
             GregoryPatchCollection = new ObservableCollection<GregoryPatch>();
             TrimCurvesCollection = new ObservableCollection<TrimCurve>();
+            TorusCollection = new ObservableCollection<Torus>();
 
-            ExchangeObject = new ImportExport(BezierPatchC2Collection, BezierPatchCollection, PointsCollection, _bezierCurveCollection);
+            ExchangeObject = new ImportExport(BezierPatchC2Collection, BezierPatchCollection, PointsCollection, _bezierCurveCollection, TorusCollection);
             //_bezierCurveC2Collection = new ObservableCollection<BezierCurveC2>();
             //PointsCollection.Add(new Point(1, 1, 0));
             //PointsCollection.Add(new Point(-5, 1, 0));
@@ -629,6 +778,14 @@ namespace ModelowanieGeometryczne.ViewModel
             dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
             dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
             dispatcherTimer.Start();
+
+
+            NewtonForwardStep = -0.1;
+            NewtonStopCondition = 0.01;
+            NewtonStepNumberCondition = 20;
+            GradientDescentethodStepLength = 0.01;
+            GradientDescentStopCondition = 0.05;
+            GradientDescentethodStopStepsNumber = 10000;
 
         }
         #endregion Public Properties
@@ -654,6 +811,7 @@ namespace ModelowanieGeometryczne.ViewModel
             BezierCurveCollection.Clear();
             GregoryPatchCollection.Clear();
             TrimCurvesCollection.Clear();
+            TorusCollection.Clear();
         }
         public void LoadScene()
         {
@@ -699,11 +857,15 @@ namespace ModelowanieGeometryczne.ViewModel
 
         private void Refresh()
         {
+            //BusyEllipseLed = 1;
             if (RefreshScene != null)
                 RefreshScene(this, new PropertyChangedEventArgs("RefreshScene"));
+            //BusyEllipseLed = 0;
         }
         System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
         int MaxDivisionsNumber = 720;
+
+
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
             if (EllipseCounter < MaxDivisionsNumber)
@@ -735,8 +897,8 @@ namespace ModelowanieGeometryczne.ViewModel
 
         internal void Render()
         {
-            
-          //  BusyColour = System.Windows.Media.Colors.Yellow;
+
+
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.LoadIdentity();
             var scaleMatrix = MatrixProvider.ScaleMatrix(_scale);
@@ -757,49 +919,52 @@ namespace ModelowanieGeometryczne.ViewModel
 
             if (ShowDescentGradientsSteps)
             {
+
                 foreach (var item2 in TrimCurvesCollection)
                 {
+                    double k = 1.0 / item2.PointsHistoryGradientDescent.Count;
+                    double k1 = 0;
                     foreach (var item in item2.PointsHistoryGradientDescent)
                     {
-                        item[0].Draw(M, 10, 1, 0, 0);
-                        item[1].Draw(M, 10, 0, 0, 1);
-
-
-
-                        //TrimCurvesCollection[0].NewtonPointToGo.Draw(M, 20, 1, 1, 1);
-                        //TrimCurvesCollection[0].NewtonStartPoint.Draw(M, 20, 1, 0.5, 0);
+                        item[0].Draw(M, 10, k1, 1, 0);
+                        item[1].Draw(M, 10, 0, 1, k1);
                     }
+
                 }
+            }
 
-                foreach (var item in TrimCurvesCollection)
+
+            foreach (var item in TrimCurvesCollection)
+            {
+                foreach (var item2 in item.NewtonOuputPoint)
                 {
-                    foreach (var item2 in item.NewtonOuputPoint)
-                    {
-                        item2[0].Draw(M, 20, 0, 1, 1);
-                        item2[1].Draw(M, 20, 1, 0, 1);
-                    }
-
+                    item2[0].Draw(M, 20, 0, 1, 1);
+                    item2[1].Draw(M, 20, 1, 0, 1);
                 }
 
             }
 
             if (DrawEllipseFlag)
             {
+                // BusyEllipseLed = 1.0;
                 YellowEllipse.Draw(M, EllipseA, EllipseB, EllipseC, EllipseM, EllipseCounter);
-            }
 
-            //wywoływanie rysowania torusa    
-            if (TorusEnabled)
-            {
-                if (Stereoscopy)
-                {
-                    _torus.DrawStereoscopy(M);
-                }
-                else
-                {
-                    _torus.Draw(M);
-                }
             }
+            //BusyEllipseLed = 0.0;
+            //wywoływanie rysowania torusa    
+
+            //TODO: Rysowanie torusa
+            //if (TorusEnabled)
+            //{
+            //    if (Stereoscopy)
+            //    {
+            //        _torus.DrawStereoscopy(M);
+            //    }
+            //    else
+            //    {
+            //        _torus.Draw(M);
+            //    }
+            //}
 
             if (Stereoscopy)
             {
@@ -870,6 +1035,11 @@ namespace ModelowanieGeometryczne.ViewModel
 
             }
 
+            foreach (var torus in TorusCollection)
+            {
+                torus.Draw(M);
+            }
+
             //// Draw GregoryPatch
             // foreach (var item in P3)
             // {
@@ -931,7 +1101,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
 
             GL.Flush();
-            //BusyColour = System.Windows.Media.Colors.Chartreuse;
+
 
         }
 
@@ -1114,18 +1284,16 @@ namespace ModelowanieGeometryczne.ViewModel
             }
         }
 
-       // private System.Windows.Media.Colors _busyColor = System.Windows.Media.Colors.Chartreuse;
-        //public System.Windows.Media.Color BusyColour
-        //{
-        //    get
-        //    {return System.Windows.Media.Colors.Chartreuse;
-        //        //return _busyColor;
 
-        //    }
+
+        //private double _busyColor = 0;
+        //public double BusyEllipseLed
+        //{
+        //    get { return _busyColor; }
         //    set
         //    {
-        //        //_busyColor = value;
-        //        OnPropertyChanged("BusyColour");
+        //        _busyColor = value;
+        //        OnPropertyChanged("BusyEllipseLed");
 
         //    }
         //}
@@ -1258,13 +1426,23 @@ namespace ModelowanieGeometryczne.ViewModel
             _alphaZ = 0;
         }
 
-        public void DeleteTrimCurve()
+        public void DeleteSelectedTrimCurve()
         {
             var temp = _trimCurvesCollection.Where(c => c.Selected).ToList();
 
             foreach (var curve in temp)
             {
                 _trimCurvesCollection.Remove(curve);
+            }
+        }
+
+        public void DeleteSelectedToruses()
+        {
+            var temp = _torusCollection.Where(c => c.Selected).ToList();
+
+            foreach (var torus in temp)
+            {
+                _torusCollection.Remove(torus);
             }
         }
     }

@@ -67,6 +67,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BitmapsWindow.xaml.cs">
+      <DependentUpon>BitmapsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\ImportExport.cs" />
     <Compile Include="Helpers\JSON_PrettyPrinter.cs" />
     <Compile Include="Model\BezierPatchC2.cs" />
@@ -80,13 +83,18 @@
     <Compile Include="Model\Curve.cs" />
     <Compile Include="Model\Ellipse.cs" />
     <Compile Include="Model\GregoryPatch.cs" />
+    <Compile Include="Model\IPatch.cs" />
     <Compile Include="Model\Patch.cs" />
     <Compile Include="Model\Point.cs" />
     <Compile Include="Model\Torus.cs" />
     <Compile Include="Model\TrimCurve.cs" />
-    <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="ViewModel\Scene.cs" />
-    <Compile Include="ViewModel\ViewModelBase.cs" />
+    <Compile Include="Model\ViewModel\MainViewModel.cs" />
+    <Compile Include="Model\ViewModel\Scene.cs" />
+    <Compile Include="Model\ViewModel\ViewModelBase.cs" />
+    <Page Include="BitmapsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

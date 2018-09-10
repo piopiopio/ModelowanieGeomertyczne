@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
+using OpenTK;
+using BezierCurve = ModelowanieGeometryczne.Model.BezierCurve;
 
 namespace ModelowanieGeometryczne.Helpers
 {
@@ -85,6 +87,31 @@ namespace ModelowanieGeometryczne.Helpers
 
         }
     }
+
+    public class TorusExchange
+    {
+        public double r1;
+        public double R;
+        public int u;
+        public int v;
+        public double[] center;
+        public double[] rotation;
+        public double[] scale;
+
+        public TorusExchange()
+        { }
+        public TorusExchange(double r11, double R1, int u1, int v1, double[] center1, double[] rotation1, double[] scale1)
+        {
+            r1 = r11;
+            R = R1;
+            u = u1;
+            v = v1;
+            center = center1;
+            rotation = rotation1;
+            scale = scale1;
+        }
+
+    }
     public class AllCollections
     {
         public List<CurveExchange> curvesC0 = new List<CurveExchange>();
@@ -93,11 +120,12 @@ namespace ModelowanieGeometryczne.Helpers
         public List<PointExchange> points = new List<PointExchange>();
         public List<Surface> surfacesC0 = new List<Surface>();
         public List<Surface> surfacesC2 = new List<Surface>();
-        public List<Surface> toruses = new List<Surface>();
+        public List<TorusExchange> toruses = new List<TorusExchange>();
     }
 
     public class ImportExport
     {
+        private ObservableCollection<Torus> TorusCollection1;
         ObservableCollection<BezierPatchC2> BezierPatchC2Collection1;
         ObservableCollection<Point> PointsCollection1;
         ObservableCollection<BezierPatch> BezierPatchCollection1;
@@ -105,13 +133,32 @@ namespace ModelowanieGeometryczne.Helpers
         AllCollections result;
 
 
-        public ImportExport(ObservableCollection<BezierPatchC2> BezierPatchC2Collection, ObservableCollection<BezierPatch> BezierPatchCollection, ObservableCollection<Point> PointsCollection, ObservableCollection<Curve> _bezierCurveCollection)
+        public ImportExport(ObservableCollection<BezierPatchC2> BezierPatchC2Collection, ObservableCollection<BezierPatch> BezierPatchCollection, ObservableCollection<Point> PointsCollection, ObservableCollection<Curve> _bezierCurveCollection, ObservableCollection<Torus> TorusCollection)
         {
+            TorusCollection1 = TorusCollection;
             BezierPatchC2Collection1 = BezierPatchC2Collection;
             PointsCollection1 = PointsCollection;
             BezierPatchCollection1 = BezierPatchCollection;
             _bezierCurveCollection1 = _bezierCurveCollection;
         }
+
+
+        public void LoadJson(string path)
+        {
+
+
+            using (StreamReader r = new StreamReader(path))
+            {
+                string json = r.ReadToEnd();
+
+
+                result = new JavaScriptSerializer().Deserialize<AllCollections>(json);
+
+            }
+            ParseLoadedObject();
+
+        }
+
 
         public void SaveJson(string path)
         {
@@ -125,25 +172,17 @@ namespace ModelowanieGeometryczne.Helpers
 
         }
 
-        public void LoadJson(string path)
-        {
-
-
-                using (StreamReader r = new StreamReader(path))
-                {
-                    string json = r.ReadToEnd();
-
-                    result = new JavaScriptSerializer().Deserialize<AllCollections>(json);
-
-                }
-                ParseLoadedObject();
-
-        }
-
         public AllCollections PrepareToSave()
         {
             result = new AllCollections();
             int PointsCounter = 0;
+
+
+            foreach (var item in TorusCollection1)
+            {
+                TorusExchange temp = new TorusExchange(item.r, item.R, item._division_fi, item.Division_teta, item.Center, item.Center, item.Center);
+                result.toruses.Add(temp);
+            }
 
             foreach (var item in BezierPatchC2Collection1)
             {
@@ -153,7 +192,7 @@ namespace ModelowanieGeometryczne.Helpers
                     pointIndices[i] = new int[item.HorizontalPatches + 3];
                     for (int j = 0; j < item.PatchPoints.GetLength(1); j++)
                     {
-                       
+
                         result.points.Add(new PointExchange(item.PatchPoints[i, j].Name, item.PatchPoints[i, j].X, item.PatchPoints[i, j].Y, item.PatchPoints[i, j].Z));
                         pointIndices[i][j] = PointsCounter;
                         PointsCounter++;
@@ -180,9 +219,9 @@ namespace ModelowanieGeometryczne.Helpers
 
                     for (int j = 0; j < PatchPoints.GetLength(1); j++)
                     {
-                        int a=AllPoints.IndexOf(PatchPoints[i, j]);
-                       
-                        if (a ==-1)
+                        int a = AllPoints.IndexOf(PatchPoints[i, j]);
+
+                        if (a == -1)
                         {
                             AllPoints.Add(PatchPoints[i, j]);
                             result.points.Add(new PointExchange(PatchPoints[i, j].Name, PatchPoints[i, j].X,
@@ -219,21 +258,21 @@ namespace ModelowanieGeometryczne.Helpers
                 {
                     result.curvesC0.Add(temp);
                 }
-                else if(item.CurveType == "C2")
+                else if (item.CurveType == "C2")
                 {
                     result.curvesC2.Add(temp);
-                }            
+                }
                 else if (item.CurveType == "C2Interpolation")
                 {
                     result.curvesC2I.Add(temp);
                 }
                 else
                 {
-                    
+
                 }
 
 
-                }
+            }
 
 
 
@@ -246,7 +285,13 @@ namespace ModelowanieGeometryczne.Helpers
 
         public void ParseLoadedObject()
         {
-            List <Point> PointsCollection = new List<Point>();
+            List<Point> PointsCollection = new List<Point>();
+
+            foreach (var item in result.toruses)
+            {
+                Vector4d temp = new Vector4d(item.center[0], item.center[1], item.center[2], 0);
+                TorusCollection1.Add(new Torus(temp, item.r1, item.R, item.u, item.v));
+            }
 
             foreach (var item in result.points)
             {
@@ -292,9 +337,9 @@ namespace ModelowanieGeometryczne.Helpers
 
                 for (int i = 0; i < item.points.GetLength(0); i++)
                 {
-                
-                        convertedPoints.Add( new Point(result.points[(int)item.points[i]].x, result.points[(int)item.points[i]].y, result.points[(int)item.points[i]].z));
-                        PointsCollection1.Add(convertedPoints.Last());
+
+                    convertedPoints.Add(new Point(result.points[(int)item.points[i]].x, result.points[(int)item.points[i]].y, result.points[(int)item.points[i]].z));
+                    PointsCollection1.Add(convertedPoints.Last());
 
 
                 }

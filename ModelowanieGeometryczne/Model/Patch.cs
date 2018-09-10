@@ -67,10 +67,12 @@ namespace ModelowanieGeometryczne.Model
 
         public Point[,] PatchPoints
         {
-            get {
+            get
+            {
                 return _patchPoints;
-            }       
-            set {
+            }
+            set
+            {
                 _patchPoints = value;
 
             }
@@ -120,11 +122,45 @@ namespace ModelowanieGeometryczne.Model
             GL.End();
         }
 
+        public Point[,] Transpose(Point[,] a)
+        {
+            var a1 = a.GetLength(0);
+            var a2 = a.GetLength(1);
+            Point[,] temp= new Point[a2,a1];
+            for (int i = 0; i < a1; i++)
+            {
+                for (int j = 0; j < a2; j++)
+                {
+                    temp[j, i] = a[i, j];
+                }
+            }
+
+            return temp;
+        }
+
         public Point GetPoint(double u, double v)
         {
-            Point[,] _pointsToDrawSinglePatch = PatchPoints;
+            Point[,] _pointsToDrawSinglePatch = Transpose(PatchPoints);
             return MatrixProvider.Multiply(CalculateB(u), _pointsToDrawSinglePatch, CalculateB(v));
         }
+
+        public double[] CalculateDerrivativeB(double u)
+        {
+            return new double[4] { -3 * (u - 1) * (u - 1), 3 * u * (2 * u - 2) + 3 * (u - 1) * (u - 1), -6 * u * (u - 1) - 3 * u * u, 3 * u * u };
+        }
+
+        public Point GetPointDerrivativeU(double u, double v)
+        {
+            Point[,] bezierPatch1 = Transpose(PatchPoints);
+            return MatrixProvider.Multiply(CalculateDerrivativeB(u), bezierPatch1, CalculateB(v));
+        }
+
+        public Point GetPointDerrivativeV(double u, double v)
+        {
+            Point[,] bezierPatch1 = Transpose(PatchPoints);
+            return MatrixProvider.Multiply(CalculateB(u), bezierPatch1, CalculateDerrivativeB(v));
+        }
+
         public void CalculateCurvesPatchPoints()
         {
             int multiplier = multiplierU;
@@ -182,7 +218,7 @@ namespace ModelowanieGeometryczne.Model
                     GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
 
 
-                   _windowCoordinates = projection.Multiply(transformacja.Multiply(_curvesPatchPoints1[i + 1, j].Coordinates));
+                    _windowCoordinates = projection.Multiply(transformacja.Multiply(_curvesPatchPoints1[i + 1, j].Coordinates));
 
                     GL.Vertex2(_windowCoordinates.X, _windowCoordinates.Y);
                 }

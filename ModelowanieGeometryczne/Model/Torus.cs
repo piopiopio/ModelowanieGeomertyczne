@@ -21,22 +21,26 @@ using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 
 namespace ModelowanieGeometryczne.Model
 {
-    public class Torus : ViewModelBase
+    public class Torus : ViewModelBase, IPatch
     {
-      
-       
-
+        public bool Selected { get; set; }
+        public static int torusID;
+        public Vector4d TorusCenterPoint;
         public event PropertyChangedEventHandler RefreshTorus;
+        public string Name { get; set; }
         #region Private fields
         private double _r;
         private double _R;
         private List<Vector4d> _verticesList = new List<Vector4d>();
         private List<Vector3d> _verticesListTransformed = new List<Vector3d>();
         private List<Tuple<int, int>> _relationsList = new List<Tuple<int, int>>();
-        private int _division_fi;
-        private int _division_teta;
+        public int _division_fi;
+        public int _division_teta;
         private object a;
-
+        public double[] Center
+        {
+            get { return new double[] { TorusCenterPoint.X, TorusCenterPoint.Y, TorusCenterPoint.Z }; }
+        }
         #endregion Private fields
 
         #region Public Properties
@@ -99,13 +103,29 @@ namespace ModelowanieGeometryczne.Model
             _division_fi = 20;
             _division_teta = 20;
             generateParametrization();
+            torusID++;
+            Name = "Torus " + torusID;
+
+
+        }
+
+        public Torus(Vector4d CenterPoint, double Torus_r, double Torus_R, int Torus_division_fi, int Torus_division_teta)
+        {
+            _r = Torus_r;
+            _R = Torus_R;
+            _division_fi = Torus_division_fi;
+            _division_teta = Torus_division_teta;
+            TorusCenterPoint = CenterPoint;
+            generateParametrization();
+            torusID++;
+            Name = "Torus " + torusID;
 
         }
 
         #region Private Methods
 
         private void generateParametrization()
-        {   
+        {
             //TODO: Generate parametrization
             _verticesList.Clear();
             double fi, teta;
@@ -124,9 +144,9 @@ namespace ModelowanieGeometryczne.Model
                     k = i + j * _division_fi;
                     fi = deltaFi * i;
                     teta = deltaTeta * j;
-                    temp.X = (_R + _r * Math.Cos(fi)) * Math.Cos(teta);
-                    temp.Y = (_R + _r * Math.Cos(fi)) * Math.Sin(teta);
-                    temp.Z = _r*Math.Sin(fi);
+                    temp.X = (_R + _r * Math.Cos(fi)) * Math.Cos(teta) + TorusCenterPoint.X;
+                    temp.Y = (_R + _r * Math.Cos(fi)) * Math.Sin(teta) + TorusCenterPoint.Y;
+                    temp.Z = _r * Math.Sin(fi) + TorusCenterPoint.Z;
                     temp.W = 1;
                     _verticesList.Add(temp);
 
@@ -179,10 +199,10 @@ namespace ModelowanieGeometryczne.Model
 
             foreach (var relations in _relationsList)
             {
-                    var vertex = transformacja.Multiply(_verticesList[relations.Item1]);
-                    var vertex2 = transformacja.Multiply(_verticesList[relations.Item2]);
-                    GL.Vertex2(projekcja.Multiply(vertex).X, projekcja.Multiply(vertex).Y);
-                    GL.Vertex2(projekcja.Multiply(vertex2).X, projekcja.Multiply(vertex2).Y);
+                var vertex = transformacja.Multiply(_verticesList[relations.Item1]);
+                var vertex2 = transformacja.Multiply(_verticesList[relations.Item2]);
+                GL.Vertex2(projekcja.Multiply(vertex).X, projekcja.Multiply(vertex).Y);
+                GL.Vertex2(projekcja.Multiply(vertex2).X, projekcja.Multiply(vertex2).Y);
                 //}
                 //GL.Vertex3(_verticesList[relations.Item1]);
                 //GL.Vertex3(_verticesList[relations.Item2]);
@@ -197,7 +217,7 @@ namespace ModelowanieGeometryczne.Model
             GL.Begin(BeginMode.Lines);
             GL.Color3(0.6, 0, 0);
 
- 
+
             Matrix4d projekcja = MatrixProvider.RightProjectionMatrix();
             foreach (var relations in _relationsList)
             {
@@ -208,7 +228,7 @@ namespace ModelowanieGeometryczne.Model
                 var vertex = projekcja.Multiply(avertex);
                 var vertex2 = projekcja.Multiply(avertex2);
                 GL.Vertex2(vertex.X, vertex.Y);
-                GL.Vertex2(vertex2.X,vertex2.Y);
+                GL.Vertex2(vertex2.X, vertex2.Y);
 
             }
             GL.End();
@@ -224,8 +244,8 @@ namespace ModelowanieGeometryczne.Model
 
             GL.Begin(BeginMode.Lines);
             GL.Color3(0, 0, 0.9);
-            
-          
+
+
             projekcja = MatrixProvider.LeftProjectionMatrix();
             foreach (var relations in _relationsList)
             {
@@ -246,76 +266,118 @@ namespace ModelowanieGeometryczne.Model
             System.Drawing.Imaging.BitmapData dat2 = bmp2.LockBits(new Rectangle(0, 0, renderWidth, renderHeight), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
             GL.ReadPixels(0, 0, renderWidth, renderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat2.Scan0);
             bmp2.UnlockBits(dat2);
-           // bmp2.Save("D:\\ModelowanieGeometryczne\\a2.bmp", ImageFormat.Bmp);
-            
-           GL.Clear(ClearBufferMask.ColorBufferBit);
+            // bmp2.Save("D:\\ModelowanieGeometryczne\\a2.bmp", ImageFormat.Bmp);
 
-           Bitmap bmp3=bmp2;
+            GL.Clear(ClearBufferMask.ColorBufferBit);
 
-           Color temp, pixeltemp, result;
+            Bitmap bmp3 = bmp2;
 
-           ////Działa dla dowolnego koloru torusa 1 i torusa 2
+            Color temp, pixeltemp, result;
 
-           for (int i = 0; i < renderWidth; i++)
-           {
-               for (int j = 0; j < renderHeight; j++)
-               {
-                   temp = bmp1.GetPixel(i, j);
-                   if (temp.R == 0 && temp.G == 0 && temp.B == 0)
-                   {
-       
-                   }
-                   else
-                   {
-                       
-                       pixeltemp = bmp3.GetPixel(i, j);
-                       result = Color.FromArgb(Math.Min(temp.R + pixeltemp.R, 255), Math.Min(temp.G + pixeltemp.G, 255), Math.Min(temp.B + pixeltemp.B, 255));
-                       bmp3.SetPixel(i, j, result);
-                   }
-               }
-           }
-           
+            ////Działa dla dowolnego koloru torusa 1 i torusa 2
+
+            for (int i = 0; i < renderWidth; i++)
+            {
+                for (int j = 0; j < renderHeight; j++)
+                {
+                    temp = bmp1.GetPixel(i, j);
+                    if (temp.R == 0 && temp.G == 0 && temp.B == 0)
+                    {
+
+                    }
+                    else
+                    {
+
+                        pixeltemp = bmp3.GetPixel(i, j);
+                        result = Color.FromArgb(Math.Min(temp.R + pixeltemp.R, 255), Math.Min(temp.G + pixeltemp.G, 255), Math.Min(temp.B + pixeltemp.B, 255));
+                        bmp3.SetPixel(i, j, result);
+                    }
+                }
+            }
+
             //Writable bitmap
             bmp3.Save("D:\\ModelowanieGeometryczne\\a3.bmp", ImageFormat.Bmp);
 
 
 
-           //Color k1 = Color.FromArgb(87, 0, 0);
-           //Color k2 = Color.FromArgb(87, 0, 173);
-           //for (int i = 0; i < RenderWidth; i++)
-           //{
-           //    for (int j = 0; j < RenderHeight; j++)
-           //    {
+            //Color k1 = Color.FromArgb(87, 0, 0);
+            //Color k2 = Color.FromArgb(87, 0, 173);
+            //for (int i = 0; i < RenderWidth; i++)
+            //{
+            //    for (int j = 0; j < RenderHeight; j++)
+            //    {
 
 
-           //        if (bmp1.GetPixel(i, j).R == 0)
-           //        {
+            //        if (bmp1.GetPixel(i, j).R == 0)
+            //        {
 
-           //        }
-           //        else if (bmp3.GetPixel(i, j).B == 0)
-           //        {
+            //        }
+            //        else if (bmp3.GetPixel(i, j).B == 0)
+            //        {
 
-           //            //Blending colors overlapped lines.
+            //            //Blending colors overlapped lines.
 
-           //            bmp3.SetPixel(i, j, k1);
-           //        }
-           //        else
-           //        {
+            //            bmp3.SetPixel(i, j, k1);
+            //        }
+            //        else
+            //        {
 
-           //            bmp3.SetPixel(i, j, k2);
-           //        }
+            //            bmp3.SetPixel(i, j, k2);
+            //        }
 
-           //    }
-           //}
-           //bmp3.Save("D:\\ModelowanieGeometryczne\\a3.bmp", ImageFormat.Bmp);
- 
+            //    }
+            //}
+            //bmp3.Save("D:\\ModelowanieGeometryczne\\a3.bmp", ImageFormat.Bmp);
 
-           dat2 = bmp2.LockBits(new Rectangle(0, 0, renderWidth, renderHeight), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
-           GL.DrawPixels(renderWidth, renderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat2.Scan0);
-           bmp2.UnlockBits(dat2);
+
+            dat2 = bmp2.LockBits(new Rectangle(0, 0, renderWidth, renderHeight), System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+            GL.DrawPixels(renderWidth, renderHeight, PixelFormat.Bgra, PixelType.UnsignedByte, dat2.Scan0);
+            bmp2.UnlockBits(dat2);
 
 
         }
+
+        public Point GetPoint(double u, double v)
+        {
+            //double[] coord = GetPatchNumber(u, v);
+            //var _pointsToDrawSinglePatch = Copy4x4PieceOfPointsCollecion(3 * (int)coord[0], 3 * (int)coord[1]);
+            //return MatrixProvider.Multiply(CalculateB(coord[2]), _pointsToDrawSinglePatch, CalculateB(coord[3]));
+
+            double fi = 2 * Math.PI * u;
+            double teta = 2 * Math.PI * v;
+            Vector4d temp = new Vector4d();
+            temp.X = (_R + _r * Math.Cos(fi)) * Math.Cos(teta) + TorusCenterPoint.X;
+            temp.Y = (_R + _r * Math.Cos(fi)) * Math.Sin(teta) + TorusCenterPoint.Y;
+            temp.Z = _r * Math.Sin(fi) + TorusCenterPoint.Z;
+
+            return new Point(temp.X, temp.Y, temp.Z);
+        }
+
+
+
+        public Point GetPointDerivativeU(double u, double v)
+        {
+            double fi = 2 * Math.PI * u;
+            double teta = 2 * Math.PI * v;
+
+            double X = -r * Math.Sin(fi) * Math.Cos(teta) * 2 * Math.PI;
+            double Y = r * Math.Sin(fi) * Math.Sin(teta) * 2 * Math.PI;
+            double Z = r * Math.Cos(fi) * 2 * Math.PI;
+
+            return new Point(X, Y, Z);
+        }
+
+        public Point GetPointDerivativeV(double u, double v)
+        {
+            double fi = 2 * Math.PI * u;
+            double teta = 2 * Math.PI * v;
+
+            double X = -(R + r * Math.Cos(fi)) * Math.Sin(teta) * 2 * Math.PI;
+            double Y = (R + r * Math.Cos(fi)) * Math.Cos(teta) * 2 * Math.PI;
+            double Z = 0;
+            return new Point(X, Y, Z);
+        }
+
 
         #endregion Public Methods
     }

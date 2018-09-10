@@ -13,12 +13,12 @@ namespace ModelowanieGeometryczne
 {
 
 
-    public class BezierPatchC2 : PointExchange
+    public class BezierPatchC2 : PointExchange, IPatch
     {
         Point[,] _curvesPatchPoints;
         Point[,] _curvesPatchPoints1;
         public Point[,] _patchPoints;
-        public Point[,] _curvePatchPoints;
+      
 
         public bool ShowControlPoints { get; set; } = true;
         public bool ShowBernstein { get; set; }
@@ -478,6 +478,20 @@ namespace ModelowanieGeometryczne
             return temp;
         }
 
+        public Point[,] Copy4x4PieceOfPointsCollecionTransposed(int HorizontalMove, int VerticalMove)
+        {
+
+            var temp = new Point[4, 4];
+
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    temp[j, i] = _additionalPoints[i + VerticalMove, j + HorizontalMove];
+                }
+            }
+            return temp;
+        }
 
 
         public void CalculateCurvesPatchPoints()
@@ -633,6 +647,9 @@ namespace ModelowanieGeometryczne
             return new double[4] { (1 - u) * (1 - u) * (1 - u), 3 * u * (1 - u) * (1 - u), 3 * u * u * (1 - u), u * u * u };
         }
 
+
+
+
         public void CalculateBezierPoints()
         {
             //Fragment do wyznaczania punktów beziera
@@ -778,6 +795,52 @@ namespace ModelowanieGeometryczne
                     }
                 }
             }
+        }
+        public double[] GetPatchNumber(double u, double v)
+        {
+            double borderX = 1.0 / HorizontalPatches;
+            double borderY = 1.0 / VerticalPatches;
+
+
+            double[] surfaceCoordinates = new double[4];
+
+            surfaceCoordinates[0] = (int)(u / borderX);
+            surfaceCoordinates[1] = (int)(v / borderY);
+
+            if ((int)surfaceCoordinates[0] == HorizontalPatches) surfaceCoordinates[0] = surfaceCoordinates[0] - 1;
+            if ((int)surfaceCoordinates[1] == VerticalPatches) surfaceCoordinates[1] = surfaceCoordinates[1] - 1;
+
+            surfaceCoordinates[2] = (u - borderX * surfaceCoordinates[0]) / borderX;
+            surfaceCoordinates[3] = (v - borderY * surfaceCoordinates[1]) / borderY;
+
+            return surfaceCoordinates;
+        }
+
+        public Point GetPoint(double u, double v)
+        {
+            double[] coord = GetPatchNumber(u, v);
+            var _pointsToDrawSinglePatch = Copy4x4PieceOfPointsCollecionTransposed(3 * (int)coord[0], 3 * (int)coord[1] );
+            return MatrixProvider.Multiply(CalculateB(coord[2]), _pointsToDrawSinglePatch, CalculateB(coord[3]));
+
+        }
+
+        public double[] CalculateDerrivativeB(double u)
+        {
+            return new double[4] { -3 * (u - 1) * (u - 1), 3 * u * (2 * u - 2) + 3 * (u - 1) * (u - 1), -6 * u * (u - 1) - 3 * u * u, 3 * u * u };
+        }
+
+        public Point GetPointDerivativeU(double u, double v)
+        {
+            double[] coord = GetPatchNumber(u, v);
+            var pointsToDrawSinglePatch = Copy4x4PieceOfPointsCollecionTransposed(3*(int)coord[0], 3*(int)coord[1]);
+            return MatrixProvider.Multiply(CalculateDerrivativeB(coord[2]), pointsToDrawSinglePatch, CalculateB(coord[3]));
+        }
+
+        public Point GetPointDerivativeV(double u, double v)
+        {
+            double[] coord = GetPatchNumber(u, v);
+            var pointsToDrawSinglePatch = Copy4x4PieceOfPointsCollecionTransposed(3 * (int)coord[0] , 3 * (int)coord[1]);
+            return MatrixProvider.Multiply(CalculateB(coord[2]), pointsToDrawSinglePatch, CalculateDerrivativeB(coord[3]));
         }
     }
 }

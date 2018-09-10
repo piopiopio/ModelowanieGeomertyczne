@@ -69,55 +69,58 @@
                             <RowDefinition Height="1*"/>
                             <RowDefinition Height="1*"/>
                             <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*"/>
-                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="23*"/>
+                            <ColumnDefinition Width="55*"/>
+                            <ColumnDefinition Width="39*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="  r: "></TextBlock>
-                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Scene.Torus.r}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="  r: " Grid.ColumnSpan="2"></TextBlock>
+                        <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Scene.Torus_r}"/>
 
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="  R: "></TextBlock>
-                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Scene.Torus.R}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="  R: " Grid.ColumnSpan="2"></TextBlock>
+                        <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Scene.Torus_R}"/>
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="  Division_fi: "></TextBlock>
-                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Scene.Torus.Division_fi}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="  Division_fi: " Grid.ColumnSpan="2"></TextBlock>
+                        <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding Scene.Torus_division_fi}"/>
 
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="  Division_teta: "></TextBlock>
-                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Scene.Torus.Division_teta}"/>
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="  Division_teta: " Grid.ColumnSpan="2"></TextBlock>
+                        <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding Scene.Torus_division_teta}"/>
 
 
-                        <TextBlock Grid.Row="4" Grid.Column="0" Text="  stereoscopy: "></TextBlock>
-                        <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding  Scene.Stereoscopy}"/>
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="  stereoscopy: " Grid.ColumnSpan="2"></TextBlock>
+                        <CheckBox Grid.Row="4" Grid.Column="2" IsChecked="{Binding  Scene.Stereoscopy}"/>
 
-                        <TextBlock Grid.Row="5" Grid.Column="0" Text="  torus:  "></TextBlock>
-                        <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding  Scene.TorusEnabled}"/>
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="  torus:  " Grid.ColumnSpan="2"></TextBlock>
+                        <CheckBox Grid.Row="5" Grid.Column="2" IsChecked="{Binding  Scene.TorusEnabled}"/>
 
-                        <TextBlock Grid.Row="7" Grid.Column="0" Text="  Horizontal/circular patches:  "></TextBlock>
-                        <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding Scene.HorizontalPatches}"/>
-                        <TextBlock Grid.Row="8" Grid.Column="0" Text="  Vertical patches:  "></TextBlock>
-                        <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding Scene.VerticalPatches}"/>
-                        <TextBlock Grid.Row="9" Grid.Column="0" Text="  Patch width/radius:  "></TextBlock>
-                        <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding Scene.PatchWidth}"/>
-                        <TextBlock Grid.Row="10" Grid.Column="0" Text="  Patch height:  "></TextBlock>
-                        <TextBox Grid.Row="10" Grid.Column="1" Text="{Binding Scene.PatchHeight}"/>
-                        <TextBlock Grid.Row="11" Grid.Column="0" Text="  Patch horizontal division:  "></TextBlock>
-                        <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding Scene.PatchHorizontalDivision}"/>
-                        <TextBlock Grid.Row="12" Grid.Column="0" Text="  Patch vertical division:  "></TextBlock>
-                        <TextBox Grid.Row="12" Grid.Column="1" Text="{Binding Scene.PatchVerticalDivision}"/>
-                        <TextBlock Grid.Row="13" Grid.Column="0" Text="  Patches are cylinder  "></TextBlock>
-                        <CheckBox Grid.Row="13" Grid.Column="1" IsChecked="{Binding  Scene.PatchesAreCylinder}"/>
+                        <TextBlock Grid.Row="7" Grid.Column="0" Text="  Horizontal/circular patches:  " Grid.ColumnSpan="2"></TextBlock>
+                        <TextBox Grid.Row="7" Grid.Column="2" Text="{Binding Scene.HorizontalPatches}"/>
+                        <TextBlock Grid.Row="8" Grid.Column="0" Text="  Vertical patches:  " Grid.ColumnSpan="2"></TextBlock>
+                        <TextBox Grid.Row="8" Grid.Column="2" Text="{Binding Scene.VerticalPatches}"/>
+                        <TextBlock Grid.Row="9" Grid.Column="0" Text="  Patch width/radius:  " Grid.ColumnSpan="2"></TextBlock>
+                        <TextBox Grid.Row="9" Grid.Column="2" Text="{Binding Scene.PatchWidth}"/>
+                        <TextBlock Grid.Row="10" Grid.Column="0" Text="  Patch height:  " Grid.ColumnSpan="2"></TextBlock>
+                        <TextBox Grid.Row="10" Grid.Column="2" Text="{Binding Scene.PatchHeight}"/>
+                        <TextBlock Grid.Row="11" Grid.Column="0" Text="  Patch horizontal division:  " Grid.ColumnSpan="2"></TextBlock>
+                        <TextBox Grid.Row="11" Grid.Column="2" Text="{Binding Scene.PatchHorizontalDivision}"/>
+                        <TextBlock Grid.Row="12" Grid.Column="0" Text="  Patch vertical division:  " Grid.ColumnSpan="2"></TextBlock>
+                        <TextBox Grid.Row="12" Grid.Column="2" Text="{Binding Scene.PatchVerticalDivision}"/>
+                        <TextBlock Grid.Row="13" Grid.Column="0" Text="  Patches are cylinder  " Grid.ColumnSpan="2"></TextBlock>
+                        <CheckBox Grid.Row="13" Grid.Column="2" IsChecked="{Binding  Scene.PatchesAreCylinder}"/>
 
-                        <Button Grid.Row="14"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Patch C2" Command="{Binding Scene.AddBezierPatchC2}"></Button>
-                        <Button Grid.Row="15"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Patch C0" Command="{Binding Scene.AddBezierPatch}"></Button>
-                        <Button Grid.Row="16"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curves C0" Command="{Binding Scene.AddBezierCurve}"></Button>
-                        <Button Grid.Row="17"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curves C2" Command="{Binding Scene.AddBezierCurveC2}"></Button>
-                        <Button Grid.Row="18"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Bezier Curves C2 interpolation" Command="{Binding Scene.AddBezierCurveC2Interpolation}"></Button>
-                        <Button Grid.Row="19"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Selected Points to Selected Bezier Curve" Command="{Binding Scene.AddPointsCommand}"></Button>
-                        <Button Grid.Row="21"  Grid.Column="0" Grid.ColumnSpan="2" Content="Undo all transformations" Command="{Binding Scene.UndoAllTransformation}"></Button>
-                        <Button Grid.Row="20"  Grid.Column="0" Grid.ColumnSpan="2" Content="Clear scene" Command="{Binding Scene.ClearSceneICommand}"></Button>
-                        <Button Grid.Row="22"  Grid.Column="0" Grid.ColumnSpan="2" Content="Merge points" Command="{Binding Scene.GregoryMergePoints}"></Button>
-                        <Button Grid.Row="23"  Grid.Column="0" Grid.ColumnSpan="2" Content="Add Gregory Patch" Command="{Binding Scene.AddGregoryPatch}"></Button>
+                        <Button Grid.Row="14"  Grid.Column="0" Grid.ColumnSpan="3" Content="Add Bezier Patch C2" Command="{Binding Scene.AddBezierPatchC2}"></Button>
+                        <Button Grid.Row="15"  Grid.Column="0" Grid.ColumnSpan="3" Content="Add Bezier Patch C0" Command="{Binding Scene.AddBezierPatch}"></Button>
+                        <Button Grid.Row="16"  Grid.Column="0" Grid.ColumnSpan="3" Content="Add Bezier Curves C0" Command="{Binding Scene.AddBezierCurve}"></Button>
+                        <Button Grid.Row="17"  Grid.Column="0" Grid.ColumnSpan="3" Content="Add Bezier Curves C2" Command="{Binding Scene.AddBezierCurveC2}"></Button>
+                        <Button Grid.Row="18"  Grid.Column="0" Grid.ColumnSpan="3" Content="Add Bezier Curves C2 interpolation" Command="{Binding Scene.AddBezierCurveC2Interpolation}"></Button>
+                        <Button Grid.Row="19"  Grid.Column="0" Grid.ColumnSpan="3" Content="Add Selected Points to Selected Bezier Curve" Command="{Binding Scene.AddPointsCommand}"></Button>
+                        <Button Grid.Row="20"  Grid.Column="0" Grid.ColumnSpan="3" Content="Add Torus" Command="{Binding Scene.AddTorus}"></Button>
+                        <Button Grid.Row="21"  Grid.Column="0" Grid.ColumnSpan="3" Content="Undo all transformations" Command="{Binding Scene.UndoAllTransformation}"></Button>
+                        <Button Grid.Row="22"  Grid.Column="0" Grid.ColumnSpan="3" Content="Clear scene" Command="{Binding Scene.ClearSceneICommand}"></Button>
+                        <Button Grid.Row="23"  Grid.Column="0" Grid.ColumnSpan="3" Content="Merge points" Command="{Binding Scene.GregoryMergePoints}"></Button>
+                        <Button Grid.Row="24"  Grid.Column="0" Grid.ColumnSpan="3" Content="Add Gregory Patch" Command="{Binding Scene.AddGregoryPatch}"></Button>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Trim">
@@ -128,15 +131,42 @@
                             <RowDefinition Height="1*"/>
                             <RowDefinition Height="1*"/>
                             <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="3*"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="27*"/>
+                            <ColumnDefinition Width="43*"/>
+                            <ColumnDefinition Width="211*"/>
+                            <ColumnDefinition Width="70*"/>
                         </Grid.ColumnDefinitions>
 
-                        <Button Grid.Row="0"  Grid.Column="0" Grid.ColumnSpan="3" Content="Trim patches" Command="{Binding Scene.TrimPatches}"></Button>
-                        <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" IsChecked="{Binding Scene.ShowDescentGradientsSteps}" Content="Show descent gradient steps"></CheckBox>
+                        <Button Grid.Row="0"  Grid.Column="0" Grid.ColumnSpan="4" Content="Trim patches" Command="{Binding Scene.TrimPatches}"></Button>
+                        <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" IsChecked="{Binding Scene.ShowDescentGradientsSteps}" Content="Show descent gradient steps"></CheckBox>
+                        <TextBox Grid.Row="2" Grid.Column="0"  Name="GradientDescentethodStepLength" Text="{Binding Scene.GradientDescentethodStepLength}" Grid.ColumnSpan="2"></TextBox>
+                        <Label Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Content="Gradient descentstep length"></Label>
+
+                        <TextBox Grid.Row="3" Grid.Column="0"  Name="GradientDescentStopCondition" Text="{Binding Scene.GradientDescentStopCondition}" Grid.ColumnSpan="2"></TextBox>
+                        <Label Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Content="Gradient descent stop condition"></Label>
+
+                        <TextBox Grid.Row="4" Grid.Column="0"  Name="GradientDescentethodStopStepsNumber" Text="{Binding Scene.GradientDescentethodStopStepsNumber}" Grid.ColumnSpan="2"></TextBox>
+                        <Label Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" Content="Gradient descentethod stop steps number"></Label>
+
+                        <TextBox Grid.Row="6" Grid.Column="0"  Name="NewtonForwardStep" Text="{Binding Scene.NewtonForwardStep}" Grid.ColumnSpan="2"></TextBox>
+                        <Label Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="2" Content="Newton forward step"></Label>
+
+                        <TextBox Grid.Row="7" Grid.Column="0"  Name="NewtonStopCondition" Text="{Binding Scene.NewtonStopCondition}" Grid.ColumnSpan="2"></TextBox>
+                        <Label Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2" Content="Newton stop conditionp"></Label>
+
+                        <TextBox Grid.Row="8" Grid.Column="0"  Name="NewtonStepNumberCondition" Text="{Binding Scene.NewtonStepNumberCondition}" Grid.ColumnSpan="2"></TextBox>
+                        <Label Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="2" Content="Newton step number condition"></Label>
+
+                        <Button Grid.Row="9"  Grid.Column="0" Grid.ColumnSpan="4" Content="Show curves uv" Command="{Binding Scene.ShowCurvesUV}"></Button>
+                        <Button Grid.Row="10"  Grid.Column="0" Grid.ColumnSpan="4" Content="Convert to interpolation bezier curve" Command="{Binding Scene.ConvertToInterpolation}"></Button>
                     </Grid>
 
 
@@ -159,7 +189,7 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <CheckBox Grid.Row="0"  Grid.Column="1" Content="Draw ellipse" IsChecked="{Binding Scene.DrawEllipseFlag}"></CheckBox>
+                        <CheckBox Grid.Row="0"  Grid.Column="1" Content="Draw ellipse" IsChecked="{Binding Scene.DrawEllipseFlag}" Click="ButtonBase_OnClick"></CheckBox>
                         <Label Grid.Row="1" Grid.Column="0" Content="a:"></Label>
                         <Slider Grid.Row="1" Grid.Column="1" Value="{Binding Scene.EllipseA}" Name="A" Tag="A" Minimum="0.01" Maximum="5" TickFrequency="0.2" IsSnapToTickEnabled="True"></Slider>
                         <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Scene.EllipseA}"></TextBox>
@@ -299,6 +329,32 @@
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
+
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+
+                    </TabItem>
+
+                    <TabItem Header="Toruses" Height="22" VerticalAlignment="Top">
+                        <ListView Name="Toruses" Grid.Row="0" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.TorusCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" SelectionChanged="TrimCurve_SelectionChanged" >
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="IsSelected" Value="{Binding Selected}"></Setter>
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.View>
+                                <GridView >
+                                    <GridViewColumn Header="Name" Width="240">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding Name}"></TextBox>
+
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
 
                                 </GridView>
                             </ListView.View>
@@ -547,7 +603,7 @@
                 <TextBlock Grid.Row="2" Text="{Binding Scene.Cursor.CursorWindowCoordinates}" Grid.ColumnSpan="2"></TextBlock>
                 <TextBlock Grid.Row="3" Text="{Binding Scene.MoveSelectedPointsWithCoursor, StringFormat=Move selected point with cursor: {0}}" Grid.ColumnSpan="2"></TextBlock>
 
-                <Ellipse Grid.Row="7" Name="BusyLed" Grid.Column="1" Width="6" Height="6" Fill="Chartreuse"  HorizontalAlignment="Right" VerticalAlignment="Bottom"></Ellipse>
+                <!--<Ellipse Grid.Row="7" Name="BusyLed" Grid.Column="1" Width="10" Height="10" Fill="Red"  HorizontalAlignment="Right" VerticalAlignment="Bottom"  Opacity="1"></Ellipse>-->
                 <!--<TextBlock Grid.Row="4" Text="{Binding Text}"></TextBlock>-->
             </Grid>
 

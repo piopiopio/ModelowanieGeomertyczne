@@ -39,7 +39,7 @@ namespace ModelowanieGeometryczne
             _mainViewModel = new MainViewModel();
             DataContext = _mainViewModel;
             _mainViewModel.Scene.RefreshScene += Scene_RefreshScene;
-            _mainViewModel.Scene.Torus.RefreshTorus += Torus_RefreshTorus;
+          //  _mainViewModel.Scene.Torus.RefreshTorus += Torus_RefreshTorus;
 
         }
 
@@ -130,9 +130,11 @@ namespace ModelowanieGeometryczne
 
         public void Paint()
         {
+
             _mainViewModel.Render();
             //_mainViewModel.Scene.YellowEllipse.Draw(0,0);
             _glControl.SwapBuffers();
+
         }
         #endregion Private Methods
 
@@ -145,8 +147,9 @@ namespace ModelowanieGeometryczne
                     _mainViewModel.Scene.DeleteSelectedCurves();
                     _mainViewModel.Scene.DeleteSelectedPatches();
                     _mainViewModel.Scene.DeleteSelectedPatchesC2();
-                    _mainViewModel.Scene.DeleteGregoryPatches();
-                    _mainViewModel.Scene.DeleteTrimCurve();
+                    _mainViewModel.Scene.DeleteSelectedGregoryPatches();
+                    _mainViewModel.Scene.DeleteSelectedTrimCurve();
+                    _mainViewModel.Scene.DeleteSelectedToruses();
                     Paint();
                     break;
                 case Key.Enter:
@@ -238,5 +241,12 @@ namespace ModelowanieGeometryczne
         {
 
         }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            _mainViewModel.Scene.EllipseCounter = 1;
+        }
+
+
     }
 }

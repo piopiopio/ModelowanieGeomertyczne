@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using ModelowanieGeometryczne.Helpers;
 using System.Windows.Forms;
+using NativeWindow = OpenTK.NativeWindow;
 
 namespace ModelowanieGeometryczne.Model
 {
-    public class BezierPatch
+    public class BezierPatch : IPatch
     {
 
         public Patch[,] Surface;
@@ -26,6 +27,57 @@ namespace ModelowanieGeometryczne.Model
         public string Name { get; set; }
         static int PatchNumber { get; set; }
         Point[,] AllPointsArray;
+
+        public double[] GetPatchNumber(double u, double v)
+        {
+            double borderX = 1.0 / HorizontalPatches;
+            double borderY = 1.0 / VerticalPatches;
+
+
+            double[] surfaceCoordinates = new double[4];
+
+            surfaceCoordinates[0] = (int)(u / borderX);
+            surfaceCoordinates[1] = (int)(v / borderY);
+
+            if ((int)surfaceCoordinates[0] == HorizontalPatches) surfaceCoordinates[0] = surfaceCoordinates[0] - 1;
+            if ((int)surfaceCoordinates[1] == VerticalPatches) surfaceCoordinates[1] = surfaceCoordinates[1] - 1;
+
+            surfaceCoordinates[2] = (u - borderX * surfaceCoordinates[0]) / borderX;
+            surfaceCoordinates[3] = (v - borderY * surfaceCoordinates[1]) / borderY;
+
+            return surfaceCoordinates;
+        }
+
+        public Point GetPoint(double u, double v)
+        {
+            double[] coord = GetPatchNumber(u, v);
+
+            // return Surface[(int)coord[0], (int)coord[1]].GetPoint(coord[3], coord[2]);
+            //return Surface[(int)coord[1], (int)coord[0]].GetPoint(coord[2], coord[3]);
+            return Surface[(int)coord[0], (int)coord[1]].GetPoint(coord[2], coord[3]);
+        }
+
+        public Point GetPointDerivativeU(double u, double v)
+        {
+
+            double[] coord = GetPatchNumber(u, v);
+
+            // return Surface[(int)coord[0], (int)coord[1]].GetPointDerrivativeU(coord[3], coord[2]);
+           // return Surface[(int)coord[1], (int)coord[0]].GetPointDerrivativeU(coord[2], coord[3]);
+            return Surface[(int)coord[0], (int)coord[1]].GetPointDerrivativeU(coord[2], coord[3]);
+        }
+
+        public Point GetPointDerivativeV(double u, double v)
+        {
+
+            double[] coord = GetPatchNumber(u, v);
+
+            //return Surface[(int)coord[0], (int)coord[1]].GetPointDerrivativeV(coord[3], coord[2]);
+            return Surface[(int)coord[0], (int)coord[1]].GetPointDerrivativeV(coord[2], coord[3]);
+        }
+
+
+
 
         public Point[] GetMiddlePointBeetweenTwoPoints(List<Point> p)
         { //MiddlePoint[0] punkt na środku krawędzi
