@@ -5,17 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ModelowanieGeometryczne"
         mc:Ignorable="d"
-        Title="BitmapsWindow" Height="443" Width="824" ResizeMode="NoResize">
+        Title="BitmapsWindow" Height="443" Width="824" ResizeMode="NoResize"  PreviewMouseDown="CanvasLeft_OnMouseDown">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Border BorderBrush="Black" BorderThickness="2">
-        <Canvas Grid.Column="0" Name="CanvasLeft"></Canvas>
+        <Border BorderBrush="Black" BorderThickness="5" PreviewMouseDown="CanvasLeft_OnMouseDown">
+            <Canvas Grid.Column="0" Name="CanvasLeft" PreviewMouseDown="CanvasLeft_OnMouseDown"></Canvas>
         </Border>
 
-        <Border Grid.Column="1" BorderBrush="Black" BorderThickness="2" >
+        <Border Grid.Column="1" BorderBrush="Black" BorderThickness="5" >
         <Canvas Grid.Column="1" Name="CanvasRight" Loaded="CanvasRight_OnLoaded"></Canvas>
         </Border>
     </Grid>

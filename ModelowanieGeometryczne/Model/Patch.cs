@@ -144,6 +144,12 @@ namespace ModelowanieGeometryczne.Model
             return MatrixProvider.Multiply(CalculateB(u), _pointsToDrawSinglePatch, CalculateB(v));
         }
 
+        public Point GetPointGregory(double u, double v)
+        {
+            Point[,] _pointsToDrawSinglePatch = (PatchPoints);
+            return MatrixProvider.Multiply(CalculateB(u), _pointsToDrawSinglePatch, CalculateB(v));
+        }
+
         public double[] CalculateDerrivativeB(double u)
         {
             return new double[4] { -3 * (u - 1) * (u - 1), 3 * u * (2 * u - 2) + 3 * (u - 1) * (u - 1), -6 * u * (u - 1) - 3 * u * u, 3 * u * u };

@@ -200,6 +200,10 @@ namespace ModelowanieGeometryczne.Model
         {
             return new Point(Coordinates.X + a.Coordinates.X, Coordinates.Y + a.Coordinates.Y, Coordinates.Z + a.Coordinates.Z);
         }
+        public Point AddToAllCoordinates(double a)
+        {
+            return new Point(Coordinates.X + a, Coordinates.Y + a, Coordinates.Z + a);
+        }
         public double Length()
         {
             return Math.Sqrt(Coordinates.X * Coordinates.X + Coordinates.Y * Coordinates.Y + Coordinates.Z * Coordinates.Z);

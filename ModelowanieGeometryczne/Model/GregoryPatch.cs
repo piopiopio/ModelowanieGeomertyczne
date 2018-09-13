@@ -142,6 +142,27 @@ namespace ModelowanieGeometryczne.Model
             //bezierArrayBasedOnGregory[3, 2] = P1[j];
             //bezierArrayBasedOnGregory[3, 3] = P0;
 
+            //bezierArrayBasedOnGregory[0, 0] = cp[i][0][0];
+            //bezierArrayBasedOnGregory[0, 1] = cp[i][0][1];
+            //bezierArrayBasedOnGregory[0, 2] = cp[i][0][2];
+            //bezierArrayBasedOnGregory[0, 3] = cp[i][0][3];
+
+            //bezierArrayBasedOnGregory[1, 0] = cp[j][0][5];
+            //bezierArrayBasedOnGregory[1, 1] = cp[i][1][1];  //Test 
+            //bezierArrayBasedOnGregory[1, 2] = cp[i][1][2]; //test ok
+            //bezierArrayBasedOnGregory[1, 3] = cp[i][1][3];
+
+            //bezierArrayBasedOnGregory[2, 0] = cp[j][0][4];
+            //bezierArrayBasedOnGregory[2, 1] = cp[j][1][4]; //Test ok
+            //bezierArrayBasedOnGregory[2, 2] = u * P14[i] + v * P13[j]; //Test ok
+            //bezierArrayBasedOnGregory[2, 2] = P13[i]; //Test ok
+            //bezierArrayBasedOnGregory[2, 3] = P1[i];
+
+            //bezierArrayBasedOnGregory[3, 0] = cp[j][0][3];
+            //bezierArrayBasedOnGregory[3, 1] = cp[j][1][3];
+            //bezierArrayBasedOnGregory[3, 2] = P1[j];
+            //bezierArrayBasedOnGregory[3, 3] = P0;
+
             bezierArrayBasedOnGregory[0, 0] = cp[i][0][0];
             bezierArrayBasedOnGregory[0, 1] = cp[i][0][1];
             bezierArrayBasedOnGregory[0, 2] = cp[i][0][2];
@@ -158,6 +179,8 @@ namespace ModelowanieGeometryczne.Model
             bezierArrayBasedOnGregory[3, 1] = cp[j][1][3];
             bezierArrayBasedOnGregory[3, 2] = P1[j];
             bezierArrayBasedOnGregory[3, 3] = P0;
+
+
             return bezierArrayBasedOnGregory;
 
 
@@ -385,8 +408,8 @@ namespace ModelowanieGeometryczne.Model
                 {
                     for (int j = 0; j < 4; j++)
                     {
-                        //k += 2;
-                        //BezierArraysBasedOnGregory[0][i, j].Draw(transformacja, k, 1, 0, 0);
+                        k += 2;
+                        BezierArraysBasedOnGregory[0][i, j].Draw(transformacja, k, 1, 0, 0);
                         //BezierArraysBasedOnGregory[1][i, j].Draw(transformacja, k, 0, 1, 0);
                         //BezierArraysBasedOnGregory[2][i, j].Draw(transformacja, k, 0, 0, 1);
 

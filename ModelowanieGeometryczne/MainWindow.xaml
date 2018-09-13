@@ -70,6 +70,7 @@
                             <RowDefinition Height="1*"/>
                             <RowDefinition Height="1*"/>
                             <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="23*"/>
@@ -121,11 +122,13 @@
                         <Button Grid.Row="22"  Grid.Column="0" Grid.ColumnSpan="3" Content="Clear scene" Command="{Binding Scene.ClearSceneICommand}"></Button>
                         <Button Grid.Row="23"  Grid.Column="0" Grid.ColumnSpan="3" Content="Merge points" Command="{Binding Scene.GregoryMergePoints}"></Button>
                         <Button Grid.Row="24"  Grid.Column="0" Grid.ColumnSpan="3" Content="Add Gregory Patch" Command="{Binding Scene.AddGregoryPatch}"></Button>
+                        <Button Grid.Row="25"  Grid.Column="0" Grid.ColumnSpan="3" Content="Unselect all items" Command="{Binding Scene.UnselectAllItems}"></Button>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Trim">
                     <Grid>
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"/>
                             <RowDefinition Height="1*"/>
                             <RowDefinition Height="1*"/>
                             <RowDefinition Height="1*"/>

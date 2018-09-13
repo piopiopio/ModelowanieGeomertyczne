@@ -125,6 +125,7 @@ namespace ModelowanieGeometryczne.ViewModel
         private ICommand _addPoints;
         private ICommand _undoAllTransformation;
         private ICommand _showCurvesUV;
+        private ICommand _unselectAllItems;
 
 
         private bool _showDescentGradientsSteps = false;
@@ -216,15 +217,49 @@ namespace ModelowanieGeometryczne.ViewModel
         public ICommand AddTorus { get { return _addTorus ?? (_addTorus = new ActionCommand(AddTorusExecuted)); } }
         public ICommand ConvertToInterpolation { get { return _convertToInterpolation ?? (_convertToInterpolation = new ActionCommand(ConvertToInterpolationExecuted)); } }
         public ICommand ShowCurvesUV { get { return _showCurvesUV ?? (_showCurvesUV = new ActionCommand(ShowCurvesUvExecuted)); } }
+        public ICommand UnselectAllItems { get { return _unselectAllItems ?? (_unselectAllItems = new ActionCommand(UnselectAllItemsExecuted)); } }
+
+        private void UnselectAllItemsExecuted()
+        {
+            foreach (var item in TrimCurvesCollection)
+            {
+                item.Selected = false;
+            }
+
+            foreach (var point in _pointsCollection)
+            {
+                point.Selected = false;
+            }
+
+            foreach (var curve in _bezierCurveCollection)
+            {
+                curve.Selected = false;
+            }
+
+            foreach (var patch in BezierPatchCollection)
+            {
+                patch.Selected = false;
+            }
+
+            foreach (var patch in BezierPatchC2Collection)
+            {
+                patch.Selected = false;
+            }
+
+            foreach (var torus in TorusCollection)
+            {
+                torus.Selected = false;
+            }
+        }
 
         private void ShowCurvesUvExecuted()
         {
-            //  foreach (var item in TrimCurvesCollection.Where(c=>c.Selected))
-            //  {
-            var item = TrimCurvesCollection[0];
-            BitmapsWindow win2 = new BitmapsWindow(item.StartPointHistory);
+            foreach (var item in TrimCurvesCollection.Where(c => c.Selected))
+            {
+              //  var item = TrimCurvesCollection[0];
+            BitmapsWindow win2 = new BitmapsWindow(item.StartPointHistory, item.StartPointForGradientDescentMethod);
             win2.Show();
-            // }
+             }
 
 
 
@@ -287,22 +322,22 @@ namespace ModelowanieGeometryczne.ViewModel
 
             foreach (var item in BezierPatchCollection)
             {
-                //if (item.Selected) BPList.Add(item);
-                BPList.Add(item);
+                if (item.Selected) BPList.Add(item);
+                //BPList.Add(item);
             }
 
             foreach (var item in BezierPatchC2Collection)
             {
-                //if (item.Selected) BPList.Add(item);
-                BPList.Add(item);
+                if (item.Selected) BPList.Add(item);
+                //BPList.Add(item);
             }
 
             foreach (var item in TorusCollection)
             {
-                //if (item.Selected) BPList.Add(item);
-                BPList.Add(item);
+                if (item.Selected) BPList.Add(item);
+                //BPList.Add(item);
             }
-            //BPList.Add(_torus);
+            
             if (BPList.Count == 2)
             {
                 Point cursorCenterPoint = new Point(Cursor.Coordinates.X, Cursor.Coordinates.Y, Cursor.Coordinates.Z);
@@ -312,9 +347,21 @@ namespace ModelowanieGeometryczne.ViewModel
 
                 Refresh();
             }
+            else if (BPList.Count == 1)
+            {
+                //MessageBox.Show("Za mało wybranych powierzcni");
+                Point cursorCenterPoint = new Point(Cursor.Coordinates.X, Cursor.Coordinates.Y, Cursor.Coordinates.Z);
+                TrimCurvesCollection.Last().CalclulateTrimmedCurve(cursorCenterPoint, BPList[0], BPList[0]);
+                Refresh();
+            }
+            else if (BPList.Count == 0)
+            {
+                MessageBox.Show("Too less surface selected");
+            }
+
             else
             {
-                MessageBox.Show("Za mało wybranych powierzcni");
+                MessageBox.Show("Too many surface selected");
             }
 
 
@@ -780,8 +827,8 @@ namespace ModelowanieGeometryczne.ViewModel
             dispatcherTimer.Start();
 
 
-            NewtonForwardStep = -0.1;
-            NewtonStopCondition = 0.01;
+            NewtonForwardStep = -0.01;
+            NewtonStopCondition = 0.001;
             NewtonStepNumberCondition = 20;
             GradientDescentethodStepLength = 0.01;
             GradientDescentStopCondition = 0.05;
@@ -1020,7 +1067,7 @@ namespace ModelowanieGeometryczne.ViewModel
             foreach (var patch in GregoryPatchCollection)
             {
                 patch.Draw(M);
-                //punkty kontrolne
+                ////punkty kontrolne
                 //foreach (var item in patch.ControlArrayC1)
                 //{
                 //    for (int i = 1; i < 6; i++)
@@ -1041,49 +1088,49 @@ namespace ModelowanieGeometryczne.ViewModel
             }
 
             //// Draw GregoryPatch
-            // foreach (var item in P3)
-            // {
-            //     item[0].Draw(M, 4, 0.6, 0, 0.3);
-            //     item[1].Draw(M, 4, 0, 0.6, 0.3);
-            // }
+            //foreach (var item in P3)
+            //{
+            //    item[0].Draw(M, 4, 0.6, 0, 0.3);
+            //    item[1].Draw(M, 4, 0, 0.6, 0.3);
+            //}
 
-            // //foreach (var item in Q)
-            // //{
-            // //    item.Draw(M, 4, 0.3, 0, 0.6);
+            ////foreach (var item in Q)
+            ////{
+            ////    item.Draw(M, 4, 0.3, 0, 0.6);
 
-            // //}
+            ////}
 
-            // if (P0 != null)
-            // {
-            //     P0.Draw(M, 4, 0, 1, 0);
-            // }
+            //if (P0 != null)
+            //{
+            //    P0.Draw(M, 4, 0, 1, 0);
+            //}
 
-            // foreach (var item in P1)
-            // {
-            //     item.Draw(M, 4, 0, 0, 1);
+            //foreach (var item in P1)
+            //{
+            //    item.Draw(M, 4, 0, 0, 1);
 
-            // }
-            // foreach (var item in PointsOnBoundaryAndC1ConditionPoints)
-            // {
-            //     for (int i = 0; i < item.GetLength(0); i++)
-            //     {
-            //         for (int j = 0; j < item.GetLength(1); j++)
-            //         {
-            //             item[i, j].Draw(M, 4, 1, 0, 0);
-            //         }
+            //}
+            //foreach (var item in PointsOnBoundaryAndC1ConditionPoints)
+            //{
+            //    for (int i = 0; i < item.GetLength(0); i++)
+            //    {
+            //        for (int j = 0; j < item.GetLength(1); j++)
+            //        {
+            //            item[i, j].Draw(M, 4, 1, 0, 0);
+            //        }
 
-            //     }
+            //    }
 
-            // }
-            // foreach (var item in UsedToCalculateRestOfPoints)
-            // {
-            //     item.Draw(M, 0, 1, 0);
-            // }
+            //}
+            //foreach (var item in UsedToCalculateRestOfPoints)
+            //{
+            //    item.Draw(M, 0, 1, 0);
+            //}
 
-            // foreach (var item in RestOfPoints)
-            // {
-            //     item.Draw(M, 0, 0, 1);
-            // }
+            //foreach (var item in RestOfPoints)
+            //{
+            //    item.Draw(M, 0, 0, 1);
+            //}
             //GL.Begin(BeginMode.Quads);
             //GL.Color3(Color.Aqua);
             //GL.Vertex2(-0.5f, -0.5f);

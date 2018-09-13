@@ -18,7 +18,7 @@ namespace ModelowanieGeometryczne
         Point[,] _curvesPatchPoints;
         Point[,] _curvesPatchPoints1;
         public Point[,] _patchPoints;
-      
+
 
         public bool ShowControlPoints { get; set; } = true;
         public bool ShowBernstein { get; set; }
@@ -65,7 +65,7 @@ namespace ModelowanieGeometryczne
             get { return _u; }
             set
             {
-                if ((value >= 1) && (value <=  20))
+                if ((value >= 1) && (value <= 20))
                 {
                     _u = value;
                     CalculateParametrizationVectors();
@@ -279,8 +279,8 @@ namespace ModelowanieGeometryczne
         {
             HorizontalPatches = horizontalPatches;
             VerticalPatches = verticalPatches;
-            _u= patchHorizontalDivision;
-            _v= patchVerticalDivision;
+            _u = patchHorizontalDivision;
+            _v = patchVerticalDivision;
             PatchesAreCylinder = cylinder;
             PatchPoints = pointsToAdd;
             Name = name1;
@@ -312,7 +312,7 @@ namespace ModelowanieGeometryczne
             // PatchHorizontalDivision = patchHorizontalDivision;
             //PatchVerticalDivision = patchVerticalDivision;
             PatchesAreCylinder = patchesAreCylinder;
-      
+
 
             _u = patchVerticalDivision;
             _v = patchHorizontalDivision;
@@ -483,6 +483,8 @@ namespace ModelowanieGeometryczne
 
             var temp = new Point[4, 4];
 
+
+
             for (int i = 0; i < 4; i++)
             {
                 for (int j = 0; j < 4; j++)
@@ -490,6 +492,8 @@ namespace ModelowanieGeometryczne
                     temp[j, i] = _additionalPoints[i + VerticalMove, j + HorizontalMove];
                 }
             }
+
+
             return temp;
         }
 
@@ -522,13 +526,13 @@ namespace ModelowanieGeometryczne
 
                 //    }
                 //}
-                _curvesPatchPoints = new Point[1 + (_u - 1) * VerticalPatches, 1 + (_v * multiplier - 1) * (HorizontalPatches+3)];
-                _curvesPatchPoints1 = new Point[(1 + (_u * multiplier - 1) * VerticalPatches), 1 + (_v - 1) * (HorizontalPatches+3)];
+                _curvesPatchPoints = new Point[1 + (_u - 1) * VerticalPatches, 1 + (_v * multiplier - 1) * (HorizontalPatches + 3)];
+                _curvesPatchPoints1 = new Point[(1 + (_u * multiplier - 1) * VerticalPatches), 1 + (_v - 1) * (HorizontalPatches + 3)];
 
 
                 for (int ii = 0; ii < VerticalPatches; ii++)
                 {
-                    for (int jj = 0; jj < HorizontalPatches+3; jj++)
+                    for (int jj = 0; jj < HorizontalPatches + 3; jj++)
                     {
 
                         _pointsToDrawSinglePatch = Copy4x4PieceOfPointsCollecion(3 * ii, 3 * jj);
@@ -556,8 +560,8 @@ namespace ModelowanieGeometryczne
 
             else
             {
-                _curvesPatchPoints = new Point[1 + (_u - 1) * VerticalPatches, (1 + (_v* multiplier - 1) * HorizontalPatches)];
-                _curvesPatchPoints1 = new Point[(1 + (_u* multiplier - 1) * VerticalPatches), (1 + (_v - 1) * HorizontalPatches) ];
+                _curvesPatchPoints = new Point[1 + (_u - 1) * VerticalPatches, (1 + (_v * multiplier - 1) * HorizontalPatches)];
+                _curvesPatchPoints1 = new Point[(1 + (_u * multiplier - 1) * VerticalPatches), (1 + (_v - 1) * HorizontalPatches)];
 
 
                 for (int ii = 0; ii < VerticalPatches; ii++)
@@ -798,7 +802,16 @@ namespace ModelowanieGeometryczne
         }
         public double[] GetPatchNumber(double u, double v)
         {
-            double borderX = 1.0 / HorizontalPatches;
+            double borderX;
+            if (PatchesAreCylinder)
+            {
+                borderX = 1.0 / (3 + HorizontalPatches);
+            }
+            else
+            {
+                borderX = 1.0 / HorizontalPatches;
+            }
+
             double borderY = 1.0 / VerticalPatches;
 
 
@@ -807,7 +820,17 @@ namespace ModelowanieGeometryczne
             surfaceCoordinates[0] = (int)(u / borderX);
             surfaceCoordinates[1] = (int)(v / borderY);
 
-            if ((int)surfaceCoordinates[0] == HorizontalPatches) surfaceCoordinates[0] = surfaceCoordinates[0] - 1;
+            if (PatchesAreCylinder)
+            {
+                if ((int)surfaceCoordinates[0] == 3+HorizontalPatches) surfaceCoordinates[0] = surfaceCoordinates[0] - 1;
+            }
+            else
+            {
+                if ((int)surfaceCoordinates[0] == HorizontalPatches) surfaceCoordinates[0] = surfaceCoordinates[0] - 1;
+            }
+
+
+
             if ((int)surfaceCoordinates[1] == VerticalPatches) surfaceCoordinates[1] = surfaceCoordinates[1] - 1;
 
             surfaceCoordinates[2] = (u - borderX * surfaceCoordinates[0]) / borderX;
@@ -819,7 +842,7 @@ namespace ModelowanieGeometryczne
         public Point GetPoint(double u, double v)
         {
             double[] coord = GetPatchNumber(u, v);
-            var _pointsToDrawSinglePatch = Copy4x4PieceOfPointsCollecionTransposed(3 * (int)coord[0], 3 * (int)coord[1] );
+            var _pointsToDrawSinglePatch = Copy4x4PieceOfPointsCollecionTransposed(3 * (int)coord[0], 3 * (int)coord[1]);
             return MatrixProvider.Multiply(CalculateB(coord[2]), _pointsToDrawSinglePatch, CalculateB(coord[3]));
 
         }
@@ -832,14 +855,14 @@ namespace ModelowanieGeometryczne
         public Point GetPointDerivativeU(double u, double v)
         {
             double[] coord = GetPatchNumber(u, v);
-            var pointsToDrawSinglePatch = Copy4x4PieceOfPointsCollecionTransposed(3*(int)coord[0], 3*(int)coord[1]);
+            var pointsToDrawSinglePatch = Copy4x4PieceOfPointsCollecionTransposed(3 * (int)coord[0], 3 * (int)coord[1]);
             return MatrixProvider.Multiply(CalculateDerrivativeB(coord[2]), pointsToDrawSinglePatch, CalculateB(coord[3]));
         }
 
         public Point GetPointDerivativeV(double u, double v)
         {
             double[] coord = GetPatchNumber(u, v);
-            var pointsToDrawSinglePatch = Copy4x4PieceOfPointsCollecionTransposed(3 * (int)coord[0] , 3 * (int)coord[1]);
+            var pointsToDrawSinglePatch = Copy4x4PieceOfPointsCollecionTransposed(3 * (int)coord[0], 3 * (int)coord[1]);
             return MatrixProvider.Multiply(CalculateB(coord[2]), pointsToDrawSinglePatch, CalculateDerrivativeB(coord[3]));
         }
     }

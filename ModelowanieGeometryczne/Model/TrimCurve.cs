@@ -29,17 +29,20 @@ namespace ModelowanieGeometryczne.Model
         public List<Point> NewtonPointToGo = new List<Point>();
         public List<Point[]> NewtonOuputPoint = new List<Point[]>();
 
-
+        
 
         //Visualization
         // {
         public List<Point[]> PointsHistoryGradientDescent = new List<Point[]>();
         public List<double> FunctionValueHistory = new List<double>();
         public List<double[]> GradientHistory = new List<double[]>();
+
         public List<double> NewtonJacobianDeterminant = new List<double>();
         // }
 
-        public TrimCurve(double GradientDescentethodStepLengthIn = 0.1, double GradientDescentStopConditionIn = 0.2, int GradientDescentethodStopStepsNumberIn = 1000, double newtonForwardStepIn = -0.1, double newtonStopConditionIn = 0.01, int newtonStepNumberConditionIn = 10000)
+        public TrimCurve(double GradientDescentethodStepLengthIn = 0.1, double GradientDescentStopConditionIn = 0.2,
+            int GradientDescentethodStopStepsNumberIn = 1000, double newtonForwardStepIn = -0.1,
+            double newtonStopConditionIn = 0.01, int newtonStepNumberConditionIn = 10000)
         {
             _curveId++;
             Name = "Trimming curve " + _curveId.ToString();
@@ -59,7 +62,9 @@ namespace ModelowanieGeometryczne.Model
 
         private double debugtemporaryvariable = 0.2;
         private double debugWyznacznik;
-        public double[] NewtonMethod<T>(double[] t, T BezierPatch1, T BezierPatch2, Vector3d Direction, bool addToEnd) where T : IPatch
+
+        public double[] NewtonMethod<T>(double[] t, T BezierPatch1, T BezierPatch2, Vector3d Direction, bool addToEnd)
+            where T : IPatch
         {
             double StopValue;
             int stepNumber = 0;
@@ -77,7 +82,8 @@ namespace ModelowanieGeometryczne.Model
 
             var temp = BP1 - BP2;
             var temp2 = BP1 - StartPointXYZ;
-            var additionalEquation = temp2.X * Direction.X + temp2.Y * Direction.Y + temp2.Z * Direction.Z - NewtonForwardStep;
+            var additionalEquation = temp2.X * Direction.X + temp2.Y * Direction.Y + temp2.Z * Direction.Z -
+                                     NewtonForwardStep;
 
             Vector4d Fun = new Vector4d(temp.X, temp.Y, temp.Z, additionalEquation);
             Vector4d tk = new Vector4d(t[0], t[1], t[2], t[3]);
@@ -101,7 +107,14 @@ namespace ModelowanieGeometryczne.Model
 
                 var invertedJcobian = jacobian;
                 NewtonJacobianDeterminant.Add(jacobian.Determinant);
-                invertedJcobian.Invert();
+                try
+                {
+                    invertedJcobian.Invert();
+                }
+                catch
+                {
+                    return null;
+                }
 
                 var debugVar = invertedJcobian.Multiply(Fun);
                 //0.01->0.1
@@ -110,58 +123,61 @@ namespace ModelowanieGeometryczne.Model
                 tk_1 = tk - debugtemporaryvariable * invertedJcobian.Multiply(Fun);
 
 
-                if (tk_1.X > 1)
-                {
-                    tk_1.X -= 1;
-                    // tk_1.X = 1;
-                    //  return null;
-                }
+                //if (tk_1.X > 1)
+                //{
+                //    tk_1.X -= 1;
 
-                if (tk_1.X < 0)
-                {
-                    tk_1.X += 1;
-                    //tk_1.X = 0;
-                    //return null;
-                }
+                //    // tk_1.X = 1;
+                //    //  return null;
+                //}
 
-                if (tk_1.Y > 1)
-                {
-                    tk_1.Y -= 1;
-                    //tk_1.Y = 1;
-                    //return null;
-                }
+                //if (tk_1.X < 0)
+                //{
+                //    tk_1.X += 1;
+                //    //tk_1.X = 0;
+                //    //return null;
+                //}
+                tk_1.X -= Math.Floor(tk_1.X);
 
-                if (tk_1.Y < 0)
-                {
-                    tk_1.Y += 1;
-                    //return null;
-                }
+                //if (tk_1.Y > 1)
+                //{
+                //    tk_1.Y -= 1;
+                //    //tk_1.Y = 1;
+                //    //return null;
+                //}
 
-                if (tk_1.Z > 1)
-                {
-                    tk_1.Z -= 1;
-                    //return null;
-                }
+                //if (tk_1.Y < 0)
+                //{
+                //    tk_1.Y += 1;
+                //    //return null;
+                //}
 
-                if (tk_1.Z < 0)
-                {
-                    tk_1.Z += 1;
-                    //return null;
-                }
+                tk_1.Y -= Math.Floor(tk_1.Y);
+                //if (tk_1.Z > 1)
+                //{
+                //    tk_1.Z -= 1;
+                //    //return null;
+                //}
 
+                //if (tk_1.Z < 0)
+                //{
+                //    tk_1.Z += 1;
+                //    //return null;
+                //}
+                tk_1.Z -= Math.Floor(tk_1.Z);
 
-                if (tk_1.W > 1)
-                {
-                    tk_1.W -= 1;
-                    //return null;
-                }
+                //if (tk_1.W > 1)
+                //{
+                //    tk_1.W -= 1;
+                //    //return null;
+                //}
 
-                if (tk_1.W < 0)
-                {
-                    tk_1.W += 1;
-                    // return null;
-                }
-
+                //if (tk_1.W < 0)
+                //{
+                //    tk_1.W += 1;
+                //    // return null;
+                //}
+                tk_1.W -= Math.Floor(tk_1.W);
 
                 tk = tk_1;
 
@@ -213,7 +229,8 @@ namespace ModelowanieGeometryczne.Model
             return result;
         }
 
-        public Vector3d CalculateNewDirectionForNewtonMethod<T>(double[] t, T BezierPatch1, T BezierPatch2) where T : IPatch
+        public Vector3d CalculateNewDirectionForNewtonMethod<T>(double[] t, T BezierPatch1, T BezierPatch2)
+            where T : IPatch
         {
             var P1_u = BezierPatch1.GetPointDerivativeU(t[0], t[1]);
             var P1_v = BezierPatch1.GetPointDerivativeV(t[0], t[1]);
@@ -248,18 +265,22 @@ namespace ModelowanieGeometryczne.Model
             return (w2 - w1).Length;
         }
 
+        public double[] StartPointForGradientDescentMethod = new double[4];
 
-        public void CalclulateTrimmedCurve<T>(Point cursor, T B1, T B2) where T : IPatch
+        public bool CalclulateTrimmedCurve<T>(Point cursor, T B1, T B2) where T : IPatch
         {
 
-            double[] t = SearchStartingPointsForGradientDescentMethod(cursor, B1, B2);
+            StartPointForGradientDescentMethod = SearchStartingPointsForGradientDescentMethod(cursor, B1, B2);
             Vector3d directionForNewton;
             NewtonOuputPoint.Clear();
             PointsHistoryGradientDescent.Clear();
-            StartPoint = GradientDescentMethod(t, B1, B2);
-            var startPointForNegativeDirectionNewtonMethod = StartPoint;
+            StartPoint = GradientDescentMethod(StartPointForGradientDescentMethod, B1, B2);
+            //var startPointForNegativeDirectionNewtonMethod = StartPoint;
             int iteriationCounter = 0;
-
+            string log1 = "  Gradient descent method failed;";
+            string log2 = "  Newton method failed;";
+            bool gradientSuccess = false;
+            bool newtonSuccess = false;
             //Point[] temp = new Point[2];
             //temp[0] = B1.GetPoint(StartPoint[0], StartPoint[1]);
             //temp[1] = B2.GetPoint(StartPoint[2], StartPoint[3]);
@@ -278,6 +299,12 @@ namespace ModelowanieGeometryczne.Model
             //double debugVariable = 10;
             bool nearPointFoundFlag = false;
             //StartPointHistory.Add(StartPoint);
+            if (StartPoint != null)
+            {
+                log1 ="  Gradient descent method ok;";
+                gradientSuccess = true;
+            }
+
             while (StartPoint != null)
             {
 
@@ -288,6 +315,8 @@ namespace ModelowanieGeometryczne.Model
                 if (StartPoint != null)
                 {
                     StartPointHistory.Add(StartPoint);
+                    
+
                 }
 
                 if (StartPointForComparison == null && StartPoint != null)
@@ -302,9 +331,11 @@ namespace ModelowanieGeometryczne.Model
 
                 if (iteriationCounter > 10 && StartPoint != null && StartPointForComparison != null)
                 {
-                    if (checkIfNear(StartPointForComparison[0], StartPointForComparison[1], StartPoint[0], StartPoint[1], 0.005))
+                    if (checkIfNear(StartPointForComparison[0], StartPointForComparison[1], StartPoint[0],
+                        StartPoint[1], 0.005))
                     {
                         nearPointFoundFlag = true;
+
                         break;
                     }
                 }
@@ -328,12 +359,8 @@ namespace ModelowanieGeometryczne.Model
             StartPoint = StartPointForComparison;
             //StartPoint = startPointForNegativeDirectionNewtonMethod;
             iteriationCounter = 0;
-            while (StartPoint != null && !nearPointFoundFlag)
+            while (StartPoint != null)
             {
-                if (StartPointForComparison == null)
-                {
-                    StartPointForComparison = StartPoint;
-                }
 
 
 
@@ -342,32 +369,45 @@ namespace ModelowanieGeometryczne.Model
                 if (StartPoint != null)
                 {
                     StartPointHistory.Add(StartPoint);
+                   
                 }
+
+                if (nearPointFoundFlag) break;
                 //if (checkIfNear(startPointForNegativeDirectionNewtonMethod[0], startPointForNegativeDirectionNewtonMethod[1], StartPoint[0], StartPoint[1], NewtonForwardStep / 2))
                 //{
                 //    break;
                 //}
 
-                iteriationCounter++;
-                if (iteriationCounter > 10 && StartPoint != null && StartPointForComparison != null)
-                {
-                    if (checkIfNear(StartPointForComparison[0], StartPointForComparison[1], StartPoint[0],
-                        StartPoint[1], 0.005))
-                    {
-                        break;
-                    }
-                }
+                ////iteriationCounter++;
+                ////if (iteriationCounter > 10 && StartPoint != null && StartPointForComparison != null)
+                ////{
+                ////    if (checkIfNear(StartPointForComparison[0], StartPointForComparison[1], StartPoint[0],
+                ////        StartPoint[1], 0.005))
+                ////    {
+                ////        break;
+                ////    }
+                ////}
             }
 
-            var debugDelta = 1.0 / 6.0;
-            double debugTemp = 0.0;
-            List<Point> debugList = new List<Point>();
-            for (int i = 0; i < 7; i++)
+            //Nie kasować, fragment kodu do sprawdzania zwracanych punktow
+            //var debugDelta = 1.0 / 6.0;
+            //double debugTemp = 0.0;
+            //List<Point> debugList = new List<Point>();
+            //for (int i = 0; i < 7; i++)
+            //{
+            //    debugList.Add(B1.GetPoint(debugTemp, 0.0));
+            //    debugTemp += debugDelta;
+            //}
+
+            if (StartPointHistory.Count > 0)
             {
-                debugList.Add(B1.GetPoint(debugTemp, 1.0));
-                debugTemp += debugDelta;
+                log2 = " Newton method ok;";
+                newtonSuccess = true;
             }
 
+            MessageBox.Show("Trim curve status:"+log1+log2);
+
+            return newtonSuccess && gradientSuccess;
         }
 
         //public Point[] GetPoints(double[] t, BezierPatch BezierPatch1, BezierPatch BezierPatch2)
@@ -426,8 +466,15 @@ namespace ModelowanieGeometryczne.Model
 
         public double[] SearchStartingPointsForGradientDescentMethod<T>(Point cursor, T BezierPatch1, T BezierPatch2) where T : IPatch
         {
+
+            double deltaForSelfIntersectionDetection = 0;
+
+            if ((object)BezierPatch1 == (object)BezierPatch2)
+            {
+                deltaForSelfIntersectionDetection = 0.2;
+            }
             double[] result = new double[4];
-            int gridMesh = 8;
+            int gridMesh = 20;
             double d;
             d = 1.0 / gridMesh;
             double[] length = new double[2] { Double.PositiveInfinity, Double.PositiveInfinity };
@@ -439,38 +486,38 @@ namespace ModelowanieGeometryczne.Model
                 for (int k = 0; k < gridMesh + 1; k++)
                 {
 
-                    for (int i = 0; i < gridMesh + 1; i++)
+                    t[0] = l * d;
+                    t[1] = k * d;
+
+                    temp[0] = BezierPatch1.GetPoint(t[0], t[1]);
+
+
+                    if (length[0] > (Math.Abs((cursor.AddToAllCoordinates(deltaForSelfIntersectionDetection) - temp[0]).Length())))
                     {
-                        for (int j = 0; j < gridMesh + 1; j++)
-                        {
-                            t[0] = l * d;
-                            t[1] = k * d;
-                            t[2] = i * d;
-                            t[3] = j * d;
-                            temp[0] = BezierPatch1.GetPoint(t[0], t[1]);
-                            temp[1] = BezierPatch2.GetPoint(t[2], t[3]);
-
-                            if (length[0] > (Math.Abs((cursor - temp[0]).Length())))
-                            {
-                                length[0] = Math.Abs((cursor - temp[0]).Length());
-                                result[0] = t[0];
-                                result[1] = t[1];
-                                debugVariable[0] = temp[0];
-                            }
-
-                            if (length[1] > (Math.Abs((cursor - temp[1]).Length())))
-                            {
-                                length[1] = Math.Abs((cursor - temp[1]).Length());
-                                result[2] = t[2];
-                                result[3] = t[3];
-                                debugVariable[1] = temp[1];
-                            }
-
-
-                        }
+                        length[0] = Math.Abs((cursor.AddToAllCoordinates(deltaForSelfIntersectionDetection) - temp[0]).Length());
+                        result[0] = t[0];
+                        result[1] = t[1];
+                        debugVariable[0] = temp[0];
                     }
+
+                    t[2] = l * d;
+                    t[3] = k * d;
+                    temp[1] = BezierPatch2.GetPoint(t[2], t[3]);
+                    if (length[1] > (Math.Abs((cursor.AddToAllCoordinates(-deltaForSelfIntersectionDetection) - temp[1]).Length())))
+                    {
+                        length[1] = Math.Abs((cursor.AddToAllCoordinates(-deltaForSelfIntersectionDetection) - temp[1]).Length());
+                        result[2] = t[2];
+                        result[3] = t[3];
+                        debugVariable[1] = temp[1];
+                    }
+
+
                 }
             }
+
+
+
+
 
             return result;
 
@@ -527,7 +574,7 @@ namespace ModelowanieGeometryczne.Model
 
                 if (stepNumber > GradientDescentethodStopStepsNumber)
                 {
-                    MessageBox.Show("Metoda gradientu prostego nie znalazła rozwiązania spełniającego kryteria. ");
+                   // MessageBox.Show("Metoda gradientu prostego nie znalazła rozwiązania spełniającego kryteria. ");
                     return null;
 
                 }

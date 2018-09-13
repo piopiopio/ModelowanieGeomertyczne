@@ -1,4 +1,6 @@
-﻿namespace ModelowanieGeometryczne.Model
+﻿using System;
+
+namespace ModelowanieGeometryczne.Model
 {
     public interface IPatch
     {
@@ -7,5 +9,7 @@
         Point GetPointDerivativeU(double u, double v);
 
         Point GetPointDerivativeV(double u, double v);
+        
+
     }
 }

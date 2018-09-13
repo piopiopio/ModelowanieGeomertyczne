@@ -342,7 +342,25 @@ namespace ModelowanieGeometryczne.Model
             //double[] coord = GetPatchNumber(u, v);
             //var _pointsToDrawSinglePatch = Copy4x4PieceOfPointsCollecion(3 * (int)coord[0], 3 * (int)coord[1]);
             //return MatrixProvider.Multiply(CalculateB(coord[2]), _pointsToDrawSinglePatch, CalculateB(coord[3]));
+            if (u > 1)
+            {
+               // u -= 1;
+            }
 
+            if (u < 0)
+            {
+                //u += 1;
+            }
+
+            if (v > 1)
+            {
+                //v -= 1;
+            }
+
+            if (v < 0)
+            {
+              //  v += 1;
+            }
             double fi = 2 * Math.PI * u;
             double teta = 2 * Math.PI * v;
             Vector4d temp = new Vector4d();
@@ -361,7 +379,7 @@ namespace ModelowanieGeometryczne.Model
             double teta = 2 * Math.PI * v;
 
             double X = -r * Math.Sin(fi) * Math.Cos(teta) * 2 * Math.PI;
-            double Y = r * Math.Sin(fi) * Math.Sin(teta) * 2 * Math.PI;
+            double Y = -r * Math.Sin(fi) * Math.Sin(teta) * 2 * Math.PI;
             double Z = r * Math.Cos(fi) * 2 * Math.PI;
 
             return new Point(X, Y, Z);

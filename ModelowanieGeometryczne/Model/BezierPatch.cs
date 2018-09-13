@@ -138,20 +138,20 @@ namespace ModelowanieGeometryczne.Model
             switch (CaseNumber)
             {
                 case 1:
-                    MiddlePoint[0] = Surface[0, 0].GetPoint(0, 0.5);
-                    MiddlePoint[1] = Surface[0, 0].GetPoint(0, 0.5).Add(Surface[0, 0].GetPoint(0, 0.5).Subtract(Surface[0, 0].GetPoint(0.1, 0.5)));
+                    MiddlePoint[0] = Surface[0, 0].GetPointGregory(0, 0.5);
+                    MiddlePoint[1] = Surface[0, 0].GetPointGregory(0, 0.5).Add(Surface[0, 0].GetPointGregory(0, 0.5).Subtract(Surface[0, 0].GetPointGregory(0.1, 0.5)));
                     break;
                 case 2:
-                    MiddlePoint[0] = Surface[0, 0].GetPoint(0.5, 1);
-                    MiddlePoint[1] = Surface[0, 0].GetPoint(0.5, 1).Add(Surface[0, 0].GetPoint(0.5, 1).Subtract(Surface[0, 0].GetPoint(0.5, 0.9)));
+                    MiddlePoint[0] = Surface[0, 0].GetPointGregory(0.5, 1);
+                    MiddlePoint[1] = Surface[0, 0].GetPointGregory(0.5, 1).Add(Surface[0, 0].GetPointGregory(0.5, 1).Subtract(Surface[0, 0].GetPointGregory(0.5, 0.9)));
                     break;
                 case 3:
-                    MiddlePoint[0] = Surface[0, 0].GetPoint(1, 0.5);
-                    MiddlePoint[1] = Surface[0, 0].GetPoint(1, 0.5).Add(Surface[0, 0].GetPoint(1, 0.5).Subtract(Surface[0, 0].GetPoint(0.9, 0.5)));
+                    MiddlePoint[0] = Surface[0, 0].GetPointGregory(1, 0.5);
+                    MiddlePoint[1] = Surface[0, 0].GetPointGregory(1, 0.5).Add(Surface[0, 0].GetPointGregory(1, 0.5).Subtract(Surface[0, 0].GetPointGregory(0.9, 0.5)));
                     break;
                 case 4:
-                    MiddlePoint[0] = Surface[0, 0].GetPoint(0.5, 0);
-                    MiddlePoint[1] = Surface[0, 0].GetPoint(0.5, 0).Add(Surface[0, 0].GetPoint(0.5, 0).Subtract(Surface[0, 0].GetPoint(0.5, 0.1)));
+                    MiddlePoint[0] = Surface[0, 0].GetPointGregory(0.5, 0);
+                    MiddlePoint[1] = Surface[0, 0].GetPointGregory(0.5, 0).Add(Surface[0, 0].GetPointGregory(0.5, 0).Subtract(Surface[0, 0].GetPointGregory(0.5, 0.1)));
                     break;
                 default:
                     MiddlePoint[0] = null;
@@ -390,9 +390,9 @@ namespace ModelowanieGeometryczne.Model
             }
             for (int i = 1; i < 6; i++)
             {
-                MiddlePoints[0, i - 1] = Surface[0, 0].GetPoint(e + (b - a) * i, f + (d - c) * i);
+                MiddlePoints[0, i - 1] = Surface[0, 0].GetPointGregory(e + (b - a) * i, f + (d - c) * i);
                 //            MiddlePoints[1, i-1] = Surface[0, 0].GetPoint(0, delta * i).Add(Surface[0, 0].GetPoint(0, delta * i).Subtract(Surface[0, 0].GetPoint(0.1, delta * i)));
-                MiddlePoints[1, i - 1] = 2 * Surface[0, 0].GetPoint(e + (b - a) * i, f + (d - c) * i) - Surface[0, 0].GetPoint(g + e + (b - a) * i, h + f + (d - c) * i); ;
+                MiddlePoints[1, i - 1] = 2 * Surface[0, 0].GetPointGregory(e + (b - a) * i, f + (d - c) * i) - Surface[0, 0].GetPointGregory(g + e + (b - a) * i, h + f + (d - c) * i); ;
             }
 
             return MiddlePoints;
