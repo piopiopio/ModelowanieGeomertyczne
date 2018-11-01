@@ -234,7 +234,14 @@ namespace ModelowanieGeometryczne
             var mYdpi = 96;
 
             RenderTargetBitmap rtb = new RenderTargetBitmap((int)width, (int)height, mXdpi, mYdpi, System.Windows.Media.PixelFormats.Default);
-            rtb.Render(CanvasLeft);
+            if (left)
+            {
+                rtb.Render(CanvasLeft);
+            }
+            else
+            {
+                rtb.Render(CanvasRight);
+            }
 
             BitmapEncoder pngEncoder = new PngBitmapEncoder();
             pngEncoder.Frames.Add(BitmapFrame.Create(rtb));
@@ -243,6 +250,8 @@ namespace ModelowanieGeometryczne
             pngEncoder.Save(stream);
             Bitmap bitmap = new Bitmap(stream);
             bitmap.Save("D:\\copy back to c\\a.bmp");
+
+
             //using (var fs = System.IO.File.OpenWrite("D:\\copy back to c\\fs.png"))
             //{
             //    pngEncoder.Save(fs);
@@ -285,12 +294,12 @@ namespace ModelowanieGeometryczne
         //}
 
 
-        bool getPixelFromLimitedBitmab(System.Drawing.Bitmap Bitmap, int positionX, int positionY, int colorToChange)
+        bool getPixelFromLimitedBitmab(System.Drawing.Bitmap Bitmap1, int positionX, int positionY, int colorToChange)
         {
             if (positionY <= (BitmapSize - 1) && positionY >= 0 && positionX <= (BitmapSize - 1) &&
                 positionX >= 0)
             {
-                if (Bitmap.GetPixel(positionX, positionY).A == colorToChange)
+                if (Bitmap1.GetPixel(positionX, positionY).A == colorToChange)
                 {
                     return true;
                 }
@@ -298,7 +307,7 @@ namespace ModelowanieGeometryczne
             return false;
 
         }
-        void floodFill(System.Drawing.Bitmap Bitmap, int positionX, int positionY, int colorToChange, int newColor)
+        void floodFill(System.Drawing.Bitmap Bitmap2, int positionX, int positionY, int colorToChange, int newColor)
         {
             var toFill = new List<int[]>();
 
@@ -308,22 +317,22 @@ namespace ModelowanieGeometryczne
             {
                 var p = toFill[0];
                 toFill.RemoveAt(0);
-                Bitmap.SetPixel(p[0], p[1], System.Drawing.Color.FromArgb((byte)newColor, 0, 0, 0));
+                Bitmap2.SetPixel(p[0], p[1], System.Drawing.Color.FromArgb((byte)newColor, 0, 0, 0));
 
                 //if (Bitmap.GetPixel(p[0]+1, p[1]).A == colorToChange && !toFill.Any(t => t[0]==(p[0]+1)))
-                if (getPixelFromLimitedBitmab(Bitmap, p[0] + 1, p[1], colorToChange) && !toFill.Any(t => (t[0] == (p[0] + 1)) && (t[1] == p[1])))
+                if (getPixelFromLimitedBitmab(Bitmap2, p[0] + 1, p[1], colorToChange) && !toFill.Any(t => (t[0] == (p[0] + 1)) && (t[1] == p[1])))
                 {
                     toFill.Add(new int[2] { p[0] + 1, p[1] });
                 }
-                if (getPixelFromLimitedBitmab(Bitmap, p[0] - 1, p[1], colorToChange) && !toFill.Any(t => (t[0] == (p[0] - 1)) && (t[1] == p[1])))
+                if (getPixelFromLimitedBitmab(Bitmap2, p[0] - 1, p[1], colorToChange) && !toFill.Any(t => (t[0] == (p[0] - 1)) && (t[1] == p[1])))
                 {
                     toFill.Add(new int[2] { p[0] - 1, p[1] });
                 }
-                if (getPixelFromLimitedBitmab(Bitmap, p[0], p[1] + 1, colorToChange) && !toFill.Any(t => (t[0] == p[0]) && (t[1] == (p[1] + 1))))
+                if (getPixelFromLimitedBitmab(Bitmap2, p[0], p[1] + 1, colorToChange) && !toFill.Any(t => (t[0] == p[0]) && (t[1] == (p[1] + 1))))
                 {
                     toFill.Add(new int[2] { p[0], p[1] + 1 });
                 }
-                if (getPixelFromLimitedBitmab(Bitmap, p[0], p[1] - 1, colorToChange) && !toFill.Any(t => (t[0] == p[0]) && (t[1] == (p[1] - 1))))
+                if (getPixelFromLimitedBitmab(Bitmap2, p[0], p[1] - 1, colorToChange) && !toFill.Any(t => (t[0] == p[0]) && (t[1] == (p[1] - 1))))
                 {
                     toFill.Add(new int[2] { p[0], p[1] - 1 });
                 }
@@ -345,20 +354,39 @@ namespace ModelowanieGeometryczne
         private void CanvasLeft_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             System.Drawing.Bitmap Bitmap = ConvertCanvasToBitmap(true);
+            System.Drawing.Bitmap Bitmap2 = ConvertCanvasToBitmap(false);
             //Bitmap.SetPixel((int)(BitmapSize * SideDeteriminantPoint[0]), (int)(BitmapSize * SideDeteriminantPoint[1]), System.Drawing.Color.FromArgb(0, 0, 0, 0));
             floodFill(Bitmap, (int)(BitmapSize * SideDeteriminantPoint[0]), (int)(BitmapSize * SideDeteriminantPoint[1]), 0, 255);
+            floodFill(Bitmap2, (int)(BitmapSize * SideDeteriminantPoint[0]), (int)(BitmapSize * SideDeteriminantPoint[1]), 0, 255);
+
             ImageBrush ib = new ImageBrush();
-            var bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(Bitmap.GetHbitmap(),
-                IntPtr.Zero,
-                Int32Rect.Empty,
-                BitmapSizeOptions.FromEmptyOptions()
-            );
+            //var bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(Bitmap.GetHbitmap(),
+            //    IntPtr.Zero,
+            //    Int32Rect.Empty,
+            //    BitmapSizeOptions.FromEmptyOptions()
+            //);
 
             ib.ImageSource = Imaging.CreateBitmapSourceFromHBitmap(Bitmap.GetHbitmap(),
                 IntPtr.Zero,
                 Int32Rect.Empty,
                 BitmapSizeOptions.FromEmptyOptions());
+
+
+
+            ImageBrush ib2 = new ImageBrush();
+            //var bitmapSource2 = Imaging.CreateBitmapSourceFromHBitmap(Bitmap2.GetHbitmap(),
+            //    IntPtr.Zero,
+            //    Int32Rect.Empty,
+            //    BitmapSizeOptions.FromEmptyOptions()
+            //);
+
+            ib2.ImageSource = Imaging.CreateBitmapSourceFromHBitmap(Bitmap2.GetHbitmap(),
+                IntPtr.Zero,
+                Int32Rect.Empty,
+                BitmapSizeOptions.FromEmptyOptions());
+
             CanvasLeft.Background = ib;
+            //CanvasRight.Background = ib2;
         }
     }
 }

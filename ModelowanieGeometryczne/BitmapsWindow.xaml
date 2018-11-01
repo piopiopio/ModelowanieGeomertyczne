@@ -11,12 +11,12 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Border BorderBrush="Black" BorderThickness="5" PreviewMouseDown="CanvasLeft_OnMouseDown">
-            <Canvas Grid.Column="0" Name="CanvasLeft" PreviewMouseDown="CanvasLeft_OnMouseDown"></Canvas>
-        </Border>
 
-        <Border Grid.Column="1" BorderBrush="Black" BorderThickness="5" >
-        <Canvas Grid.Column="1" Name="CanvasRight" Loaded="CanvasRight_OnLoaded"></Canvas>
-        </Border>
+        <Canvas Grid.Column="0" Name="CanvasLeft" />
+        <Canvas Grid.Column="1" Name="CanvasRight" Loaded="CanvasRight_OnLoaded"/>
+
+        <Canvas Grid.Column="0">
+            <Line Y1="0" Y2="443" X1="406" X2="406" Stroke="Black" StrokeThickness="12"></Line>
+        </Canvas>
     </Grid>
 </Window>

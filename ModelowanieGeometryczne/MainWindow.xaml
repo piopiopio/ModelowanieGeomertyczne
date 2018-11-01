@@ -142,34 +142,35 @@
                             <RowDefinition Height="1*"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="27*"/>
+                            <ColumnDefinition Width="18*"/>
+                            <ColumnDefinition Width="10*"/>
                             <ColumnDefinition Width="43*"/>
                             <ColumnDefinition Width="211*"/>
                             <ColumnDefinition Width="70*"/>
                         </Grid.ColumnDefinitions>
 
-                        <Button Grid.Row="0"  Grid.Column="0" Grid.ColumnSpan="4" Content="Trim patches" Command="{Binding Scene.TrimPatches}"></Button>
-                        <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" IsChecked="{Binding Scene.ShowDescentGradientsSteps}" Content="Show descent gradient steps"></CheckBox>
-                        <TextBox Grid.Row="2" Grid.Column="0"  Name="GradientDescentethodStepLength" Text="{Binding Scene.GradientDescentethodStepLength}" Grid.ColumnSpan="2"></TextBox>
-                        <Label Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Content="Gradient descentstep length"></Label>
+                        <Button Grid.Row="0"  Grid.Column="0" Grid.ColumnSpan="5" Content="Trim patches" Command="{Binding Scene.TrimPatches}"></Button>
+                        <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" IsChecked="{Binding Scene.ShowDescentGradientsSteps}" Content="Show descent gradient steps"></CheckBox>
+                        <TextBox Grid.Row="2" Grid.Column="0"  Name="GradientDescentethodStepLength" Text="{Binding Scene.GradientDescentethodStepLength}" Grid.ColumnSpan="3"></TextBox>
+                        <Label Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2" Content="Gradient descentstep length"></Label>
 
-                        <TextBox Grid.Row="3" Grid.Column="0"  Name="GradientDescentStopCondition" Text="{Binding Scene.GradientDescentStopCondition}" Grid.ColumnSpan="2"></TextBox>
-                        <Label Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Content="Gradient descent stop condition"></Label>
+                        <TextBox Grid.Row="3" Grid.Column="0"  Name="GradientDescentStopCondition" Text="{Binding Scene.GradientDescentStopCondition}" Grid.ColumnSpan="3"></TextBox>
+                        <Label Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="2" Content="Gradient descent stop condition"></Label>
 
-                        <TextBox Grid.Row="4" Grid.Column="0"  Name="GradientDescentethodStopStepsNumber" Text="{Binding Scene.GradientDescentethodStopStepsNumber}" Grid.ColumnSpan="2"></TextBox>
-                        <Label Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" Content="Gradient descentethod stop steps number"></Label>
+                        <TextBox Grid.Row="4" Grid.Column="0"  Name="GradientDescentethodStopStepsNumber" Text="{Binding Scene.GradientDescentethodStopStepsNumber}" Grid.ColumnSpan="3"></TextBox>
+                        <Label Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="2" Content="Gradient descentethod stop steps number"></Label>
 
-                        <TextBox Grid.Row="6" Grid.Column="0"  Name="NewtonForwardStep" Text="{Binding Scene.NewtonForwardStep}" Grid.ColumnSpan="2"></TextBox>
-                        <Label Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="2" Content="Newton forward step"></Label>
+                        <TextBox Grid.Row="6" Grid.Column="0"  Name="NewtonForwardStep" Text="{Binding Scene.NewtonForwardStep}" Grid.ColumnSpan="3"></TextBox>
+                        <Label Grid.Row="6" Grid.Column="3" Grid.ColumnSpan="2" Content="Newton forward step"></Label>
 
-                        <TextBox Grid.Row="7" Grid.Column="0"  Name="NewtonStopCondition" Text="{Binding Scene.NewtonStopCondition}" Grid.ColumnSpan="2"></TextBox>
-                        <Label Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2" Content="Newton stop conditionp"></Label>
+                        <TextBox Grid.Row="7" Grid.Column="0"  Name="NewtonStopCondition" Text="{Binding Scene.NewtonStopCondition}" Grid.ColumnSpan="3"></TextBox>
+                        <Label Grid.Row="7" Grid.Column="3" Grid.ColumnSpan="2" Content="Newton stop condition"></Label>
 
-                        <TextBox Grid.Row="8" Grid.Column="0"  Name="NewtonStepNumberCondition" Text="{Binding Scene.NewtonStepNumberCondition}" Grid.ColumnSpan="2"></TextBox>
-                        <Label Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="2" Content="Newton step number condition"></Label>
+                        <TextBox Grid.Row="8" Grid.Column="0"  Name="NewtonStepNumberCondition" Text="{Binding Scene.NewtonStepNumberCondition}" Grid.ColumnSpan="3"></TextBox>
+                        <Label Grid.Row="8" Grid.Column="3" Grid.ColumnSpan="2" Content="Newton step number condition"></Label>
 
-                        <Button Grid.Row="9"  Grid.Column="0" Grid.ColumnSpan="4" Content="Show curves uv" Command="{Binding Scene.ShowCurvesUV}"></Button>
-                        <Button Grid.Row="10"  Grid.Column="0" Grid.ColumnSpan="4" Content="Convert to interpolation bezier curve" Command="{Binding Scene.ConvertToInterpolation}"></Button>
+                        <Button Grid.Row="9"  Grid.Column="0" Grid.ColumnSpan="5" Content="Show curves uv" Command="{Binding Scene.ShowCurvesUV}"></Button>
+                        <Button Grid.Row="10"  Grid.Column="0" Grid.ColumnSpan="5" Content="Convert to interpolation bezier curve" Command="{Binding Scene.ConvertToInterpolation}"></Button>
                     </Grid>
 
 
@@ -212,6 +213,36 @@
                     </Grid>
 
                 </TabItem>
+                <TabItem Header="Path">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Row="0" Grid.ColumnSpan="5" Content="Generate envelope path" Command="{Binding Scene.GenerateEnvelopePath}"/>
+
+                        <!--<TextBlock Grid.Row="7" Grid.Column="0" Text="X translation:" Grid.ColumnSpan="2"></TextBlock>
+                        <TextBox Grid.Row="7" Grid.Column="2" Text="{Binding Scene.HorizontalPatches}"/>
+                        <TextBlock Grid.Row="8" Grid.Column="0" Text="Y translation" Grid.ColumnSpan="2"></TextBlock>
+                        <TextBox Grid.Row="8" Grid.Column="2" Text="{Binding Scene.VerticalPatches}"/>
+                        <TextBlock Grid.Row="9" Grid.Column="0" Text="Z translation" Grid.ColumnSpan="2"></TextBlock>
+                        <TextBox Grid.Row="9" Grid.Column="2" Text="{Binding Scene.PatchWidth}"/>-->
+                    </Grid>
+                </TabItem>
+
             </TabControl>
             <Grid Grid.Row="1" Grid.ColumnSpan="3">
                 <Grid.RowDefinitions>

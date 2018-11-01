@@ -282,9 +282,13 @@ namespace ModelowanieGeometryczne.Helpers
         }
 
 
-
+        //double scale = 20;
+        //Vector3d translate = new Vector3d(0, -75, 0);
+        double scale = 1;
+        Vector3d translate = new Vector3d(0, 0, 0);
         public void ParseLoadedObject()
         {
+
             List<Point> PointsCollection = new List<Point>();
 
             foreach (var item in result.toruses)
@@ -305,8 +309,8 @@ namespace ModelowanieGeometryczne.Helpers
                 {
                     for (int j = 0; j < item.points[0].GetLength(0); j++)
                     {
-                        convertedPoints[i, j] = new Point(result.points[(int)item.points[i][j]].x, result.points[(int)item.points[i][j]].y, result.points[(int)item.points[i][j]].z);
-                    }
+                        convertedPoints[i, j] = new Point(translate.X+scale*result.points[(int)item.points[i][j]].x, translate.Y+scale*result.points[(int)item.points[i][j]].y, translate.Z+scale*result.points[(int)item.points[i][j]].z);
+                  }
                 }
 
                 BezierPatchC2Collection1.Add(new BezierPatchC2(item.flakeU, item.flakeV, item.u, item.v, item.cylinder, convertedPoints, item.name));
@@ -323,7 +327,7 @@ namespace ModelowanieGeometryczne.Helpers
                     for (int j = 0; j < item.points[0].GetLength(0); j++)
                     {
                         //convertedPoints[i, j] = new Point(result.points[(int)item.points[i][j]].x, result.points[(int)item.points[i][j]].y, result.points[(int)item.points[i][j]].z);
-                        convertedPoints[i, j] = PointsCollection[item.points[i][j]];
+                        convertedPoints[i, j] =scale*PointsCollection[item.points[i][j]]+ translate;
                     }
                 }
 

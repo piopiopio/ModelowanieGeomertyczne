@@ -31,6 +31,7 @@ namespace ModelowanieGeometryczne
         private GLControl _glControl;
         private MainViewModel _mainViewModel;
         private const double increment = 0.1;
+        //private const double increment = 1;
         #endregion Private fields
 
         public MainWindow()
@@ -55,7 +56,7 @@ namespace ModelowanieGeometryczne
         private void OpenTkControl_Initialized(object sender, EventArgs e)
         {
             _glControl = new GLControl();
-            _glControl.MakeCurrent();
+          //  _glControl.MakeCurrent();
             _glControl.Paint += _glControl_Paint;
             _glControl.Dock = DockStyle.Fill;
             _glControl.MouseUp += _glControl_MouseUp;

@@ -275,30 +275,18 @@ namespace ModelowanieGeometryczne.Model
             NewtonOuputPoint.Clear();
             PointsHistoryGradientDescent.Clear();
             StartPoint = GradientDescentMethod(StartPointForGradientDescentMethod, B1, B2);
-            //var startPointForNegativeDirectionNewtonMethod = StartPoint;
+
             int iteriationCounter = 0;
             string log1 = "  Gradient descent method failed;";
             string log2 = "  Newton method failed;";
             bool gradientSuccess = false;
             bool newtonSuccess = false;
-            //Point[] temp = new Point[2];
-            //temp[0] = B1.GetPoint(StartPoint[0], StartPoint[1]);
-            //temp[1] = B2.GetPoint(StartPoint[2], StartPoint[3]);
-            //NewtonOuputPoint.Add(temp);
 
-            //proba wyznaczenia dokladnie brakujacego punktu
-            //var tempNewtonForwardStep = NewtonForwardStep;
-            //NewtonForwardStep = 0;
-            //directionForNewton = new Vector3d(0, 0, 0);
-            //NewtonMethod(StartPoint, B1, B2, directionForNewton, addToEnd: true);
-            //double[] StartPointForComparison = NewtonMethod(StartPoint, B1, B2, directionForNewton, addToEnd: true);
-            //StartPoint = StartPointForComparison;
-            //NewtonForwardStep = tempNewtonForwardStep;
             double[] StartPointForComparison = null;
 
-            //double debugVariable = 10;
+
             bool nearPointFoundFlag = false;
-            //StartPointHistory.Add(StartPoint);
+
             if (StartPoint != null)
             {
                 log1 ="  Gradient descent method ok;";
@@ -323,11 +311,7 @@ namespace ModelowanieGeometryczne.Model
                 {
                     StartPointForComparison = (double[])StartPoint.Clone();
                 }
-
-                //if (debugVariable > checkIfNearLengthValue(StartPointForComparison[0], StartPointForComparison[1], StartPoint[0], StartPoint[1], 0.3))
-                //{
-                //    debugVariable = checkIfNearLengthValue(StartPointForComparison[0], StartPointForComparison[1], StartPoint[0], StartPoint[1], 0.3);
-                //}
+                
 
                 if (iteriationCounter > 10 && StartPoint != null && StartPointForComparison != null)
                 {
@@ -340,24 +324,11 @@ namespace ModelowanieGeometryczne.Model
                     }
                 }
 
-
-
-                //else
-                //{
-                //    if (checkIfNear(StartPointForComparison[0], StartPointForComparison[1], StartPoint[0],
-                //        StartPoint[1], NewtonForwardStep / 2))
-                //    {
-                //        break;
-                //    }
-                //}
-
-
             }
 
 
 
             StartPoint = StartPointForComparison;
-            //StartPoint = startPointForNegativeDirectionNewtonMethod;
             iteriationCounter = 0;
             while (StartPoint != null)
             {
@@ -373,20 +344,6 @@ namespace ModelowanieGeometryczne.Model
                 }
 
                 if (nearPointFoundFlag) break;
-                //if (checkIfNear(startPointForNegativeDirectionNewtonMethod[0], startPointForNegativeDirectionNewtonMethod[1], StartPoint[0], StartPoint[1], NewtonForwardStep / 2))
-                //{
-                //    break;
-                //}
-
-                ////iteriationCounter++;
-                ////if (iteriationCounter > 10 && StartPoint != null && StartPointForComparison != null)
-                ////{
-                ////    if (checkIfNear(StartPointForComparison[0], StartPointForComparison[1], StartPoint[0],
-                ////        StartPoint[1], 0.005))
-                ////    {
-                ////        break;
-                ////    }
-                ////}
             }
 
             //Nie kasować, fragment kodu do sprawdzania zwracanych punktow
@@ -405,7 +362,7 @@ namespace ModelowanieGeometryczne.Model
                 newtonSuccess = true;
             }
 
-            MessageBox.Show("Trim curve status:"+log1+log2);
+           if (!(newtonSuccess && gradientSuccess)) MessageBox.Show("Trim curve status:"+log1+log2);
 
             return newtonSuccess && gradientSuccess;
         }
