@@ -226,16 +226,16 @@ namespace ModelowanieGeometryczne.ViewModel
 
         public void ConnectTwoPoints(Point p1, Point p2, List<Point> list)
         {
-           Point delta= (p2 - p1);
+            Point delta = (p2 - p1);
             int n = (int)Math.Floor(Math.Abs(delta.Length() / NewtonForwardStep));
             delta = delta / n;
-            
+
 
             for (int i = 1; i < n; i++)
             {
-                
-                list.Add(p1+i*delta);
-              
+
+                list.Add(p1 + i * delta);
+
             }
         }
 
@@ -248,96 +248,272 @@ namespace ModelowanieGeometryczne.ViewModel
             }
         }
 
-        public List<Point> TrimedCurvesPointsList=new List<Point>();
+        public List<Point> TrimedCurvesPointsList = new List<Point>();
+
+        public List<Point> MaxValues = new List<Point>();
+        public List<Point> MinValues = new List<Point>();
+
+        public List<Point> MaxValues1 = new List<Point>();
+        public List<Point> MinValues1 = new List<Point>();
+        public void GnerateMinMaxXLists(List<Point> list)
+        {
+
+            double jump = 0.05;
+            double min = -7.5;
+            double current = min;
+            double max = 7.5;
+            double rawDiameter = 1;
+            double diameterOffset = 0.2;
+            double radius = (rawDiameter + diameterOffset) / 2;
+            MaxValues = new List<Point>();
+            MinValues = new List<Point>();
+            MaxValues1 = new List<Point>();
+            MinValues1 = new List<Point>();
+
+            for (int i = 0; i < (max - min) / jump; i++)
+            {
+                var temp = list.Where(o => (o.Y >= current && o.Y < (current + jump))).ToList();
+
+                double maxValue = min;
+                double minValue = max;
+                foreach (var item in temp)
+                {
+                    maxValue = Math.Max(maxValue, item.X);
+                }
+                MaxValues.Add(new Point(maxValue, current, 0));
+
+                foreach (var item in temp)
+                {
+                    minValue = Math.Min(minValue, item.X);
+                }
+
+                MinValues.Add(new Point(minValue, current, 0));
+                current += jump;
+            }
+
+            for (int i = 0; i < MaxValues.Count; i++)
+            {
+                foreach (var item in list)
+                {
+                    while ((item.X - MaxValues[i].X) * (item.X - MaxValues[i].X) +
+                           (item.Y - MaxValues[i].Y) * (item.Y - MaxValues[i].Y) <= radius * radius)
+                    {
+                        MaxValues[i].X += jump / 30;
+
+
+                    }
+
+                }
+                if (MaxValues[i].X > 0.5 && MaxValues[i].X < 1.5 && MaxValues[i].Y > 2.8 && MaxValues[i].Y < (3.0 + radius))
+                {
+                    //Kasowanie nadmiarowych punktów kolizja po y przy smigle
+                    MinValues1.Insert(0, MaxValues[i]);
+                    MaxValues.RemoveAt(i);
+                    i -= 1;
+                    //     break;
+                }
+            }
+
+            for (int i = 0; i < MinValues.Count; i++)
+            {
+                foreach (var item in list)
+                {
+                    while ((item.X - MinValues[i].X) * (item.X - MinValues[i].X) +
+                           (item.Y - MinValues[i].Y) * (item.Y - MinValues[i].Y) <= radius * radius)
+                    {
+                        MinValues[i].X -= jump / 30;
+                    }
+                }
+
+            }
+
+
+
+            current = MinValues1.Last().Y - jump;
+            for (int i = 0; i < (max - min) / jump; i++)
+            {//x=1.5
+
+                var temp = list.Where(o => (o.Y >= current && o.Y < (current + jump))).ToList();
+
+                double maxValue = max;
+                double minValue = min;
+                foreach (var item in temp)
+                {
+                    if (item.X > 1.5)
+                    {
+                        maxValue = Math.Min(maxValue, item.X);
+                    }
+                }
+
+                bool addFlag = true;
+                foreach (var item in list)
+                {
+                    addFlag = true;
+                    while ((item.X - current) * (item.X - current) +
+                           (item.Y - current) * (item.Y - current) <= radius * radius)
+                    {
+                        maxValue -= jump / 30;
+
+                        if (maxValue < 0)
+                        {
+                            addFlag = false;
+                            break;
+                        }
+                    }
+
+                }
+
+                if (addFlag)
+                {
+                    MaxValues1.Add(new Point(maxValue, current, 0));
+                }
+
+
+
+
+
+
+
+
+                foreach (var item in temp)
+                {
+                    if (item.X < 1.5)
+                    {
+                        minValue = Math.Max(minValue, item.X);
+                    }
+
+                }
+
+                addFlag = true;
+                foreach (var item in list)
+                {
+
+                    while ((item.X - minValue) * (item.X - minValue) +
+                           (item.Y - current) * (item.Y - current) <= radius * radius)
+                    {
+                        minValue += jump / 30;
+
+
+                    }
+                    if (minValue > 2.3)
+                    {
+                        addFlag = false;
+                        //break;
+                    }
+                }
+
+                if (addFlag)
+                {
+                    MinValues1.Add(new Point(minValue, current, 0));
+                }
+
+                current -= jump;
+
+
+            }
+        }
+
+        private bool firstrun = true;
         private void GenerateEnvelopePathExecuted()
         {
-            GL.Enable(EnableCap.PointSmooth);
+            if (firstrun)
+            {
+                GL.Enable(EnableCap.PointSmooth);
 
-            TrimedCurvesPointsList = new List<Point>();
-            double scale = 2;
-            //Ploza
-            _cursor.Coordinates = new Vector4d(scale*-0.9, scale * (3.8 - 3.6), scale * -0.1, scale *0.0);
-            UnselectAllItemsExecuted();
-            _bezierPatchC2Collection[4].Selected = true;
-            _bezierPatchC2Collection[2].Selected = true;
-            TrimPatchesExecuted();
-            AppendTrimmedCurvesPoints(_trimCurvesCollection.Last(), TrimedCurvesPointsList);
+                TrimedCurvesPointsList = new List<Point>();
+                double scale = 2;
+                //Ploza
+                _cursor.Coordinates = new Vector4d(scale * -0.9, scale * (3.8 - 3.6), scale * -0.1, scale * 0.0);
+                UnselectAllItemsExecuted();
+                _bezierPatchC2Collection[4].Selected = true;
+                _bezierPatchC2Collection[2].Selected = true;
+                TrimPatchesExecuted();
+                AppendTrimmedCurvesPoints(_trimCurvesCollection.Last(), TrimedCurvesPointsList);
 
-            //Korpus
-            _cursor.Coordinates = new Vector4d(scale * -0.9, scale *( 3.8 - 3.6), scale * -0.1, scale * 0.0);
-            UnselectAllItemsExecuted();
-            _bezierPatchC2Collection[4].Selected = true;
-            _bezierPatchC2Collection[0].Selected = true;
-            TrimPatchesExecuted();
-            AppendTrimmedCurvesPoints(_trimCurvesCollection.Last(), TrimedCurvesPointsList);
-
-
-            //Korpus
-            _cursor.Coordinates = new Vector4d(scale * 0.5, scale * (5.2 - 3.6), scale * -0.1, scale * 0.0);
-            UnselectAllItemsExecuted();
-            _bezierPatchC2Collection[4].Selected = true;
-            _bezierPatchC2Collection[0].Selected = true;
-            TrimPatchesExecuted();
-            ConnectTwoPoints(_trimCurvesCollection[1].NewtonOuputPoint.Last()[0], _trimCurvesCollection[2].NewtonOuputPoint.First()[0], TrimedCurvesPointsList);
-            ConnectTwoPoints(_trimCurvesCollection[1].NewtonOuputPoint.First()[0], _trimCurvesCollection[2].NewtonOuputPoint.Last()[0], TrimedCurvesPointsList);
-            AppendTrimmedCurvesPoints(_trimCurvesCollection.Last(), TrimedCurvesPointsList);
+                //Korpus
+                _cursor.Coordinates = new Vector4d(scale * -0.9, scale * (3.8 - 3.6), scale * -0.1, scale * 0.0);
+                UnselectAllItemsExecuted();
+                _bezierPatchC2Collection[4].Selected = true;
+                _bezierPatchC2Collection[0].Selected = true;
+                TrimPatchesExecuted();
+                AppendTrimmedCurvesPoints(_trimCurvesCollection.Last(), TrimedCurvesPointsList);
 
 
-            //Wirnik tyl
-            _cursor.Coordinates = new Vector4d(scale * 0.8, scale * (6.1 - 3.6), scale * -0.1, scale * 0.0);
-            UnselectAllItemsExecuted();
-            _bezierPatchC2Collection[4].Selected = true;
-            _bezierPatchC2Collection[3].Selected = true;
-            TrimPatchesExecuted();
-            AppendTrimmedCurvesPoints(_trimCurvesCollection.Last(), TrimedCurvesPointsList);
-
-            //Wirnik tył
-            _cursor.Coordinates = new Vector4d(scale * -0.1, scale * (6.6 - 3.6), scale * -0.1, scale * 0.0);
-            UnselectAllItemsExecuted();
-            _bezierPatchC2Collection[4].Selected = true;
-            _bezierPatchC2Collection[3].Selected = true;
-            TrimPatchesExecuted();
-            ConnectTwoPoints(_trimCurvesCollection[3].NewtonOuputPoint.Last()[0], _trimCurvesCollection[4].NewtonOuputPoint.First()[0], TrimedCurvesPointsList);
-            ConnectTwoPoints(_trimCurvesCollection[3].NewtonOuputPoint.First()[0], _trimCurvesCollection[4].NewtonOuputPoint.Last()[0], TrimedCurvesPointsList);
-            AppendTrimmedCurvesPoints(_trimCurvesCollection.Last(), TrimedCurvesPointsList);
+                //Korpus
+                _cursor.Coordinates = new Vector4d(scale * 0.5, scale * (5.2 - 3.6), scale * -0.1, scale * 0.0);
+                UnselectAllItemsExecuted();
+                _bezierPatchC2Collection[4].Selected = true;
+                _bezierPatchC2Collection[0].Selected = true;
+                TrimPatchesExecuted();
+                ConnectTwoPoints(_trimCurvesCollection[1].NewtonOuputPoint.Last()[0],
+                    _trimCurvesCollection[2].NewtonOuputPoint.First()[0], TrimedCurvesPointsList);
+                ConnectTwoPoints(_trimCurvesCollection[1].NewtonOuputPoint.First()[0],
+                    _trimCurvesCollection[2].NewtonOuputPoint.Last()[0], TrimedCurvesPointsList);
+                AppendTrimmedCurvesPoints(_trimCurvesCollection.Last(), TrimedCurvesPointsList);
 
 
-            //Smiglo
-            _cursor.Coordinates = new Vector4d(scale * 0.9, scale * (4.6 - 3.6), scale * -0.1, scale * 0.0);
-            UnselectAllItemsExecuted();
-            _bezierPatchCollection[0].Selected = true;
-            _bezierPatchC2Collection[4].Selected = true;
-            TrimPatchesExecuted();
-            AppendTrimmedCurvesPoints(_trimCurvesCollection.Last(), TrimedCurvesPointsList);
+                //Wirnik tyl
+                _cursor.Coordinates = new Vector4d(scale * 0.8, scale * (6.1 - 3.6), scale * -0.1, scale * 0.0);
+                UnselectAllItemsExecuted();
+                _bezierPatchC2Collection[4].Selected = true;
+                _bezierPatchC2Collection[3].Selected = true;
+                TrimPatchesExecuted();
+                AppendTrimmedCurvesPoints(_trimCurvesCollection.Last(), TrimedCurvesPointsList);
 
-            //Smiglo
-            _cursor.Coordinates = new Vector4d(scale * 1.2, scale * (3.8 - 3.6), scale * -0.1, scale * 0.0);
-            UnselectAllItemsExecuted();
-            _bezierPatchCollection[0].Selected = true;
-            _bezierPatchC2Collection[4].Selected = true;
-            TrimPatchesExecuted();
-            AppendTrimmedCurvesPoints(_trimCurvesCollection.Last(), TrimedCurvesPointsList);
-
-            //Wirnik
-            _cursor.Coordinates = new Vector4d(scale * 0.7, scale * (3.4 - 3.6), scale * -0.1, scale * 0.0);
-            UnselectAllItemsExecuted();
-            _bezierPatchC2Collection[4].Selected = true;
-            _bezierPatchC2Collection[1].Selected = true;
-            TrimPatchesExecuted();
-            AppendTrimmedCurvesPoints(_trimCurvesCollection.Last(), TrimedCurvesPointsList);
-
-            //Wirnik
-            _cursor.Coordinates = new Vector4d(scale * 0.8, scale * (2.9 - 3.6), scale * -0.1, scale * 0.0);
-            UnselectAllItemsExecuted();
-            _bezierPatchC2Collection[4].Selected = true;
-            _bezierPatchC2Collection[1].Selected = true;
-            TrimPatchesExecuted();
-            AppendTrimmedCurvesPoints(_trimCurvesCollection.Last(), TrimedCurvesPointsList);
+                //Wirnik tył
+                _cursor.Coordinates = new Vector4d(scale * -0.1, scale * (6.6 - 3.6), scale * -0.1, scale * 0.0);
+                UnselectAllItemsExecuted();
+                _bezierPatchC2Collection[4].Selected = true;
+                _bezierPatchC2Collection[3].Selected = true;
+                TrimPatchesExecuted();
+                ConnectTwoPoints(_trimCurvesCollection[3].NewtonOuputPoint.Last()[0],
+                    _trimCurvesCollection[4].NewtonOuputPoint.First()[0], TrimedCurvesPointsList);
+                ConnectTwoPoints(_trimCurvesCollection[3].NewtonOuputPoint.First()[0],
+                    _trimCurvesCollection[4].NewtonOuputPoint.Last()[0], TrimedCurvesPointsList);
+                AppendTrimmedCurvesPoints(_trimCurvesCollection.Last(), TrimedCurvesPointsList);
 
 
+                //Smiglo
+                _cursor.Coordinates = new Vector4d(scale * 0.9, scale * (4.6 - 3.6), scale * -0.1, scale * 0.0);
+                UnselectAllItemsExecuted();
+                _bezierPatchCollection[0].Selected = true;
+                _bezierPatchC2Collection[4].Selected = true;
+                TrimPatchesExecuted();
+                AppendTrimmedCurvesPoints(_trimCurvesCollection.Last(), TrimedCurvesPointsList);
 
-            _trimCurvesCollection.Clear();
-            List<Point> SortedList = TrimedCurvesPointsList.OrderBy(o => o.Coordinates.Y).ToList();
+                //Smiglo
+                _cursor.Coordinates = new Vector4d(scale * 1.2, scale * (3.8 - 3.6), scale * -0.1, scale * 0.0);
+                UnselectAllItemsExecuted();
+                _bezierPatchCollection[0].Selected = true;
+                _bezierPatchC2Collection[4].Selected = true;
+                TrimPatchesExecuted();
+                AppendTrimmedCurvesPoints(_trimCurvesCollection.Last(), TrimedCurvesPointsList);
+
+                //Wirnik
+                _cursor.Coordinates = new Vector4d(scale * 0.7, scale * (3.4 - 3.6), scale * -0.1, scale * 0.0);
+                UnselectAllItemsExecuted();
+                _bezierPatchC2Collection[4].Selected = true;
+                _bezierPatchC2Collection[1].Selected = true;
+                TrimPatchesExecuted();
+                AppendTrimmedCurvesPoints(_trimCurvesCollection.Last(), TrimedCurvesPointsList);
+
+                //Wirnik
+                _cursor.Coordinates = new Vector4d(scale * 0.8, scale * (2.9 - 3.6), scale * -0.1, scale * 0.0);
+                UnselectAllItemsExecuted();
+                _bezierPatchC2Collection[4].Selected = true;
+                _bezierPatchC2Collection[1].Selected = true;
+                TrimPatchesExecuted();
+                AppendTrimmedCurvesPoints(_trimCurvesCollection.Last(), TrimedCurvesPointsList);
+
+
+
+                _trimCurvesCollection.Clear();
+                //List<Point> SortedList = TrimedCurvesPointsList.OrderBy(o => o.Coordinates.Y).ToList();
+
+                firstrun = false;
+            }
+
+            GnerateMinMaxXLists(TrimedCurvesPointsList);
 
         }
 
@@ -1089,6 +1265,33 @@ namespace ModelowanieGeometryczne.ViewModel
             _fi = 0;
             _teta = 0;
 
+            //foreach (var item in TrimedCurvesPointsList)
+            //{
+            //    item.Draw(M, 10, 1, 0, 0);
+            //}
+
+
+            foreach (var item in MaxValues)
+            {
+                item.Draw(M, 100, 0, 0, 1);
+            }
+
+            foreach (var item in MinValues)
+            {
+                item.Draw(M, 100, 0, 1, 1);
+            }
+            foreach (var item in MaxValues1)
+            {
+                item.Draw(M, 100, 1, 0, 1);
+            }
+
+            foreach (var item in MinValues1)
+            {
+                item.Draw(M, 100, 1, 1, 1);
+            }
+
+
+
             if (ShowDescentGradientsSteps)
             {
 
@@ -1105,10 +1308,6 @@ namespace ModelowanieGeometryczne.ViewModel
                 }
             }
 
-            foreach (var item in TrimedCurvesPointsList)
-            {
-                item.Draw(M, 50,1,0,0);
-            }
 
             foreach (var item in TrimCurvesCollection)
             {
