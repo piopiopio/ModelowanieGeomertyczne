@@ -120,6 +120,11 @@ namespace ModelowanieGeometryczne.Model
             }
         }
 
+        public string ToString(int lineNumber, double scale, double z_offset)
+        {
+            return "N"+lineNumber + "G01X" + (-scale*X).ToString("0.000") + "Y" + (scale * Y).ToString("0.000") + "Z" + (scale*Z+z_offset).ToString("0.000") + "\n";
+
+        }
 
         #region Private Methods
         #endregion Private Methods
