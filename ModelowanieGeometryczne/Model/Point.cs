@@ -119,6 +119,17 @@ namespace ModelowanieGeometryczne.Model
                 _name = DateTime.Now.ToLongDateString() + "  " + DateTime.Now.ToLongTimeString();
             }
         }
+        public Point (Vector4d a, string name = null)
+        {
+            _coordinates.X = a.X;
+            _coordinates.Y = a.Y;
+            _coordinates.Z = a.Z;
+            _coordinates.W = 1;
+            if (name == null)
+            {
+                _name = DateTime.Now.ToLongDateString() + "  " + DateTime.Now.ToLongTimeString();
+            }
+        }
 
         public string ToString(int lineNumber, double scale, double z_offset)
         {

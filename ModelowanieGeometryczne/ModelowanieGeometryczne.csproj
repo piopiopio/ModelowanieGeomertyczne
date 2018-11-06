@@ -70,6 +70,7 @@
     <Compile Include="BitmapsWindow.xaml.cs">
       <DependentUpon>BitmapsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HeightArray.cs" />
     <Compile Include="Helpers\ImportExport.cs" />
     <Compile Include="Helpers\JSON_PrettyPrinter.cs" />
     <Compile Include="Model\BezierPatchC2.cs" />

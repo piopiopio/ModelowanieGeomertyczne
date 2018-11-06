@@ -15,8 +15,8 @@ namespace ModelowanieGeometryczne
 
     public class BezierPatchC2 : PointExchange, IPatch
     {
-        Point[,] _curvesPatchPoints;
-        Point[,] _curvesPatchPoints1;
+        public Point[,] _curvesPatchPoints;
+        public Point[,] _curvesPatchPoints1;
         public Point[,] _patchPoints;
 
 
@@ -652,8 +652,69 @@ namespace ModelowanieGeometryczne
         }
 
 
+        public void AddPoints(Point a, Point b, List<Point> list,  double minDensity = 0.005)
+        {
+            int i = 1;
+            int elementsNumber;
+            elementsNumber =Math.Max((int) ((b - a).Length() / minDensity),1);
+            list.Add(a);
+            // list.Add(b);
+            Point delta = (b - a) / i;
+            Point temp=new Point(a.X, a.Y, a.Z);
+            for (int j = 0; j < i; j++)
+            {
+
+                temp += delta;
+                list.Add(temp);
+            }
+        }
+        public List<Point> GeneratePointsForMilling()
+        {
+
+            List<Point> PointsList=new List<Point>();
 
 
+            for (int i = 0; i < _curvesPatchPoints1.GetLength(0) - 1; i++)
+            {
+                for (int j = 0; j < _curvesPatchPoints1.GetLength(1); j++)
+                {
+
+                    // if (_curvesPatchPoints[i + 1, j] == null || _curvesPatchPoints[i, j] == null) break;
+
+                    var p1 = _curvesPatchPoints1[i, j].Coordinates;
+
+
+                    var p2 = _curvesPatchPoints1[i + 1, j].Coordinates;
+
+                    AddPoints(new Point(p1), new Point (p2), PointsList);
+                }
+
+            }
+
+
+
+
+            for (int i = 0; i < _curvesPatchPoints.GetLength(0); i++)
+            {
+                for (int j = 0; j < _curvesPatchPoints.GetLength(1) - 1; j++)
+                {
+                    //if (_curvesPatchPoints[i , j+1] == null || _curvesPatchPoints[i, j] == null) break;
+
+
+                    var p1 = _curvesPatchPoints[i, j].Coordinates;
+
+                    var p2 = _curvesPatchPoints[i, j + 1].Coordinates;
+
+                    AddPoints(new Point(p1), new Point(p2), PointsList);
+                }
+
+            }
+
+            return PointsList;
+        }
+
+
+        
         public void CalculateBezierPoints()
         {
             //Fragment do wyznaczania punktów beziera

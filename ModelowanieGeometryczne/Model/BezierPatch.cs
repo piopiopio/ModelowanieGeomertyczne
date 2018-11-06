@@ -962,6 +962,23 @@ namespace ModelowanieGeometryczne.Model
             }
         }
 
+        List <Point> list = new List<Point>();
+        public List<Point> GeneratePointsForMilling()
+        {
+
+            for (int i = 0; i < HorizontalPatches; i++)
+            {
+                for (int j = 0; j < VerticalPatches; j++)
+                {
+                    Surface[i, j].GeneratePointsForMilling(list);
+
+
+                }
+            }
+
+            return list;
+        }
+
         #endregion Public Methods
     }
 }
