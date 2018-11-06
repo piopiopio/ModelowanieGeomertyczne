@@ -235,6 +235,9 @@
                         <Button Grid.Row="0" Grid.ColumnSpan="5" Content="Initial path" Command="{Binding Scene.InitialPath}"/>
                         <Button Grid.Row="1" Grid.ColumnSpan="5" Content="Generate envelope path" Command="{Binding Scene.GenerateEnvelopePath}"/>
                         <Button Grid.Row="2" Grid.ColumnSpan="5" Content="Generate contour path" Command="{Binding Scene.GenerateContourPath}"/>
+                        <CheckBox Grid.Row="3" Grid.Column="0" IsChecked="{Binding Scene.InitialHelpers}"></CheckBox>
+                        <Label Grid.Row="3" Grid.Column="1" Content="Show initial helpers"></Label>
+
                         <CheckBox Grid.Row="4" Grid.Column="0" IsChecked="{Binding Scene.ZigZagHelpers}"></CheckBox>
                         <Label Grid.Row="4" Grid.Column="1" Content="Show zigZag helpers"></Label>
 

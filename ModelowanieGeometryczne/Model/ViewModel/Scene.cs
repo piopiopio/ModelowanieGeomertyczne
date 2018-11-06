@@ -237,62 +237,15 @@ namespace ModelowanieGeometryczne.ViewModel
         {
             heightArray = new HeightArray();
             List<Point> MovesList=new List<Point>();
-            heightArray.Clear();
-            foreach (var item in BezierPatchC2Collection)
-            {
-                if (increaseAccuracy)
-                {
-                    item.u = 10;
-                    item.v = 10;
-                }
-
-                heightArray.ConsiderList(item.GeneratePointsForMilling());
-
-                if (increaseAccuracy)
-                {
-                    item.u = 4;
-                    item.v = 4;
-                }
-            }
-
-            foreach (var item in BezierPatchCollection)
-            {
-                if (increaseAccuracy)
-                {
-                    item.PatchHorizontalDivision = 10;
-                    item.PatchVerticalDivision = 10;
-                }
-
-                heightArray.ConsiderList(item.GeneratePointsForMilling());
-
-                if (increaseAccuracy)
-                {
-                    item.PatchHorizontalDivision = 4;
-                    item.PatchVerticalDivision = 4;
-                }
-            }
-
-            double jump = 0.6;
-            double size = 15;
-            double epsilon = 0.5;
-            double Z_max = heightArray.Z_max;
-            double MoveY = 0;
-            MovesList.Add(new Point(-size / 2, -size / 2 + MoveY, 10));
-            for (int i = 0; i < (int)Math.Ceiling(size/(2*jump))+1; i++)
-            {
-                MovesList.Add(new Point(-size/2, -size/2+ MoveY, Z_max+epsilon));
-                MovesList.Add(new Point(size/2, -size/2+ MoveY, Z_max+epsilon));
-                MoveY += jump;
-                MovesList.Add(new Point(size/2, -size/2+ MoveY, Z_max+epsilon));
-                MovesList.Add(new Point(-size/2, -size/2+ MoveY, Z_max+epsilon));
-                MoveY += jump;
-            }
-            MovesList.Add(new Point(-size / 2, -size / 2 + MoveY-jump, 10));
+            //heightArray.Clear();
+           
 
 
+
+            heightArray.GenerateInitialPathStep(MovesList);
             //TODO: Przejscie
-            MovesList.Clear();
-            
+            //MovesList.Clear();
+
             heightArray.GenerateInitialPathStep2(MovesList);
             SavePath(MovesList, "1.k16");
         }
@@ -1787,7 +1740,11 @@ namespace ModelowanieGeometryczne.ViewModel
             _fi = 0;
             _teta = 0;
 
-            heightArray.Draw(M);
+            if (_initialHelpers)
+            {
+                heightArray.Draw(M);
+            }
+
             if (_contourHelpers)
             {
                 foreach (var item in TrimedCurvesPointsListWithOffset)
@@ -2212,6 +2169,16 @@ namespace ModelowanieGeometryczne.ViewModel
             {
                 _zigZagHelpers = value;
                 OnPropertyChanged(nameof(ZigZagHelpers));
+            }
+        }
+        private bool _initialHelpers = false;
+        public bool InitialHelpers
+        {
+            get { return _initialHelpers; }
+            set
+            {
+                _initialHelpers = value;
+                OnPropertyChanged(nameof(InitialHelpers));
             }
         }
 
