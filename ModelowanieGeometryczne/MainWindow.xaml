@@ -151,14 +151,17 @@
 
                         <Button Grid.Row="0"  Grid.Column="0" Grid.ColumnSpan="5" Content="Trim patches" Command="{Binding Scene.TrimPatches}"></Button>
                         <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" IsChecked="{Binding Scene.ShowDescentGradientsSteps}" Content="Show descent gradient steps"></CheckBox>
-                        <TextBox Grid.Row="2" Grid.Column="0"  Name="GradientDescentethodStepLength" Text="{Binding Scene.GradientDescentethodStepLength}" Grid.ColumnSpan="3"></TextBox>
-                        <Label Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2" Content="Gradient descentstep length"></Label>
 
-                        <TextBox Grid.Row="3" Grid.Column="0"  Name="GradientDescentStopCondition" Text="{Binding Scene.GradientDescentStopCondition}" Grid.ColumnSpan="3"></TextBox>
-                        <Label Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="2" Content="Gradient descent stop condition"></Label>
+                        <CheckBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" IsChecked="{Binding Scene.ShowTrimmingCurves}" Content="Show trimming curves"></CheckBox>
 
-                        <TextBox Grid.Row="4" Grid.Column="0"  Name="GradientDescentethodStopStepsNumber" Text="{Binding Scene.GradientDescentethodStopStepsNumber}" Grid.ColumnSpan="3"></TextBox>
-                        <Label Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="2" Content="Gradient descentethod stop steps number"></Label>
+                        <TextBox Grid.Row="3" Grid.Column="0"  Name="GradientDescentethodStepLength" Text="{Binding Scene.GradientDescentethodStepLength}" Grid.ColumnSpan="3"></TextBox>
+                        <Label Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="2" Content="Gradient descentstep length"></Label>
+
+                        <TextBox Grid.Row="4" Grid.Column="0"  Name="GradientDescentStopCondition" Text="{Binding Scene.GradientDescentStopCondition}" Grid.ColumnSpan="3"></TextBox>
+                        <Label Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="2" Content="Gradient descent stop condition"></Label>
+
+                        <TextBox Grid.Row="5" Grid.Column="0"  Name="GradientDescentethodStopStepsNumber" Text="{Binding Scene.GradientDescentethodStopStepsNumber}" Grid.ColumnSpan="3"></TextBox>
+                        <Label Grid.Row="5" Grid.Column="3" Grid.ColumnSpan="2" Content="Gradient descentethod stop steps number"></Label>
 
                         <TextBox Grid.Row="6" Grid.Column="0"  Name="NewtonForwardStep" Text="{Binding Scene.NewtonForwardStep}" Grid.ColumnSpan="3"></TextBox>
                         <Label Grid.Row="6" Grid.Column="3" Grid.ColumnSpan="2" Content="Newton forward step"></Label>
@@ -233,16 +236,21 @@
                         </Grid.ColumnDefinitions>
 
                         <Button Grid.Row="0" Grid.ColumnSpan="5" Content="Initial path" Command="{Binding Scene.InitialPath}"/>
-                        <Button Grid.Row="1" Grid.ColumnSpan="5" Content="Generate envelope path" Command="{Binding Scene.GenerateEnvelopePath}"/>
+                        <Button Grid.Row="1" Grid.ColumnSpan="5" Content="Generate zigZag path" Command="{Binding Scene.GenerateZigZagPath}"/>
                         <Button Grid.Row="2" Grid.ColumnSpan="5" Content="Generate contour path" Command="{Binding Scene.GenerateContourPath}"/>
-                        <CheckBox Grid.Row="3" Grid.Column="0" IsChecked="{Binding Scene.InitialHelpers}"></CheckBox>
-                        <Label Grid.Row="3" Grid.Column="1" Content="Show initial helpers"></Label>
+                        <Button Grid.Row="3" Grid.ColumnSpan="5" Content="Generate finish path" Command="{Binding Scene.GenerateFinishPath}"/>
 
-                        <CheckBox Grid.Row="4" Grid.Column="0" IsChecked="{Binding Scene.ZigZagHelpers}"></CheckBox>
-                        <Label Grid.Row="4" Grid.Column="1" Content="Show zigZag helpers"></Label>
+                        <CheckBox Grid.Row="4" Grid.Column="0" IsChecked="{Binding Scene.InitialHelpers}"></CheckBox>
+                        <Label Grid.Row="4" Grid.Column="1" Content="Show initial helpers"></Label>
 
-                        <CheckBox Grid.Row="5" Grid.Column="0" IsChecked="{Binding Scene.ContourHelpers}"></CheckBox>
-                        <Label Grid.Row="5" Grid.Column="1" Content="Show contour helpers"></Label>
+                        <CheckBox Grid.Row="5" Grid.Column="0" IsChecked="{Binding Scene.ZigZagHelpers}"></CheckBox>
+                        <Label Grid.Row="5" Grid.Column="1" Content="Show zigZag helpers"></Label>
+
+                        <CheckBox Grid.Row="6" Grid.Column="0" IsChecked="{Binding Scene.ContourHelpers}"></CheckBox>
+                        <Label Grid.Row="6" Grid.Column="1" Content="Show contour helpers"></Label>            
+                        
+                        <CheckBox Grid.Row="7" Grid.Column="0" IsChecked="{Binding Scene.FinishPathHelpers}"></CheckBox>
+                        <Label Grid.Row="7" Grid.Column="1" Content="Show finish helpers"></Label>
                         <!--<TextBlock Grid.Row="7" Grid.Column="0" Text="X translation:" Grid.ColumnSpan="2"></TextBlock>
                         <TextBox Grid.Row="7" Grid.Column="2" Text="{Binding Scene.HorizontalPatches}"/>
                         <TextBlock Grid.Row="8" Grid.Column="0" Text="Y translation" Grid.ColumnSpan="2"></TextBlock>

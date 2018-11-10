@@ -49,7 +49,20 @@ namespace ModelowanieGeometryczne
         public Vector4d StartPoint { get; set; }
         // private ObservableCollection<Point> _vertices = new ObservableCollection<Point>();
         bool _polylineEnabled = false;
-        public bool Selected { get; set; }
+        private bool _selected = false;
+
+        public bool Selected
+        {
+            get { return _selected;}
+            set
+            {
+                _selected = value;
+                foreach (var item in PatchPoints)
+                {
+                    item.Selected = _selected;
+                }
+            }
+        }
         public string Name { get; set; }
         static int PatchNumber { get; set; }
         Matrix4d projection = MatrixProvider.ProjectionMatrix();
@@ -652,15 +665,15 @@ namespace ModelowanieGeometryczne
         }
 
 
-        public void AddPoints(Point a, Point b, List<Point> list,  double minDensity = 0.005)
+        public void AddPoints(Point a, Point b, List<Point> list, double minDensity = 0.005)
         {
             int i = 1;
-            int elementsNumber;
-            elementsNumber =Math.Max((int) ((b - a).Length() / minDensity),1);
+            //int elementsNumber;
+            //elementsNumber =Math.Max((int) ((b - a).Length() / minDensity),1);
             list.Add(a);
             // list.Add(b);
             Point delta = (b - a) / i;
-            Point temp=new Point(a.X, a.Y, a.Z);
+            Point temp = new Point(a.X, a.Y, a.Z);
             for (int j = 0; j < i; j++)
             {
 
@@ -671,7 +684,7 @@ namespace ModelowanieGeometryczne
         public List<Point> GeneratePointsForMilling()
         {
 
-            List<Point> PointsList=new List<Point>();
+            List<Point> PointsList = new List<Point>();
 
 
             for (int i = 0; i < _curvesPatchPoints1.GetLength(0) - 1; i++)
@@ -686,7 +699,7 @@ namespace ModelowanieGeometryczne
 
                     var p2 = _curvesPatchPoints1[i + 1, j].Coordinates;
 
-                    AddPoints(new Point(p1), new Point (p2), PointsList);
+                    AddPoints(new Point(p1), new Point(p2), PointsList);
                 }
 
             }
@@ -712,9 +725,49 @@ namespace ModelowanieGeometryczne
 
             return PointsList;
         }
+        private bool changeDirection = false;
+        private int insertIndex = 0;
+        public List<Tuple<Point, Vector3d>> GeneratePointsWithNormalVectorsForMilling(double umin, double umax, double vmin, double vmax, int nu, int nv, double radius)
+        {
+            double deltaU = (umax - umin) / nu;
+            double deltaV = (vmax - vmin) / nv;
+            double tempU = umin;
+            double tempV = vmin;
+            List<Tuple<Point, Vector3d>> List = new List<Tuple<Point, Vector3d>>();
+            for (int j = 0; j <= nu; j++)
+            {
 
+                tempV = vmin;
+                insertIndex = List.Count;
 
-        
+                for (int i = 0; i <= nv; i++)
+                {
+                    Point a = GetPoint(tempU, tempV);
+                    Vector3d b = Point.CrossProduct(GetPointDerivativeU(tempU, tempV),
+                        GetPointDerivativeV(tempU, tempV));
+
+                    b.Normalize();
+                    b= b*radius;
+                    if (changeDirection)
+                    {
+                        List.Insert(insertIndex, new Tuple<Point, Vector3d>(a, b));
+                    }
+                    else
+                    {
+                        List.Add(new Tuple<Point, Vector3d>(a, b));
+                    }
+
+                    tempV += deltaV;
+                }
+
+                changeDirection = !changeDirection;
+                tempU += deltaV;
+            }
+
+            return List;
+
+        }
+
         public void CalculateBezierPoints()
         {
             //Fragment do wyznaczania punktów beziera
@@ -883,7 +936,7 @@ namespace ModelowanieGeometryczne
 
             if (PatchesAreCylinder)
             {
-                if ((int)surfaceCoordinates[0] == 3+HorizontalPatches) surfaceCoordinates[0] = surfaceCoordinates[0] - 1;
+                if ((int)surfaceCoordinates[0] == 3 + HorizontalPatches) surfaceCoordinates[0] = surfaceCoordinates[0] - 1;
             }
             else
             {

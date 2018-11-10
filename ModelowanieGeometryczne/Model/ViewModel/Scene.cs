@@ -129,9 +129,10 @@ namespace ModelowanieGeometryczne.ViewModel
         private ICommand _undoAllTransformation;
         private ICommand _showCurvesUV;
         private ICommand _unselectAllItems;
-        private ICommand _generateEnvelopePath;
+        private ICommand _generateZigZagPath;
         private ICommand _initialPath;
         private ICommand _generateContourPath;
+        private ICommand _generateFinishPath;
 
 
 
@@ -143,6 +144,16 @@ namespace ModelowanieGeometryczne.ViewModel
             set
             {
                 _showDescentGradientsSteps = value;
+                Refresh();
+            }
+        }
+        private bool _showTrimmingCurves = false;
+        public bool ShowTrimmingCurves
+        {
+            get { return _showTrimmingCurves; }
+            set
+            {
+                _showTrimmingCurves = value;
                 Refresh();
             }
         }
@@ -227,27 +238,28 @@ namespace ModelowanieGeometryczne.ViewModel
         public ICommand ShowCurvesUV { get { return _showCurvesUV ?? (_showCurvesUV = new ActionCommand(ShowCurvesUvExecuted)); } }
         public ICommand UnselectAllItems { get { return _unselectAllItems ?? (_unselectAllItems = new ActionCommand(UnselectAllItemsExecuted)); } }
         public ICommand InitialPath { get { return _initialPath ?? (_initialPath = new ActionCommand(InitialPathExecuted)); } }
-        public ICommand GenerateEnvelopePath { get { return _generateEnvelopePath ?? (_generateEnvelopePath = new ActionCommand(GenerateEnvelopePathExecuted)); } }
+        public ICommand GenerateZigZagPath { get { return _generateZigZagPath ?? (_generateZigZagPath = new ActionCommand(GenerateZigZagPathExecuted)); } }
         public ICommand GenerateContourPath { get { return _generateContourPath ?? (_generateContourPath = new ActionCommand(GenerateContourPathExecuted)); } }
+        public ICommand GenerateFinishPath { get { return _generateFinishPath ?? (_generateFinishPath = new ActionCommand(GenerateFinishPathExecuted)); } }
 
         public List<Point> TrimedCurvesPointsListWithOffset = new List<Point>();
-        HeightArray heightArray = new HeightArray();
-        public bool increaseAccuracy { get; set; } = false;
+        HeightArray _heightArray = new HeightArray();
+        private FinishPathGenerator _finishPathGenerator=new FinishPathGenerator();
+        private void GenerateFinishPathExecuted()
+        {//Sprawdzac czy ustawiona, wyłączyć możliwość klikniecia w przycisk przed wykonaniem poprzednih krokow.
+
+            _finishPathGenerator=new FinishPathGenerator(BezierPatchC2Collection, BezierPatchCollection);
+            SavePath(_finishPathGenerator.GeneratePath(), "4.k8");
+        }
+
+
         private void InitialPathExecuted()
         {
-            heightArray = new HeightArray();
-            List<Point> MovesList=new List<Point>();
-            //heightArray.Clear();
-           
-
-
-
-            heightArray.GenerateInitialPathStep(MovesList);
-            //TODO: Przejscie
-            //MovesList.Clear();
-
-            heightArray.GenerateInitialPathStep2(MovesList);
-            SavePath(MovesList, "1.k16");
+            _heightArray = new HeightArray(BezierPatchC2Collection, BezierPatchCollection);
+            List<Point> movesList=new List<Point>();
+            _heightArray.GenerateInitialPathStep(movesList);
+            _heightArray.GenerateInitialPathStep2(movesList);
+            SavePath(movesList, "1.k16");
         }
 
 
@@ -303,8 +315,10 @@ namespace ModelowanieGeometryczne.ViewModel
             }
 
             double epsilonSpace = 0.2;
-            TrimedCurvesPointsListWithOffset.RemoveAt(2298);
-            TrimedCurvesPointsListWithOffset.RemoveAt(3138);
+            //TrimedCurvesPointsListWithOffset.RemoveAt(2298);
+           // TrimedCurvesPointsListWithOffset.RemoveAt(3138);
+            //TrimedCurvesPointsListWithOffset.RemoveAt(3324);
+            //TrimedCurvesPointsListWithOffset.RemoveAt(2483);
             List<Tuple<Point, Point, Point, Point>> freeSpacePoints = new List<Tuple<Point, Point, Point, Point>>();
 
             if ((TrimedCurvesPointsListWithOffset[1] - TrimedCurvesPointsListWithOffset[0]).Length() > epsilonSpace)
@@ -357,7 +371,7 @@ namespace ModelowanieGeometryczne.ViewModel
             {
                 item.Z = 0;
             }
-            TrimedCurvesPointsListWithOffset.Insert(0, new Point(TrimedCurvesPointsListWithOffset[0].X, TrimedCurvesPointsListWithOffset[0].Y - 3, 10));
+            TrimedCurvesPointsListWithOffset.Insert(0, new Point(TrimedCurvesPointsListWithOffset[0].X, TrimedCurvesPointsListWithOffset[0].Y - 4, 10));
             TrimedCurvesPointsListWithOffset.Insert(1, new Point(TrimedCurvesPointsListWithOffset[0].X, TrimedCurvesPointsListWithOffset[0].Y, 0));
             TrimedCurvesPointsListWithOffset.Add(new Point(TrimedCurvesPointsListWithOffset.Last().X, TrimedCurvesPointsListWithOffset.Last().Y, 10));
 
@@ -638,7 +652,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
             for (int i = 0; i < 7; i++)
             {
-                MinValues1.RemoveAt(33);
+                MinValues1.RemoveAt(34);
             }
 
             double delta;
@@ -742,25 +756,35 @@ namespace ModelowanieGeometryczne.ViewModel
             OutputList.Add(new Point(MinValues1[30].X, MinValues1[30].Y, 10));
 
 
-            OutputList.Add(new Point(MinValues1[77].X, MinValues1[77].Y - 0.8, 10));
-            OutputList.Add(new Point(MinValues1[77].X, MinValues1[77].Y - 0.8, MinValues1[77].Z));
+            ////OutputList.Add(new Point(MinValues1[77].X, MinValues1[77].Y - 0.8, 10));
+            ////OutputList.Add(new Point(MinValues1[77].X, MinValues1[77].Y - 0.8, MinValues1[77].Z));
 
-            int st = 77;
-            int d = 10;
-            for (int i = 2 * d; i < 41; i += 2 * d)
-            {
+            //int st = 77;
+            //int d = 10;
+            //for (int i = 2 * d; i < 41; i += 2 * d)
+            //{
 
 
-                OutputList.Add(MinValues1[st]);
-                OutputList.Add(MaxValues1[st]);
-                OutputList.Add(MaxValues1[st - d]);
-                OutputList.Add(MinValues1[st - d]);
+            //    OutputList.Add(MinValues1[st]);
+            //    OutputList.Add(MaxValues1[st-14]);
+            //    OutputList.Add(MaxValues1[st -14-d]);
+            //    OutputList.Add(MinValues1[st -d]);
 
-                st -= i;
-
-            }
-            OutputList.Add(new Point(MinValues1[st + 2 * d].X, MinValues1[st + 2 * d].Y - 0.8, 10));
+            //    st -= i;
+            //    //break;
             //}
+
+
+            ////OutputList.Add(MinValues1[77]);
+            ////OutputList.Add(MaxValues1[63]);
+            ////OutputList.Add(MaxValues1[55]);
+            ////OutputList.Add(MinValues1[60]);
+            ////OutputList.Add(MinValues1[60]);
+            ////OutputList.Add(MaxValues1[42]);
+
+            
+            ////OutputList.Add(new Point(MaxValues1[42].X, MaxValues1[42].Y, 10));
+        //}
 
 
 
@@ -773,7 +797,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
 
         private bool DebugZigZagfirstrun = true;
-        private void GenerateEnvelopePathExecuted()
+        private void GenerateZigZagPathExecuted()
         {
             double scale = 2;
             if (DebugZigZagfirstrun)
@@ -795,39 +819,40 @@ namespace ModelowanieGeometryczne.ViewModel
 
                 tempKorpus = _trimCurvesCollection.Last().NewtonOuputPoint.ToList();
 
-                for (int i = _trimCurvesCollection.Last().NewtonOuputPoint.Count; i > 189; i--)
+                for (int i = _trimCurvesCollection.Last().NewtonOuputPoint.Count; i > 168; i--)
                 {
-                    _trimCurvesCollection.Last().NewtonOuputPoint.RemoveAt(189);
+                    _trimCurvesCollection.Last().NewtonOuputPoint.RemoveAt(168);
                 }
 
-                for (int i = 0; i < 509; i++)
+                for (int i = 0; i < 523; i++)
                 {
                     tempKorpus.RemoveAt(0);
                 }
-                for (int i = 0; i < 14; i++)
-                {
-                    tempKorpus.RemoveAt(tempKorpus.Count - 1);
-                }
+                //for (int i = 0; i < 14; i++)
+                //{
+                //    tempKorpus.RemoveAt(tempKorpus.Count - 1);
+                //}
 
                 AppendTrimmedCurvesPoints(_trimCurvesCollection.Last().NewtonOuputPoint, TrimedCurvesPointsList);
-
+            
 
                 //Ploza
-                _cursor.Coordinates = new Vector4d(scale * -0.9, scale * (3.8 - 3.6), scale * -0.1, scale * 0.0);
+                //_cursor.Coordinates = new Vector4d(scale * -0.9, scale * (3.8 - 3.6), scale * -0.1, scale * 0.0);
+                _cursor.Coordinates = new Vector4d(-2.6,0.5,-0.2,0);
                 UnselectAllItemsExecuted();
                 _bezierPatchC2Collection[4].Selected = true;
                 _bezierPatchC2Collection[2].Selected = true;
                 TrimPatchesExecuted();
-                for (int i = 0; i < 37; i++)
-                {
-                    _trimCurvesCollection.Last().NewtonOuputPoint.RemoveAt(0);
-                }
+                //for (int i = 0; i < 37; i++)
+                //{
+                //    _trimCurvesCollection.Last().NewtonOuputPoint.RemoveAt(0);
+                //}
 
 
-                for (int i = 0; i < 19; i++)
-                {
-                    _trimCurvesCollection.Last().NewtonOuputPoint.RemoveAt(_trimCurvesCollection.Last().NewtonOuputPoint.Count() - 1);
-                }
+                //for (int i = 0; i < 19; i++)
+                //{
+                //    _trimCurvesCollection.Last().NewtonOuputPoint.RemoveAt(_trimCurvesCollection.Last().NewtonOuputPoint.Count() - 1);
+                //}
 
                 AppendTrimmedCurvesPoints(_trimCurvesCollection.Last().NewtonOuputPoint, TrimedCurvesPointsList);
                 AppendTrimmedCurvesPoints(tempKorpus, TrimedCurvesPointsList);
@@ -882,10 +907,10 @@ namespace ModelowanieGeometryczne.ViewModel
                 //       _trimCurvesCollection[2].NewtonOuputPoint.Last()[0], TrimedCurvesPointsList);
 
                 tempKorpus.Clear();
-                for (int i = _trimCurvesCollection.Last().NewtonOuputPoint.Count; i > 637; i--)
+                for (int i = _trimCurvesCollection.Last().NewtonOuputPoint.Count; i > 624; i--)
                 {
-                    tempKorpus.Add(_trimCurvesCollection.Last().NewtonOuputPoint[637]);
-                    _trimCurvesCollection.Last().NewtonOuputPoint.RemoveAt(637);
+                    tempKorpus.Add(_trimCurvesCollection.Last().NewtonOuputPoint[624]);
+                    _trimCurvesCollection.Last().NewtonOuputPoint.RemoveAt(624);
                 }
 
                 AppendTrimmedCurvesPoints(_trimCurvesCollection.Last().NewtonOuputPoint, TrimedCurvesPointsList);
@@ -897,18 +922,18 @@ namespace ModelowanieGeometryczne.ViewModel
                 _bezierPatchC2Collection[1].Selected = true;
                 TrimPatchesExecuted();
                 _trimCurvesCollection.Last().NewtonOuputPoint.Reverse();
-                for (int i = 0; i < 49; i++)
-                {
-                    _trimCurvesCollection.Last().NewtonOuputPoint.RemoveAt(0);
-                }
-                for (int i = 0; i < 18; i++)
-                {
-                    _trimCurvesCollection.Last().NewtonOuputPoint.RemoveAt(_trimCurvesCollection.Last().NewtonOuputPoint.Count - 1);
-                }
+                //for (int i = 0; i < 49; i++)
+                //{
+                //    _trimCurvesCollection.Last().NewtonOuputPoint.RemoveAt(0);
+                //}
+                //for (int i = 0; i < 18; i++)
+                //{
+                //    _trimCurvesCollection.Last().NewtonOuputPoint.RemoveAt(_trimCurvesCollection.Last().NewtonOuputPoint.Count - 1);
+                //}
                 AppendTrimmedCurvesPoints(_trimCurvesCollection.Last().NewtonOuputPoint, TrimedCurvesPointsList);
 
                 //Smiglo
-                _cursor.Coordinates = new Vector4d(scale * 0.9, scale * (4.6 - 3.6), scale * -0.1, scale * 0.0);
+                _cursor.Coordinates = new Vector4d(scale * 1.2, scale * (3.8 - 3.6),scale * -0.1, scale * 0.0);
                 UnselectAllItemsExecuted();
                 _bezierPatchCollection[0].Selected = true;
                 _bezierPatchC2Collection[4].Selected = true;
@@ -931,12 +956,15 @@ namespace ModelowanieGeometryczne.ViewModel
 
 
                 //Smiglo
-                _cursor.Coordinates = new Vector4d(scale * 1.2, scale * (3.8 - 3.6), scale * -0.1, scale * 0.0);
+                TrimedCurvesPointsList.Add(_bezierPatchCollection[0].GetPoint(1, 1));
+                _cursor.Coordinates = new Vector4d(3.0, 0.4, scale * -0.1, scale * 0.0);
                 UnselectAllItemsExecuted();
                 _bezierPatchCollection[0].Selected = true;
                 _bezierPatchC2Collection[4].Selected = true;
                 TrimPatchesExecuted();
                 AppendTrimmedCurvesPoints(_trimCurvesCollection.Last().NewtonOuputPoint, TrimedCurvesPointsList);
+
+                TrimedCurvesPointsList.Add(_bezierPatchCollection[0].GetPoint(1, 0));
                 AppendTrimmedCurvesPoints(SmigloTemp, TrimedCurvesPointsList);
 
                 //Wirnik
@@ -946,14 +974,14 @@ namespace ModelowanieGeometryczne.ViewModel
                 _bezierPatchC2Collection[1].Selected = true;
                 TrimPatchesExecuted();
                 _trimCurvesCollection.Last().NewtonOuputPoint.Reverse();
-                for (int i = 0; i < 18; i++)
-                {
-                    _trimCurvesCollection.Last().NewtonOuputPoint.RemoveAt(0);
-                }
-                for (int i = 0; i < 36; i++)
-                {
-                    _trimCurvesCollection.Last().NewtonOuputPoint.RemoveAt(_trimCurvesCollection.Last().NewtonOuputPoint.Count - 1);
-                }
+                //for (int i = 0; i < 18; i++)
+                //{
+                //    _trimCurvesCollection.Last().NewtonOuputPoint.RemoveAt(0);
+                //}
+                //for (int i = 0; i < 36; i++)
+                //{
+                //    _trimCurvesCollection.Last().NewtonOuputPoint.RemoveAt(_trimCurvesCollection.Last().NewtonOuputPoint.Count - 1);
+                //}
                 AppendTrimmedCurvesPoints(_trimCurvesCollection.Last().NewtonOuputPoint, TrimedCurvesPointsList);
                 for (int i = 0; i < 71; i++)
                 {
@@ -976,6 +1004,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
                 DebugZigZagfirstrun = false;
             }
+          
             SavePath(TrimedCurvesPointsList, "CzystyKontur.f999");
             GnerateMinMaxXLists(TrimedCurvesPointsList);
 
@@ -1631,7 +1660,7 @@ namespace ModelowanieGeometryczne.ViewModel
             MaxValues1.Clear();
             MinValues1.Clear();
             DebugZigZagfirstrun = true;
-            heightArray.Clear();
+            _heightArray.Clear();
         }
         public void LoadScene()
         {
@@ -1647,7 +1676,8 @@ namespace ModelowanieGeometryczne.ViewModel
                 // DeserializeDataSet(op.FileName);
                 ClearScene();
                 //ExchangeObject.LoadJson(op.FileName);
-                ExchangeObject.LoadJson("D:\\Studia\\Informatyka MGR\\Semestr 1\\ModelowanieGeometryczne\\MG testowe\\New folder\\Piotrek14+plaszczyzna symetriiC2_Final.json");
+               // ExchangeObject.LoadJson("D:\\Studia\\Informatyka MGR\\Semestr 1\\ModelowanieGeometryczne\\MG testowe\\New folder\\Piotrek14+plaszczyzna symetriiC2_Final.json");
+                ExchangeObject.LoadJson("D:\\Studia\\Informatyka MGR\\Semestr 1\\ModelowanieGeometryczne\\MG testowe\\New folder\\tt.json");
                 //}
                 //catch
                 //{
@@ -1740,9 +1770,13 @@ namespace ModelowanieGeometryczne.ViewModel
             _fi = 0;
             _teta = 0;
 
+            if (_finishPathHelpers)
+            {
+                _finishPathGenerator.Draw(M);
+            }
             if (_initialHelpers)
             {
-                heightArray.Draw(M);
+                _heightArray.Draw(M);
             }
 
             if (_contourHelpers)
@@ -1810,16 +1844,17 @@ namespace ModelowanieGeometryczne.ViewModel
                 }
             }
 
-
-            //foreach (var item in TrimCurvesCollection)
-            //{
-            //    foreach (var item2 in item.NewtonOuputPoint)
-            //    {
-            //        item2[0].Draw(M, 20, 0, 1, 1);
-            //        item2[1].Draw(M, 20, 1, 0, 1);
-            //    }
-
-            //}
+            if (_showTrimmingCurves)
+            {
+                foreach (var item in TrimCurvesCollection)
+                {
+                    foreach (var item2 in item.NewtonOuputPoint)
+                    {
+                        item2[0].Draw(M, 20, 0, 1, 1);
+                        item2[1].Draw(M, 20, 1, 0, 1);
+                    }
+                }
+            }
 
             if (DrawEllipseFlag)
             {
@@ -2190,6 +2225,17 @@ namespace ModelowanieGeometryczne.ViewModel
             {
                 _contourHelpers = value;
                 OnPropertyChanged(nameof(ContourHelpers));
+            }
+        }
+
+        private bool _finishPathHelpers = true;
+        public bool FinishPathHelpers
+        {
+            get { return _finishPathHelpers; }
+            set
+            {
+                _finishPathHelpers = value;
+                OnPropertyChanged(nameof(FinishPathHelpers));
             }
         }
 

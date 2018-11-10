@@ -124,7 +124,8 @@ namespace ModelowanieGeometryczne
                 for (int j = 0; j < arraySize; j++)
                 {
                     // if (PointsArray[i, j].Z > 0.01 || PointsArray[i, j].Z < -0.01) (new Point(delta * (i - arraySize / 2), delta*(j - arraySize / 2), PointsArray[i, j].Z)).Draw(M,10,1,1,0);
-                    (new Point(delta * (i - arraySize / 2), delta * (j - arraySize / 2), PointsArray[i, j].Z)).Draw(M, 10, 1, 1, 0);
+                   (new Point(delta * (i - arraySize / 2), delta * (j - arraySize / 2), PointsArray[i, j].Z)).Draw(M, 10, 1, 1, 0);
+                   // PointsArray[i, j].Draw(M, 10, 1, 0, 0);
                 }
             }
         }

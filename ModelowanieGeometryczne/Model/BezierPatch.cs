@@ -23,7 +23,29 @@ namespace ModelowanieGeometryczne.Model
         public Vector4d StartPoint { get; set; }
         private ObservableCollection<Point> _vertices = new ObservableCollection<Point>();
         bool _polylineEnabled = false;
-        public bool Selected { get; set; }
+        private bool _selected = false;
+
+        public bool Selected
+        {
+            get
+            {
+                return _selected;
+
+            }
+            set
+            {
+                _selected = value;
+                foreach (var VARIABLE in Surface)
+                {
+                    foreach (var item in VARIABLE.PatchPoints)
+                    {
+                        item.Selected = _selected;
+                    }
+
+                   
+                }
+            }
+        }
         public string Name { get; set; }
         static int PatchNumber { get; set; }
         Point[,] AllPointsArray;
@@ -978,6 +1000,50 @@ namespace ModelowanieGeometryczne.Model
 
             return list;
         }
+
+        private bool changeDirection = false;
+        private int insertIndex = 0;
+        public List<Tuple<Point, Vector3d>> GeneratePointsWithNormalVectorsForMilling(double umin, double umax, double vmin, double vmax, int nu, int nv, double radius)
+        {
+            double deltaU = (umax - umin) / nu;
+            double deltaV = (vmax - vmin) / nv;
+            double tempU = umin;
+            double tempV = vmin;
+            List<Tuple<Point, Vector3d>> List = new List<Tuple<Point, Vector3d>>();
+            for (int j = 0; j <= nu; j++)
+            {
+
+                tempV = vmin;
+                insertIndex = List.Count;
+
+                for (int i = 0; i <= nv; i++)
+                {
+                    Point a = GetPoint(tempU, tempV);
+                    Vector3d b = Point.CrossProduct(GetPointDerivativeU(tempU, tempV),
+                        GetPointDerivativeV(tempU, tempV));
+
+                    b.Normalize();
+                    b = b * radius;
+                    if (changeDirection)
+                    {
+                        List.Insert(insertIndex, new Tuple<Point, Vector3d>(a, b));
+                    }
+                    else
+                    {
+                        List.Add(new Tuple<Point, Vector3d>(a, b));
+                    }
+
+                    tempV += deltaV;
+                }
+
+                changeDirection = !changeDirection;
+                tempU += deltaV;
+            }
+
+            return List;
+
+        }
+
 
         #endregion Public Methods
     }
