@@ -263,13 +263,12 @@ namespace ModelowanieGeometryczne.ViewModel
         }
 
 
-        private void GenerateContourPathExecuted()
+        private void GenerateOneStepContourPathExecuted(double r)
         {
-            double r = 0.5; //Zmiana tego paramatru wymusi koniecznosc ręcznegoo usunięcia innych dwóch punktów niż te usuwane w tej chwili!! Default: r=0.5;
             Point a;
             Vector3d b = new Vector3d(0, 0, 0);
             List<Vector3d> OffsetVectorsHistory = new List<Vector3d>();
-            TrimedCurvesPointsListWithOffset.Clear();
+
             Point tempPoint;
             for (int i = 0; i < TrimedCurvesPointsList.Count; i++)
             {
@@ -316,7 +315,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
             double epsilonSpace = 0.2;
             //TrimedCurvesPointsListWithOffset.RemoveAt(2298);
-           // TrimedCurvesPointsListWithOffset.RemoveAt(3138);
+            // TrimedCurvesPointsListWithOffset.RemoveAt(3138);
             //TrimedCurvesPointsListWithOffset.RemoveAt(3324);
             //TrimedCurvesPointsListWithOffset.RemoveAt(2483);
             List<Tuple<Point, Point, Point, Point>> freeSpacePoints = new List<Tuple<Point, Point, Point, Point>>();
@@ -374,7 +373,13 @@ namespace ModelowanieGeometryczne.ViewModel
             TrimedCurvesPointsListWithOffset.Insert(0, new Point(TrimedCurvesPointsListWithOffset[0].X, TrimedCurvesPointsListWithOffset[0].Y - 4, 10));
             TrimedCurvesPointsListWithOffset.Insert(1, new Point(TrimedCurvesPointsListWithOffset[0].X, TrimedCurvesPointsListWithOffset[0].Y, 0));
             TrimedCurvesPointsListWithOffset.Add(new Point(TrimedCurvesPointsListWithOffset.Last().X, TrimedCurvesPointsListWithOffset.Last().Y, 10));
-
+        }
+        private void GenerateContourPathExecuted()
+        {
+            //double r = 1; //Zmiana tego paramatru wymusi koniecznosc ręcznegoo usunięcia innych dwóch punktów niż te usuwane w tej chwili!! Default: r=0.5;
+            TrimedCurvesPointsListWithOffset.Clear();
+            GenerateOneStepContourPathExecuted(0.5);
+            GenerateOneStepContourPathExecuted(1);
 
             SavePath(TrimedCurvesPointsListWithOffset, "3.f10");
         }
@@ -732,8 +737,8 @@ namespace ModelowanieGeometryczne.ViewModel
 
 
 
-            OutputList.Add(new Point(MinValues1[0].X, MinValues1[0].Y + 0.8, 10));
-            OutputList.Add(new Point(MinValues1[0].X, MinValues1[0].Y + 0.8, MinValues1[0].Z));
+            //OutputList.Add(new Point(MinValues1[0].X, MinValues1[0].Y + 0.8, 10));
+            //OutputList.Add(new Point(MinValues1[0].X, MinValues1[0].Y + 0.8, MinValues1[0].Z));
 
             // for (int i = 0; i < 3; i += 10)
             //  {
@@ -741,19 +746,19 @@ namespace ModelowanieGeometryczne.ViewModel
             //OutputList.Add(MinValues[i]);
             //OutputList.Add(new Point(min, MinValues[i].Y, MinValues[i].Z));
             //OutputList.Add(new Point(min, MinValues[i].Y, MinValues[i].Z));
-            OutputList.Add(MinValues1[0]);
-            OutputList.Add(MaxValues1[0]);
-            OutputList.Add(MaxValues1[10]);
-            OutputList.Add(MinValues1[10]);
+            //OutputList.Add(MinValues1[0]);
+            //OutputList.Add(MaxValues1[0]);
+            //OutputList.Add(MaxValues1[10]);
+            //OutputList.Add(MinValues1[10]);
 
 
 
-            OutputList.Add(MinValues1[20]);
-            OutputList.Add(MaxValues1[20]);
-            OutputList.Add(MaxValues1[30]);
+            //OutputList.Add(MinValues1[20]);
+            //OutputList.Add(MaxValues1[20]);
+            //OutputList.Add(MaxValues1[30]);
 
-            OutputList.Add(MinValues1[30]);
-            OutputList.Add(new Point(MinValues1[30].X, MinValues1[30].Y, 10));
+            //OutputList.Add(MinValues1[30]);
+            //OutputList.Add(new Point(MinValues1[30].X, MinValues1[30].Y, 10));
 
 
             ////OutputList.Add(new Point(MinValues1[77].X, MinValues1[77].Y - 0.8, 10));
