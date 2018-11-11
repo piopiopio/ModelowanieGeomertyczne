@@ -370,18 +370,28 @@ namespace ModelowanieGeometryczne.ViewModel
             {
                 item.Z = 0;
             }
-            TrimedCurvesPointsListWithOffset.Insert(0, new Point(TrimedCurvesPointsListWithOffset[0].X, TrimedCurvesPointsListWithOffset[0].Y - 4, 10));
-            TrimedCurvesPointsListWithOffset.Insert(1, new Point(TrimedCurvesPointsListWithOffset[0].X, TrimedCurvesPointsListWithOffset[0].Y, 0));
-            TrimedCurvesPointsListWithOffset.Add(new Point(TrimedCurvesPointsListWithOffset.Last().X, TrimedCurvesPointsListWithOffset.Last().Y, 10));
+
         }
         private void GenerateContourPathExecuted()
         {
-            //double r = 1; //Zmiana tego paramatru wymusi koniecznosc ręcznegoo usunięcia innych dwóch punktów niż te usuwane w tej chwili!! Default: r=0.5;
-            TrimedCurvesPointsListWithOffset.Clear();
-            GenerateOneStepContourPathExecuted(0.5);
-            GenerateOneStepContourPathExecuted(1);
+            List<Point> PathToExport=new List<Point>();
 
-            SavePath(TrimedCurvesPointsListWithOffset, "3.f10");
+            TrimedCurvesPointsListWithOffset.Clear();
+            GenerateOneStepContourPathExecuted(1);
+            TrimedCurvesPointsListWithOffset.Insert(0, new Point(TrimedCurvesPointsListWithOffset[0].X, TrimedCurvesPointsListWithOffset[0].Y - 4, 10));
+            TrimedCurvesPointsListWithOffset.Insert(1, new Point(TrimedCurvesPointsListWithOffset[0].X, TrimedCurvesPointsListWithOffset[0].Y-4, 0));
+            PathToExport = TrimedCurvesPointsListWithOffset.ToList();
+            TrimedCurvesPointsListWithOffset.Clear();
+            int Count = PathToExport.Count;
+
+
+            GenerateOneStepContourPathExecuted(0.5);
+            
+            PathToExport =PathToExport.Concat(TrimedCurvesPointsListWithOffset).ToList();
+            PathToExport.Add(PathToExport[Count]);
+            PathToExport.Add(new Point(TrimedCurvesPointsListWithOffset.Last().X, TrimedCurvesPointsListWithOffset.Last().Y, 10));
+
+            SavePath(PathToExport, "3.f10");
         }
 
 
@@ -452,7 +462,7 @@ namespace ModelowanieGeometryczne.ViewModel
             double current = min;
             double max = 7.5;
             double rawDiameter = 1;
-            double diameterOffset = 0.2;
+            double diameterOffset = 1;
             double radius = (rawDiameter + diameterOffset) / 2;
             MaxValues = new List<Point>();
             MinValues = new List<Point>();
@@ -575,10 +585,10 @@ namespace ModelowanieGeometryczne.ViewModel
                 }
 
 
-                if (addFlag)
-                {
-                    MaxValues1.Add(new Point(maxValue, current, 0));
-                }
+                //if (addFlag)
+                //{
+                //    MaxValues1.Add(new Point(maxValue, current, 0));
+                //}
 
 
 
@@ -587,39 +597,39 @@ namespace ModelowanieGeometryczne.ViewModel
 
 
 
-                foreach (var item in temp)
-                {
-                    if (item.X < 1.5)
-                    {
-                        minValue = Math.Max(minValue, item.X);
-                    }
+            //    foreach (var item in temp)
+            //    {
+            //        if (item.X < 1.5)
+            //        {
+            //            minValue = Math.Max(minValue, item.X);
+            //        }
 
-                }
+            //    }
 
-                addFlag = true;
-                foreach (var item in list)
-                {
+            //    addFlag = true;
+            //    foreach (var item in list)
+            //    {
 
-                    while ((item.X - minValue) * (item.X - minValue) +
-                           (item.Y - current) * (item.Y - current) <= radius * radius)
-                    {
-                        minValue += jump / 30;
+            //        while ((item.X - minValue) * (item.X - minValue) +
+            //               (item.Y - current) * (item.Y - current) <= radius * radius)
+            //        {
+            //            minValue += jump / 30;
 
 
-                    }
-                    if (minValue > 1.4 || minValue < 0)
-                    {
-                        addFlag = false;
-                        //break;
-                    }
-                }
+            //        }
+            //        if (minValue > 1.4 || minValue < 0)
+            //        {
+            //            addFlag = false;
+            //            //break;
+            //        }
+            //    }
 
-                if (addFlag)
-                {
-                    MinValues1.Add(new Point(minValue, current, 0));
-                }
+            //    if (addFlag)
+            //    {
+            //        MinValues1.Add(new Point(minValue, current, 0));
+            //    }
 
-                current -= jump;
+            //    current -= jump;
 
 
             }
@@ -655,35 +665,35 @@ namespace ModelowanieGeometryczne.ViewModel
 
             //minValues ma 59 elementow a i zaczyna sie od 51 moze byc nie tak
 
-            for (int i = 0; i < 7; i++)
-            {
-                MinValues1.RemoveAt(34);
-            }
+            //for (int i = 0; i < 7; i++)
+            //{
+            //    MinValues1.RemoveAt(34);
+            //}
 
             double delta;
-            double deltaX = MinValues1[51].X - MinValues1[50].X;
-            double deltaY = MaxValues1[51].Y - MaxValues1[50].Y;
-            for (int i = 52; i < 78; i++)
-            {
-                //MinValues1[i] = new Point(MinValues1[i - 1].X + delta, MinValues1[i].Y, MinValues1[i].Z);
-                MinValues1.Add(new Point(MinValues1[i - 1].X + deltaX, MinValues1[i - 1].Y + deltaY, MinValues1[i - 1].Z));
+            //double deltaX = MinValues1[51].X - MinValues1[50].X;
+            //double deltaY = MaxValues1[51].Y - MaxValues1[50].Y;
+            //for (int i = 52; i < 78; i++)
+            //{
+            //    //MinValues1[i] = new Point(MinValues1[i - 1].X + delta, MinValues1[i].Y, MinValues1[i].Z);
+            //    MinValues1.Add(new Point(MinValues1[i - 1].X + deltaX, MinValues1[i - 1].Y + deltaY, MinValues1[i - 1].Z));
 
-            }
+            //}
 
-            double u = MaxValues1[0].Y;
-            deltaX = MaxValues1[0].X - MaxValues1[1].X;
-            deltaY = MaxValues1[0].Y - MaxValues1[1].Y;
-            while (u < 3.58)
-            {
+            //double u = MaxValues1[0].Y;
+            //deltaX = MaxValues1[0].X - MaxValues1[1].X;
+            //deltaY = MaxValues1[0].Y - MaxValues1[1].Y;
+            //while (u < 3.58)
+            //{
 
-                MaxValues1.Insert(0, new Point(MaxValues1[0].X + deltaX, MaxValues1[0].Y + jump, MaxValues1[0].Z));
-                u += jump;
-            }
-            MaxValues1.RemoveAt(33);
-            for (int i = MinValues1.Count; i > 78; i--)
-            {
-                MinValues1.RemoveAt(78);
-            }
+            //    MaxValues1.Insert(0, new Point(MaxValues1[0].X + deltaX, MaxValues1[0].Y + jump, MaxValues1[0].Z));
+            //    u += jump;
+            //}
+            //MaxValues1.RemoveAt(33);
+            //for (int i = MinValues1.Count; i > 78; i--)
+            //{
+            //    MinValues1.RemoveAt(78);
+            //}
 
             delta = MinValues[77].Y - MinValues[76].Y;
             double temp1 = delta * 12;
@@ -694,10 +704,10 @@ namespace ModelowanieGeometryczne.ViewModel
                 temp1 -= delta;
             }
 
-            while (MaxValues1.Count > 78)
-            {
-                MaxValues1.RemoveAt(78);
-            }
+            //while (MaxValues1.Count > 78)
+            //{
+            //    MaxValues1.RemoveAt(78);
+            //}
             List<Point> OutputList = new List<Point>();
 
 
