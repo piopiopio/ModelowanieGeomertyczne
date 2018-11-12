@@ -424,8 +424,8 @@ namespace ModelowanieGeometryczne.ViewModel
         public List<Point> MaxValues = new List<Point>();
         public List<Point> MinValues = new List<Point>();
 
-        public List<Point> MaxValues1 = new List<Point>();
-        public List<Point> MinValues1 = new List<Point>();
+      //  public List<Point> MaxValues1 = new List<Point>();
+       // public List<Point> MinValues1 = new List<Point>();
 
         public void SavePath(List<Point> pointsList, string fileName)
         {
@@ -466,8 +466,8 @@ namespace ModelowanieGeometryczne.ViewModel
             double radius = (rawDiameter + diameterOffset) / 2;
             MaxValues = new List<Point>();
             MinValues = new List<Point>();
-            MaxValues1 = new List<Point>();
-            MinValues1 = new List<Point>();
+           // MaxValues1 = new List<Point>();
+           // MinValues1 = new List<Point>();
 
             for (int i = 0; i < (max - min) / jump; i++)
             {
@@ -508,7 +508,7 @@ namespace ModelowanieGeometryczne.ViewModel
                 if (MaxValues[i].X > 0.5 && MaxValues[i].X < 1.5 && MaxValues[i].Y > 2.8 && MaxValues[i].Y < (3.0 + radius))
                 {
                     //Kasowanie nadmiarowych punktów kolizja po y przy smigle
-                    MinValues1.Insert(0, MaxValues[i]);
+                   // MinValues1.Insert(0, MaxValues[i]);
                     MaxValues.RemoveAt(i);
                     i -= 1;
                     //     break;
@@ -531,7 +531,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
             }
 
-            current = MinValues1.Last().Y - jump;
+            //current = MinValues1.Last().Y - jump;
             for (int i = 0; i < (max - min) / jump; i++)
             {//x=1.5
 
@@ -1672,8 +1672,8 @@ namespace ModelowanieGeometryczne.ViewModel
             TrimedCurvesPointsList.Clear();
             MaxValues.Clear();
             MinValues.Clear();
-            MaxValues1.Clear();
-            MinValues1.Clear();
+            //MaxValues1.Clear();
+            //MinValues1.Clear();
             DebugZigZagfirstrun = true;
             _heightArray.Clear();
         }
@@ -1815,15 +1815,15 @@ namespace ModelowanieGeometryczne.ViewModel
                     item.Draw(M, 100, 0, 1, 1);
                 }
 
-                foreach (var item in MaxValues1)
-                {
-                    item.Draw(M, 100, 1, 0, 1);
-                }
+                //foreach (var item in MaxValues1)
+                //{
+                //    item.Draw(M, 100, 1, 0, 1);
+                //}
 
-                foreach (var item in MinValues1)
-                {
-                    item.Draw(M, 100, 1, 1, 1);
-                }
+                //foreach (var item in MinValues1)
+                //{
+                //    item.Draw(M, 100, 1, 1, 1);
+                //}
 
                 ////  UPPER = 0;
                 foreach (var item in TrimedCurvesPointsList)

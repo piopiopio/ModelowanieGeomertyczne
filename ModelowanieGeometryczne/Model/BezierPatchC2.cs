@@ -761,7 +761,7 @@ namespace ModelowanieGeometryczne
                 }
 
                 changeDirection = !changeDirection;
-                tempU += deltaV;
+                tempU += deltaU;
             }
 
             return List;
