@@ -265,6 +265,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
         private void GenerateOneStepContourPathExecuted(double r)
         {
+
             Point a;
             Vector3d b = new Vector3d(0, 0, 0);
             List<Vector3d> OffsetVectorsHistory = new List<Vector3d>();
@@ -374,6 +375,12 @@ namespace ModelowanieGeometryczne.ViewModel
         }
         private void GenerateContourPathExecuted()
         {
+            if (TrimedCurvesPointsList.Count == 0)
+            {
+                GenerateZigZagPathExecuted();
+                if (TrimedCurvesPointsList.Count == 0)
+                { return; }
+            }
             List<Point> PathToExport=new List<Point>();
 
             TrimedCurvesPointsListWithOffset.Clear();
@@ -429,6 +436,7 @@ namespace ModelowanieGeometryczne.ViewModel
 
         public void SavePath(List<Point> pointsList, string fileName)
         {
+            if (pointsList == null) return;
             double scale = 10;
             double z_offset = 20;
             int LineNumberIterator = 1;
@@ -814,6 +822,10 @@ namespace ModelowanieGeometryczne.ViewModel
         private bool DebugZigZagfirstrun = true;
         private void GenerateZigZagPathExecuted()
         {
+            if (_bezierPatchC2Collection.Count < 5 || _bezierPatchCollection.Count<1)
+            {
+                return;
+            }
             double scale = 2;
             if (DebugZigZagfirstrun)
             {
@@ -2243,7 +2255,7 @@ namespace ModelowanieGeometryczne.ViewModel
             }
         }
 
-        private bool _finishPathHelpers = true;
+        private bool _finishPathHelpers = false;
         public bool FinishPathHelpers
         {
             get { return _finishPathHelpers; }
