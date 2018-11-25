@@ -179,6 +179,38 @@ namespace ModelowanieGeometryczne
         {
             List.Add(new Point(delta * (-arraySize / 2) + delta / 2, delta * (-arraySize / 2) + delta / 2, 10));
             Tuple<int, int> nextPointCoordinates;
+            Point[,] PointsArray1 = new Point[arraySize, arraySize];
+           
+            int divsionFactor = 2;
+            for (int i = 0; i < PointsArray.GetLength(0); i++)
+            {
+                for (int j = 0; j < PointsArray.GetLength(1); j++)
+                {
+                    Point temp = new Point(0,0,0);
+
+                    for (int l = -divsionFactor; l < divsionFactor; l++)
+                    {
+                        for (int m =-divsionFactor; m < divsionFactor; m++)
+                        {
+                            if ((j + m) < 0 || (i + l) < 0 || (j + m) >= PointsArray.GetLength(1) || (i + l) >= PointsArray.GetLength(0))
+                            {
+                                continue;
+                            }
+
+                            if (temp.Z < PointsArray[ (i + l), (j + m)].Z)
+                            {
+                                temp.Z = PointsArray[i + l, j + m].Z;
+                            }
+                        }
+                    }
+
+                    PointsArray1[i, j] = temp;
+
+                }
+            }
+
+            PointsArray = PointsArray1;
+
             for (int i = 0; i < PointsArray.GetLength(0); i++)
             {
                 for (int j = 0; j < PointsArray.GetLength(1); j++)
@@ -197,7 +229,7 @@ namespace ModelowanieGeometryczne
                     {
                         if (i == (PointsArray.GetLength(0) - 1))
                         {
-                            nextPoint = PointsArray[k, i];
+                            nextPoint = PointsArray1[k, i];
                             nextPointCoordinates = new Tuple<int, int>(k, i);
                         }
 
@@ -227,7 +259,7 @@ namespace ModelowanieGeometryczne
 
             }
 
-            List.Add(new Point(-delta * (PointsArray.GetLength(0) - 1 - arraySize / 2) + delta / 2, delta * (PointsArray.GetLength(1) - 1 - arraySize / 2) + delta / 2, 10));
+            List.Add(new Point(-delta * (PointsArray1.GetLength(0) - 1 - arraySize / 2) + delta / 2, delta * (PointsArray1.GetLength(1) - 1 - arraySize / 2) + delta / 2, 10));
         }
 
     }

@@ -58,6 +58,21 @@ namespace ModelowanieGeometryczne
         }
         List<Point> hatchingList = new List<Point>();
         public List<Point> Path = new List<Point>();
+
+        public List<Point> GenerateControlStar()
+        {
+            List<Point> ControlStarPoints=new List<Point>();
+            //Point Origin=new Point(0,0,0);
+            foreach (var item in List)
+            {Point temp=new Point(item.Item1.X, item.Item1.Y,0);
+                ControlStarPoints.Add(temp);
+                ControlStarPoints.Add(item.Item1);
+                ControlStarPoints.Add(temp);
+            }
+
+            return ControlStarPoints;
+
+        }
         public List<Point> GeneratePath()
         {
             if (BezierPatchC2Collection.Count < 5 || BezierPatchCollection.Count < 1)
@@ -180,7 +195,7 @@ namespace ModelowanieGeometryczne
             }
 
             Path = Path.Concat(ListToAdd).ToList();
-
+            Path.Add(new Point(Path.Last().X, Path.Last().Y, safeHeight));
 
             //////debug
             ////Path.Clear();

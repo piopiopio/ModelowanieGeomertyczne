@@ -38,8 +38,9 @@ namespace Tests
             Patch a = new Patch();
             a.u = 2;
             a.v = 3;
+            //a.CalculateParametrizationVectors();
             a.CalculateParametrizationVectors();
-            
+
         }
 
     }

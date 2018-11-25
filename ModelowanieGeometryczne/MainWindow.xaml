@@ -95,7 +95,7 @@
 
                         <TextBlock Grid.Row="5" Grid.Column="0" Text="  torus:  " Grid.ColumnSpan="2"></TextBlock>
                         <CheckBox Grid.Row="5" Grid.Column="2" IsChecked="{Binding  Scene.TorusEnabled}"/>
-
+                        <Button Grid.Row="6"  Grid.Column="0" Content="Generate control star" Command="{Binding Scene.GenerateControlStar}" Visibility="Hidden"></Button>
                         <TextBlock Grid.Row="7" Grid.Column="0" Text="  Horizontal/circular patches:  " Grid.ColumnSpan="2"></TextBlock>
                         <TextBox Grid.Row="7" Grid.Column="2" Text="{Binding Scene.HorizontalPatches}"/>
                         <TextBlock Grid.Row="8" Grid.Column="0" Text="  Vertical patches:  " Grid.ColumnSpan="2"></TextBlock>
@@ -269,7 +269,7 @@
                 <TabControl>
 
 
-                    <TabItem Header="PointsCollection">
+                    <TabItem Header="Points">
                         <ListView Name="PointsListView" Grid.Row="0" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.PointsCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" >
                             <ListView.ItemContainerStyle>
                                 <Style TargetType="ListViewItem">
@@ -353,7 +353,7 @@
 
                     </TabItem>
 
-                    <TabItem Header="Trimming curve" Height="22" VerticalAlignment="Top">
+                    <TabItem Header="Trimming curves" Height="22" VerticalAlignment="Top">
                         <ListView Name="TrimCurve" Grid.Row="0" VerticalAlignment="Top" Grid.ColumnSpan="1" ItemsSource="{Binding Scene.TrimCurvesCollection}" MouseUp="PointsListView_MouseUp" KeyUp="PointsListView_KeyUp" SelectionChanged="TrimCurve_SelectionChanged" >
                             <ListView.ItemContainerStyle>
                                 <Style TargetType="ListViewItem">
