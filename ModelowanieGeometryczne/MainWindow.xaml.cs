@@ -189,6 +189,16 @@ namespace ModelowanieGeometryczne
                     _mainViewModel.Scene.AddPointByCursor();
                     Paint();
                     break;
+                case Key.OemMinus:
+                    _mainViewModel.Scene.Scale += 10 / 3000.0;
+                    Paint();
+                    break;
+                case Key.OemPlus:
+                    _mainViewModel.Scene.Scale += 10 / 3000.0;
+                    Paint();
+                    break;
+
+
             }
         }
 
